@@ -27,6 +27,7 @@ class ProjectManager:
                     continue
                 path = os.path.join(root, name)
                 if os.path.isdir(path):
+                    structure.append(new_prefix + name)
                     walk_dir(path, new_prefix)
                 elif os.path.isfile(path) and name.endswith(".py"):
                     structure.append(new_prefix + name)

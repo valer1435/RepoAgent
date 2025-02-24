@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import ast
 import json
 import os
 import threading
+from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import Enum, auto, unique
 from pathlib import Path
@@ -50,6 +52,8 @@ class DocItemType(Enum):
             return "FunctionDef"
         elif self == DocItemType._sub_function:
             return "FunctionDef"
+        elif self == DocItemType._dir:
+            return "Dir"
         # assert False, f"{self.name}"
         return self.name
 
@@ -87,18 +91,18 @@ def need_to_generate(doc_item: DocItem, ignore_list: List[str] = []) -> bool:
     if doc_item.item_status == DocItemStatus.doc_up_to_date:
         return False
     rel_file_path = doc_item.get_full_name()
-    if doc_item.item_type in [
-        DocItemType._file,
-        DocItemType._dir,
-        DocItemType._repo,
-    ]:  # 暂时不生成file及以上的doc
-        return False
+    # if doc_item.item_type in [
+    #     DocItemType._file,
+    #     DocItemType._dir,
+    #     DocItemType._repo,
+    # ]:  # 暂时不生成file及以上的doc
+    #     return False
     doc_item = doc_item.father
     while doc_item:
         if doc_item.item_type == DocItemType._file:
             # 如果当前文件在忽略列表中，或者在忽略列表某个文件路径下，则跳过
             if any(
-                rel_file_path.startswith(ignore_item) for ignore_item in ignore_list
+                    rel_file_path.startswith(ignore_item) for ignore_item in ignore_list
             ):
                 return False
             else:
@@ -115,6 +119,7 @@ class DocItem:
     obj_name: str = ""  # 对象的名字
     code_start_line: int = -1
     code_end_line: int = -1
+    source_node: Optional[ast.__ast.stmt] = None
     md_content: List[str] = field(default_factory=list)  # 存储不同版本的doc
     content: Dict[Any, Any] = field(default_factory=dict)  # 原本存储的信息
 
@@ -253,11 +258,11 @@ class DocItem:
             now_item.has_task = child.has_task or now_item.has_task
 
     def print_recursive(
-        self,
-        indent=0,
-        print_content=False,
-        diff_status=False,
-        ignore_list: List[str] = [],
+            self,
+            indent=0,
+            print_content=False,
+            diff_status=False,
+            ignore_list: List[str] = [],
     ):
         """递归打印repo对象"""
 
@@ -294,7 +299,7 @@ class DocItem:
 
 
 def find_all_referencer(
-    repo_path, variable_name, file_path, line_number, column_number, in_file_only=False
+        repo_path, variable_name, file_path, line_number, column_number, in_file_only=False
 ):
     """复制过来的之前的实现"""
     script = jedi.Script(path=os.path.join(repo_path, file_path))
@@ -329,6 +334,8 @@ class MetaInfo:
     document_version: str = (
         ""  # 随时间变化，""代表没完成，否则对应一个目标仓库的commit hash
     )
+    repo_structure: Dict[str, Any] = field(default_factory=dict)
+    # 整个repo的文件结构
     target_repo_hierarchical_tree: "DocItem" = field(
         default_factory=lambda: DocItem()
     )  # 整个repo的文件结构
@@ -363,7 +370,7 @@ class MetaInfo:
         return metainfo
 
     @staticmethod
-    def from_checkpoint_path(checkpoint_dir_path: Path) -> MetaInfo:
+    def from_checkpoint_path(checkpoint_dir_path: Path, repo_structure: Optional[Dict[str, Any]] = None) -> MetaInfo:
         """从已有的metainfo dir里面读取metainfo"""
         setting = SettingsManager.get_setting()
 
@@ -371,14 +378,14 @@ class MetaInfo:
 
         with open(project_hierarchy_json_path, "r", encoding="utf-8") as reader:
             project_hierarchy_json = json.load(reader)
-        metainfo = MetaInfo.from_project_hierarchy_json(project_hierarchy_json)
+        metainfo = MetaInfo.from_project_hierarchy_json(project_hierarchy_json, repo_structure)
 
         with open(
-            checkpoint_dir_path / "meta-info.json", "r", encoding="utf-8"
+                checkpoint_dir_path / "meta-info.json", "r", encoding="utf-8"
         ) as reader:
             meta_data = json.load(reader)
             metainfo.repo_path = setting.project.target_repo
-
+            metainfo.main_idea = setting.project.main_idea
             metainfo.document_version = meta_data["doc_version"]
             metainfo.fake_file_reflection = meta_data["fake_file_reflection"]
             metainfo.jump_files = meta_data["jump_files"]
@@ -426,6 +433,7 @@ class MetaInfo:
             # 保存 meta-info.json 文件
             meta_info_file = target_dir / "meta-info.json"
             meta = {
+                "main_idea": SettingsManager().get_setting().project.main_idea,
                 "doc_version": self.document_version,
                 "in_generation_process": self.in_generation_process,
                 "fake_file_reflection": self.fake_file_reflection,
@@ -463,12 +471,14 @@ class MetaInfo:
         # print("Remain tasks to be done")
         print(task_table)
 
-    def get_all_files(self) -> List[DocItem]:
+    def get_all_files(self, count_repo=False) -> List[DocItem]:
         """获取所有的file节点"""
         files = []
 
         def walk_tree(now_node):
-            if now_node.item_type == DocItemType._file:
+            if now_node.item_type in [DocItemType._file, DocItemType._dir]:
+                files.append(now_node)
+            if count_repo and now_node.item_type == DocItemType._repo:
                 files.append(now_node)
             for _, child in now_node.children.items():
                 walk_tree(child)
@@ -487,8 +497,8 @@ class MetaInfo:
             for _, child in now_node.children.items():
                 assert child.content != None
                 if (
-                    child.content["code_start_line"] <= start_line_num
-                    and child.content["code_end_line"] >= start_line_num
+                        child.content["code_start_line"] <= start_line_num
+                        and child.content["code_end_line"] >= start_line_num
                 ):
                     now_node = child
                     find_qualify_child = True
@@ -522,7 +532,7 @@ class MetaInfo:
             assert rel_file_path not in self.jump_files
 
             if white_list_file_names != [] and (
-                file_node.get_file_name() not in white_list_file_names
+                    file_node.get_file_name() not in white_list_file_names
             ):  # 如果有白名单，只parse白名单里的对象
                 continue
 
@@ -531,7 +541,7 @@ class MetaInfo:
                 nonlocal ref_count, white_list_file_names
                 in_file_only = False
                 if white_list_obj_names != [] and (
-                    now_obj.obj_name not in white_list_obj_names
+                        now_obj.obj_name not in white_list_obj_names
                 ):
                     in_file_only = True  # 作为加速，如果有白名单，白名单obj同文件夹下的也parse，但是只找同文件内的引用
 
@@ -594,13 +604,13 @@ class MetaInfo:
                         # 不考虑祖先节点之间的引用
                         if now_obj not in referencer_node.reference_who:
                             special_reference_type = (
-                                referencer_node.item_type
-                                in [
-                                    DocItemType._function,
-                                    DocItemType._sub_function,
-                                    DocItemType._class_function,
-                                ]
-                            ) and referencer_node.code_start_line == referencer_pos[1]
+                                                             referencer_node.item_type
+                                                             in [
+                                                                 DocItemType._function,
+                                                                 DocItemType._sub_function,
+                                                                 DocItemType._class_function,
+                                                             ]
+                                                     ) and referencer_node.code_start_line == referencer_pos[1]
                             referencer_node.special_reference_type.append(
                                 special_reference_type
                             )
@@ -622,8 +632,8 @@ class MetaInfo:
             def in_white_list(item: DocItem):
                 for cont in self.white_list:
                     if (
-                        item.get_file_name() == cont["file_path"]
-                        and item.obj_name == cont["id_text"]
+                            item.get_file_name() == cont["file_path"]
+                            and item.obj_name == cont["id_text"]
                     ):
                         return True
                 return False
@@ -650,16 +660,16 @@ class MetaInfo:
                     if task_available_func(child) and (child not in deal_items):
                         best_break_level += 1
                 for referenced, special in zip(
-                    item.reference_who, item.special_reference_type
+                        item.reference_who, item.special_reference_type
                 ):
                     if task_available_func(referenced) and (
-                        referenced not in deal_items
+                            referenced not in deal_items
                     ):
                         best_break_level += 1
                     if (
-                        task_available_func(referenced)
-                        and (not special)
-                        and (referenced not in deal_items)
+                            task_available_func(referenced)
+                            and (not special)
+                            and (referenced not in deal_items)
                     ):
                         second_best_break_level += 1
                 if best_break_level == 0:
@@ -678,7 +688,8 @@ class MetaInfo:
             item_denp_task_ids = []
             for _, child in target_item.children.items():
                 if child.multithread_task_id != -1:
-                    assert child.multithread_task_id in task_manager.task_dict.keys()
+                   # if not child.multithread_task_id in task_manager.task_dict.keys():
+                        #assert child.multithread_task_id in task_manager.task_dict.keys()
                     item_denp_task_ids.append(child.multithread_task_id)
             for referenced_item in target_item.reference_who:
                 if referenced_item.multithread_task_id in task_manager.task_dict.keys():
@@ -765,8 +776,8 @@ class MetaInfo:
             if "code_content" in now_older_item.content.keys():
                 assert "code_content" in result_item.content.keys()
                 if (
-                    now_older_item.content["code_content"]
-                    != result_item.content["code_content"]
+                        now_older_item.content["code_content"]
+                        != result_item.content["code_content"]
                 ):  # 源码被修改了
                     result_item.item_status = DocItemStatus.code_changed
 
@@ -790,10 +801,10 @@ class MetaInfo:
             # if now_older_item.get_full_name() == "autogen/_pydantic.py/type2schema":
             #     import pdb; pdb.set_trace()
             if not (set(new_reference_names) == set(old_reference_names)) and (
-                result_item.item_status == DocItemStatus.doc_up_to_date
+                    result_item.item_status == DocItemStatus.doc_up_to_date
             ):
                 if set(new_reference_names) <= set(
-                    old_reference_names
+                        old_reference_names
                 ):  # 旧的referencer包含新的referencer
                     result_item.item_status = DocItemStatus.referencer_not_exist
                 else:
@@ -835,6 +846,8 @@ class MetaInfo:
             def walk_file(now_obj: DocItem):
                 nonlocal file_hierarchy_content, flash_reference_relation
                 temp_json_obj = now_obj.content
+                if 'source_node' in temp_json_obj:
+                    temp_json_obj.pop('source_node')
                 temp_json_obj["name"] = now_obj.obj_name
                 temp_json_obj["type"] = now_obj.item_type.to_str()
                 temp_json_obj["md_content"] = now_obj.md_content
@@ -865,15 +878,25 @@ class MetaInfo:
 
             for _, child in file_item.children.items():
                 walk_file(child)
-            hierachy_json[file_item.get_full_name()] = file_hierarchy_content
+            if file_item.item_type == DocItemType._dir:
+                temp_json_obj = {}
+                temp_json_obj["name"] = file_item.obj_name
+                temp_json_obj["type"] = file_item.item_type.to_str()
+                temp_json_obj["md_content"] = file_item.md_content
+                temp_json_obj["item_status"] = file_item.item_status.name
+                hierachy_json[file_item.get_full_name()] = [temp_json_obj]
+            else:
+                hierachy_json[file_item.get_full_name()] = file_hierarchy_content
         return hierachy_json
 
     @staticmethod
-    def from_project_hierarchy_json(project_hierarchy_json) -> MetaInfo:
+    def from_project_hierarchy_json(project_hierarchy_json,
+                                    repo_structure: Optional[Dict[str, Any]] = None) -> MetaInfo:
         setting = SettingsManager.get_setting()
 
         target_meta_info = MetaInfo(
             # repo_path=repo_path,
+            repo_structure=project_hierarchy_json,
             target_repo_hierarchical_tree=DocItem(  # 根节点
                 item_type=DocItemType._repo,
                 obj_name="full_repo",
@@ -881,15 +904,16 @@ class MetaInfo:
         )
 
         for file_name, file_content in tqdm(
-            project_hierarchy_json.items(), desc="parsing parent relationship"
+                project_hierarchy_json.items(), desc="parsing parent relationship"
         ):
+
             # 首先parse file archi
             if not os.path.exists(os.path.join(setting.project.target_repo, file_name)):
                 logger.info(f"deleted content: {file_name}")
                 continue
             elif (
-                os.path.getsize(os.path.join(setting.project.target_repo, file_name))
-                == 0
+                    os.path.getsize(os.path.join(setting.project.target_repo, file_name))
+                    == 0 and file_content and file_content[0]['type'] != 'Dir'
             ):
                 logger.info(f"blank content: {file_name}")
                 continue
@@ -910,18 +934,33 @@ class MetaInfo:
                 now_structure = now_structure.children[recursive_file_path[pos]]
                 pos += 1
             if recursive_file_path[-1] not in now_structure.children.keys():
-                now_structure.children[recursive_file_path[pos]] = DocItem(
-                    item_type=DocItemType._file,
-                    obj_name=recursive_file_path[-1],
-                )
-                now_structure.children[recursive_file_path[pos]].father = now_structure
+                if file_content and file_content[0].get('type') == 'Dir':
+                    doctype = DocItemType._dir
 
+                    now_structure.children[recursive_file_path[pos]] = DocItem(
+                        item_type=doctype,
+                        obj_name=recursive_file_path[-1],
+                    )
+                    now_structure.children[recursive_file_path[pos]].father = now_structure
+                else:
+                    doctype = DocItemType._file
+                    now_structure.children[recursive_file_path[pos]] = DocItem(
+                        item_type=doctype,
+                        obj_name=recursive_file_path[-1],
+                    )
+
+                    now_structure.children[recursive_file_path[pos]].father = now_structure
+
+            if repo_structure:
+                actual_item = repo_structure[file_name]
+            else:
+                actual_item = deepcopy(file_content)
             # 然后parse file内容
             assert type(file_content) == list
             file_item = target_meta_info.target_repo_hierarchical_tree.find(
                 recursive_file_path
             )
-            assert file_item.item_type == DocItemType._file
+            # assert file_item.item_type == DocItemType._file
             """用类线段树的方式：
             1.先parse所有节点，再找父子关系
             2.一个节点的父节点，所有包含他的code范围的节点里的，最小的节点
@@ -930,13 +969,18 @@ class MetaInfo:
             """
 
             obj_item_list: List[DocItem] = []
-            for value in file_content:
+            for value, actual in zip(file_content, actual_item):
+                if value.get("source_node"):
+                    source_node = value.get("source_node")
+                else:
+                    source_node = actual.get("source_node")
                 obj_doc_item = DocItem(
                     obj_name=value["name"],
                     content=value,
                     md_content=value["md_content"],
-                    code_start_line=value["code_start_line"],
-                    code_end_line=value["code_end_line"],
+                    code_start_line=value.get("code_start_line"),
+                    code_end_line=value.get("code_end_line"),
+                    source_node=source_node
                 )
                 if "item_status" in value.keys():
                     obj_doc_item.item_status = DocItemStatus[value["item_status"]]
@@ -957,24 +1001,25 @@ class MetaInfo:
 
                     def code_contain(item, other_item) -> bool:
                         if (
-                            other_item.code_end_line == item.code_end_line
-                            and other_item.code_start_line == item.code_start_line
+                                other_item.code_end_line == item.code_end_line
+                                and other_item.code_start_line == item.code_start_line
                         ):
                             return False
                         if (
-                            other_item.code_end_line < item.code_end_line
-                            or other_item.code_start_line > item.code_start_line
+                                other_item.code_end_line < item.code_end_line
+                                or other_item.code_start_line > item.code_start_line
                         ):
                             return False
                         return True
 
-                    if code_contain(item, other_item):
+                    if code_contain(
+                            item, other_item):
                         if potential_father == None or (
-                            (other_item.code_end_line - other_item.code_start_line)
-                            < (
-                                potential_father.code_end_line
-                                - potential_father.code_start_line
-                            )
+                                (other_item.code_end_line - other_item.code_start_line)
+                                < (
+                                        potential_father.code_end_line
+                                        - potential_father.code_start_line
+                                )
                         ):
                             potential_father = other_item
 
@@ -986,17 +1031,20 @@ class MetaInfo:
                     # 如果存在同层次的重名问题，就重命名成 xxx_i的形式
                     now_name_id = 0
                     while (
-                        child_name + f"_{now_name_id}"
+                            child_name + f"_{now_name_id}"
                     ) in potential_father.children.keys():
                         now_name_id += 1
                     child_name = child_name + f"_{now_name_id}"
                     logger.warning(
                         f"Name duplicate in {file_item.get_full_name()}: rename to {item.obj_name}->{child_name}"
                     )
-                potential_father.children[child_name] = item
+                if potential_father.item_type != DocItemType._dir:
+                    potential_father.children[child_name] = item
                 # print(f"{potential_father.get_full_name()} -> {item.get_full_name()}")
 
             def change_items(now_item: DocItem):
+                if now_item.item_type == DocItemType._dir:
+                    return target_meta_info
                 if now_item.item_type != DocItemType._file:
                     if now_item.content["type"] == "ClassDef":
                         now_item.item_type = DocItemType._class

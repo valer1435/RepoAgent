@@ -52,7 +52,7 @@ class TaskManager:
             int: The ID of the newly added task.
         """
         with self.task_lock:
-            depend_tasks = [self.task_dict[task_id] for task_id in dependency_task_id]
+            depend_tasks = [self.task_dict[task_id] for task_id in dependency_task_id if task_id in self.task_dict]
             self.task_dict[self.now_id] = Task(
                 task_id=self.now_id, dependencies=depend_tasks, extra_info=extra
             )

@@ -31,6 +31,7 @@ class ProjectSettings(BaseSettings):
     language: str = "English"
     max_thread_count: PositiveInt = 4
     log_level: LogLevel = LogLevel.INFO
+    main_idea: Optional[str] = None
 
     @field_validator("language")
     @classmethod

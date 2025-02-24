@@ -4,6 +4,7 @@ import ast
 import json
 import os
 
+import astor
 import git
 from colorama import Fore, Style
 from tqdm import tqdm
@@ -26,7 +27,7 @@ class FileHandler:
         setting = SettingsManager.get_setting()
 
         self.project_hierarchy = (
-            setting.project.target_repo / setting.project.hierarchy_name
+                setting.project.target_repo / setting.project.hierarchy_name
         )
 
     def read_file(self):
@@ -43,7 +44,7 @@ class FileHandler:
         return content
 
     def get_obj_code_info(
-        self, code_type, code_name, start_line, end_line, params, file_path=None
+            self, code_type, code_name, start_line, end_line, params, file_path=None, docstring = "", source_node=None
     ):
         """
         Get the code information for a given object.
@@ -67,16 +68,18 @@ class FileHandler:
         code_info["code_start_line"] = start_line
         code_info["code_end_line"] = end_line
         code_info["params"] = params
+        code_info['docstring'] = docstring
+        code_info['source_node'] = source_node
 
         with open(
-            os.path.join(
-                self.repo_path, file_path if file_path != None else self.file_path
-            ),
-            "r",
-            encoding="utf-8",
+                os.path.join(
+                    self.repo_path, file_path if file_path != None else self.file_path
+                ),
+                "r",
+                encoding="utf-8",
         ) as code_file:
             lines = code_file.readlines()
-            code_content = "".join(lines[start_line - 1 : end_line])
+            code_content = "".join(lines[start_line - 1: end_line])
             # 获取对象名称在第一行代码中的位置
             name_column = lines[start_line - 1].find(code_name)
             # 判断代码中是否有return字样
@@ -210,7 +213,8 @@ class FileHandler:
                 all_names = [item[1] for item in functions_and_classes]
                 # (parent_name == None or parent_name in all_names) and
                 functions_and_classes.append(
-                    (type(node).__name__, node.name, start_line, end_line, parameters)
+                    (type(node).__name__, node.name, start_line, end_line, parameters, ast.get_docstring(node),
+                     node)
                 )
         return functions_and_classes
 
@@ -242,16 +246,25 @@ class FileHandler:
             }
         }
         """
-        with open(os.path.join(self.repo_path, file_path), "r", encoding="utf-8") as f:
-            content = f.read()
-            structures = self.get_functions_and_classes(content)
-            file_objects = []  # 以列表的形式存储
-            for struct in structures:
-                structure_type, name, start_line, end_line, params = struct
-                code_info = self.get_obj_code_info(
-                    structure_type, name, start_line, end_line, params, file_path
-                )
-                file_objects.append(code_info)
+        if os.path.isdir(os.path.join(self.repo_path, file_path)):
+            return [{'type': 'Dir',
+                     'name': file_path,
+                     'content': "",
+                     'md_content': [],
+                     'code_start_line': -1,
+                     'code_end_line': -1,
+                     }]
+        else:
+            with open(os.path.join(self.repo_path, file_path), "r", encoding="utf-8") as f:
+                content = f.read()
+                structures = self.get_functions_and_classes(content)
+                file_objects = []  # 以列表的形式存储
+                for struct in structures:
+                    structure_type, name, start_line, end_line, params, docstring, source_node = struct
+                    code_info = self.get_obj_code_info(
+                        structure_type, name, start_line, end_line, params, file_path, docstring, source_node
+                    )
+                    file_objects.append(code_info)
 
         return file_objects
 
@@ -355,7 +368,7 @@ class FileHandler:
                     params_str = f"({', '.join(obj['params'])})"
             markdown += f"{'#' * level} {obj['type']} {obj['name']}{params_str}:\n"
             markdown += (
-                f"{obj['md_content'][-1] if len(obj['md_content']) >0 else ''}\n"
+                f"{obj['md_content'][-1] if len(obj['md_content']) > 0 else ''}\n"
             )
         markdown += "***\n"
 

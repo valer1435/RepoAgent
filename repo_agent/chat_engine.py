@@ -1,8 +1,11 @@
+from typing import List, Dict
+
 from llama_index.llms.openai_like import OpenAILike
 
 from repo_agent.doc_meta_info import DocItem
 from repo_agent.log import logger
-from repo_agent.prompt import chat_template
+from repo_agent.prompt import chat_template, idea_chat_template, new_desc_chat_template, module_summary_template, \
+    docstring_update_templates, docstring_update_chat_templates
 from repo_agent.settings import SettingsManager
 
 
@@ -15,6 +18,7 @@ class ChatEngine:
         setting = SettingsManager.get_setting()
 
         self.llm = OpenAILike(
+            context_window=20000,
             api_key=setting.chat_completion.openai_api_key.get_secret_value(),
             api_base=setting.chat_completion.openai_base_url,
             timeout=setting.chat_completion.request_timeout,
@@ -24,17 +28,18 @@ class ChatEngine:
             is_chat_model=True,
         )
 
-    def build_prompt(self, doc_item: DocItem):
+    def build_prompt(self, doc_item: DocItem, main_idea="", context_length=20000):
         """Builds and returns the system and user prompts based on the DocItem."""
         setting = SettingsManager.get_setting()
 
         code_info = doc_item.content
-        referenced = len(doc_item.who_reference_me) > 0
+        referenced = len(doc_item.who_reference_me) > 0 and len(code_info) < 16000
 
         code_type = code_info["type"]
         code_name = code_info["name"]
         code_content = code_info["code_content"]
         have_return = code_info["have_return"]
+        docstring = code_info['md_content'][-1] if  code_info['md_content'] else "Empty docstring"
         file_path = doc_item.get_full_name()
 
         def get_referenced_prompt(doc_item: DocItem) -> str:
@@ -45,8 +50,8 @@ class ChatEngine:
             ]
             for reference_item in doc_item.reference_who:
                 instance_prompt = (
-                    f"""obj: {reference_item.get_full_name()}\nDocument: \n{reference_item.md_content[-1] if len(reference_item.md_content) > 0 else 'None'}\nRaw code:```\n{reference_item.content['code_content'] if 'code_content' in reference_item.content.keys() else ''}\n```"""
-                    + "=" * 10
+                        f"""obj: {reference_item.get_full_name()}\nDocument: \n{reference_item.md_content[-1] if len(reference_item.md_content) > 0 else 'None'}\nRaw code:```\n{reference_item.content['code_content'] if 'code_content' in reference_item.content.keys() else ''}\n```"""
+                        + "=" * 10
                 )
                 prompt.append(instance_prompt)
             return "\n".join(prompt)
@@ -59,8 +64,8 @@ class ChatEngine:
             ]
             for referencer_item in doc_item.who_reference_me:
                 instance_prompt = (
-                    f"""obj: {referencer_item.get_full_name()}\nDocument: \n{referencer_item.md_content[-1] if len(referencer_item.md_content) > 0 else 'None'}\nRaw code:```\n{referencer_item.content['code_content'] if 'code_content' in referencer_item.content.keys() else 'None'}\n```"""
-                    + "=" * 10
+                        f"""obj: {referencer_item.get_full_name()}\nDocument: \n{referencer_item.md_content[-1] if len(referencer_item.md_content) > 0 else 'None'}\nRaw code:```\n{referencer_item.content['code_content'] if 'code_content' in referencer_item.content.keys() else 'None'}\n```"""
+                        + "=" * 10
                 )
                 prompt.append(instance_prompt)
             return "\n".join(prompt)
@@ -76,47 +81,94 @@ class ChatEngine:
                 return ""
 
         code_type_tell = "Class" if code_type == "ClassDef" else "Function"
-        parameters_or_attribute = (
-            "attributes" if code_type == "ClassDef" else "parameters"
-        )
-        have_return_tell = (
-            "**Output Example**: Mock up a possible appearance of the code's return value."
-            if have_return
-            else ""
-        )
-        combine_ref_situation = (
-            "and combine it with its calling situation in the project,"
-            if referenced
-            else ""
-        )
+        if referenced:
+            combine_ref_situation = "and combine it with its calling situation in the project,"
+            referencer_content = get_referencer_prompt(doc_item)
+            reference_letter = get_referenced_prompt(doc_item)
+            has_relationship = get_relationship_description(
+                referencer_content, reference_letter
+            )
+        else:
+            combine_ref_situation = ""
+            referencer_content = ""
+            reference_letter = ""
+            has_relationship = ""
 
-        referencer_content = get_referencer_prompt(doc_item)
-        reference_letter = get_referenced_prompt(doc_item)
-        has_relationship = get_relationship_description(
-            referencer_content, reference_letter
-        )
+        if main_idea:
+            return docstring_update_chat_templates.format_messages(
+                combine_ref_situation=combine_ref_situation,
+                file_path=file_path,
+                code_type_tell=code_type_tell,
+                code_name=code_name,
+                main_idea=main_idea if not main_idea else f"You can use user-defined main idea of the project to enhance exist docstring\n{main_idea}",
+                docstring=docstring,
+                has_relationship=has_relationship,
+                reference_letter=reference_letter,
+                referencer_content=referencer_content,
+                language=setting.project.language)
+        else:
+            return chat_template.format_messages(
+                combine_ref_situation=combine_ref_situation,
+                file_path=file_path,
+                code_type_tell=code_type_tell,
+                code_name=code_name,
+                code_content=code_content,
+                main_idea=main_idea if not main_idea else f"You can use user-defined main idea of the project to enhance exist docstring\n{main_idea}",
+                docstring=docstring,
+                has_relationship=has_relationship,
+                reference_letter=reference_letter,
+                referencer_content=referencer_content,
+                language=setting.project.language)
 
-        project_structure_prefix = ", and the related hierarchical structure of this project is as follows (The current object is marked with an *):"
-
-        return chat_template.format_messages(
-            combine_ref_situation=combine_ref_situation,
-            file_path=file_path,
-            project_structure_prefix=project_structure_prefix,
-            code_type_tell=code_type_tell,
-            code_name=code_name,
-            code_content=code_content,
-            have_return_tell=have_return_tell,
-            has_relationship=has_relationship,
-            reference_letter=reference_letter,
-            referencer_content=referencer_content,
-            parameters_or_attribute=parameters_or_attribute,
-            language=setting.project.language,
-        )
 
     def generate_doc(self, doc_item: DocItem):
         """Generates documentation for a given DocItem."""
-        messages = self.build_prompt(doc_item)
+        settings = SettingsManager.get_setting()
+        if settings.project.main_idea:
+            messages = self.build_prompt(doc_item, main_idea=settings.project.main_idea)
+        else:
+            messages = self.build_prompt(doc_item)
 
+        try:
+            response = self.llm.stream_chat(messages)
+            answer = ""
+            for chunk in response:
+                answer += chunk.delta
+            # logger.debug(f"LLM Prompt Tokens: {response.raw.usage.prompt_tokens}")  # type: ignore
+            # logger.debug(
+            #     f"LLM Completion Tokens: {response.raw.usage.completion_tokens}"  # type: ignore
+            # )
+            # logger.debug(
+            #     f"Total LLM Token Count: {response.raw.usage.total_tokens}"  # type: ignore
+            # )
+            print(answer)
+            return answer.replace("```python\n", "").replace("```", "")
+        except Exception as e:
+            logger.error(f"Error in llamaindex chat call: {e}")
+            raise
+
+    def generate_idea(self, list_items: str):
+        settings = SettingsManager.get_setting()
+        messages = idea_chat_template.format_messages(components=list_items, language=settings.project.language)
+        try:
+            response = self.llm.chat(messages)
+            logger.debug(f"LLM Prompt Tokens: {response.raw.usage.prompt_tokens}")  # type: ignore
+            logger.debug(
+                f"LLM Completion Tokens: {response.raw.usage.completion_tokens}"  # type: ignore
+            )
+            logger.debug(
+                f"Total LLM Token Count: {response.raw.usage.total_tokens}"  # type: ignore
+            )
+            return response.message.content
+        except Exception as e:
+            logger.error(f"Error in llamaindex chat call: {e}")
+            raise
+
+    def summarize_module(self, module_desc: str):
+        settings = SettingsManager.get_setting()
+        messages = module_summary_template.format_messages(components=module_desc,
+                                                           main_idea=settings.project.main_idea,
+                                                           language=settings.project.language)
         try:
             response = self.llm.chat(messages)
             logger.debug(f"LLM Prompt Tokens: {response.raw.usage.prompt_tokens}")  # type: ignore

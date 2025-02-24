@@ -67,7 +67,7 @@ class GitignoreChecker:
         Returns:
             tuple: Two lists, one for folder patterns and one for file patterns.
         """
-        folder_patterns = []
+        folder_patterns = ['.git', '.github', '.idea', 'venv', '.venv']
         file_patterns = []
         for pattern in gitignore_patterns:
             if pattern.endswith("/"):
@@ -112,7 +112,7 @@ class GitignoreChecker:
                 for d in dirs
                 if not self._is_ignored(d, self.folder_patterns, is_dir=True)
             ]
-
+            not_ignored_files += [os.path.relpath(os.path.join(root, d), self.directory) for d in dirs]
             for file in files:
                 file_path = os.path.join(root, file)
                 relative_path = os.path.relpath(file_path, self.directory)

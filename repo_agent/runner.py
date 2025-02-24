@@ -1,3 +1,4 @@
+import ast
 import json
 import os
 import shutil
@@ -7,18 +8,21 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from pathlib import Path
+from typing import Dict, List
 
 from colorama import Fore, Style
 from tqdm import tqdm
 
 from repo_agent.change_detector import ChangeDetector
 from repo_agent.chat_engine import ChatEngine
-from repo_agent.doc_meta_info import DocItem, DocItemStatus, MetaInfo, need_to_generate
+from repo_agent.doc_meta_info import DocItem, DocItemStatus, MetaInfo, need_to_generate, DocItemType
 from repo_agent.file_handler import FileHandler
 from repo_agent.log import logger
+from repo_agent.module_summarization import summarize_repository
 from repo_agent.multi_task_dispatch import worker
 from repo_agent.project_manager import ProjectManager
 from repo_agent.settings import SettingsManager
+from repo_agent.utils.docstring_updater import update_doc
 from repo_agent.utils.meta_info_utils import delete_fake_files, make_fake_files
 
 
@@ -26,7 +30,7 @@ class Runner:
     def __init__(self):
         self.setting = SettingsManager.get_setting()
         self.absolute_project_hierarchy_path = (
-            self.setting.project.target_repo / self.setting.project.hierarchy_name
+                self.setting.project.target_repo / self.setting.project.hierarchy_name
         )
 
         self.project_manager = ProjectManager(
@@ -38,15 +42,21 @@ class Runner:
         )
         self.chat_engine = ChatEngine(project_manager=self.project_manager)
 
+        file_path_reflections, jump_files = make_fake_files()
         if not self.absolute_project_hierarchy_path.exists():
-            file_path_reflections, jump_files = make_fake_files()
             self.meta_info = MetaInfo.init_meta_info(file_path_reflections, jump_files)
             self.meta_info.checkpoint(
                 target_dir_path=self.absolute_project_hierarchy_path
             )
         else:  # 如果存在全局结构信息文件夹.project_hierarchy，就从中加载
+            setting = SettingsManager.get_setting()
+            project_abs_path = setting.project.target_repo
+            file_handler = FileHandler(project_abs_path, None)
+            repo_structure = file_handler.generate_overall_structure(
+                file_path_reflections, jump_files
+            )
             self.meta_info = MetaInfo.from_checkpoint_path(
-                self.absolute_project_hierarchy_path
+                self.absolute_project_hierarchy_path, repo_structure
             )
 
         self.meta_info.checkpoint(  # 更新白名单后也要重新将全局信息写入到.project_doc_record文件夹中
@@ -75,6 +85,7 @@ class Runner:
 
     def generate_doc_for_a_single_item(self, doc_item: DocItem):
         """为一个对象生成文档"""
+        settings = SettingsManager.get_setting()
         try:
             if not need_to_generate(doc_item, self.setting.project.ignore_list):
                 print(
@@ -88,7 +99,9 @@ class Runner:
                     doc_item=doc_item,
                 )
                 doc_item.md_content.append(response_message)  # type: ignore
-                doc_item.item_status = DocItemStatus.doc_up_to_date
+                if settings.project.main_idea:
+                    doc_item.item_status = DocItemStatus.doc_up_to_date
+
                 self.meta_info.checkpoint(
                     target_dir_path=self.absolute_project_hierarchy_path
                 )
@@ -96,9 +109,19 @@ class Runner:
             logger.exception(
                 f"Document generation failed after multiple attempts, skipping: {doc_item.get_full_name()}"
             )
-            doc_item.item_status = DocItemStatus.doc_has_not_been_generated
+            doc_item.md_content.append("")  # type: ignore
+            if settings.project.main_idea:
+                doc_item.item_status = DocItemStatus.doc_up_to_date
 
-    def first_generate(self):
+    def generate_main_project_idea(self, docs: List[Dict]):
+        str_obj = []
+        for doc in docs:
+            str_obj.append(
+                f"Component name: {doc['obj_name']}\nComponent description: {doc['md_content']}\nComponent place in hierarchy: {doc['tree_path']}")
+        response_message = self.chat_engine.generate_idea('\n\n'.join(str_obj))
+        return response_message
+
+    def generate_doc(self):
         """
         生成所有文档，完成后刷新并保存文件系统中的文档信息。
         """
@@ -138,13 +161,14 @@ class Runner:
             self.markdown_refresh()
 
             # 更新文档版本
-            self.meta_info.document_version = (
-                self.change_detector.repo.head.commit.hexsha
-            )
-            self.meta_info.in_generation_process = False
-            self.meta_info.checkpoint(
-                target_dir_path=self.absolute_project_hierarchy_path
-            )
+            if self.setting.project.main_idea:
+                self.meta_info.document_version = (
+                    self.change_detector.repo.head.commit.hexsha
+                )
+                self.meta_info.in_generation_process = False
+                self.meta_info.checkpoint(
+                    target_dir_path=self.absolute_project_hierarchy_path
+                )
             logger.info(
                 f"Successfully generated {before_task_len - len(task_manager.task_dict)} documents."
             )
@@ -154,13 +178,98 @@ class Runner:
                 f"An error occurred: {e}. {before_task_len - len(task_manager.task_dict)} docs are generated at this time"
             )
 
+    def get_top_n_components(self, doc_item: DocItem):
+        components = []
+        for file in doc_item.children:
+            skip = False
+            for ignore in self.setting.project.ignore_list:
+                if ignore in file:
+                    skip = True
+                    break
+            if skip:
+                continue
+            for class_ in doc_item.children[file].children:
+                curr_obj = doc_item.children[file].children[class_]
+                components.append(self._get_md_and_links_from_doc(curr_obj))
+        return components
+
+    def _get_md_and_links_from_doc(self, doc_item: DocItem):
+        return {'obj_name': doc_item.obj_name,
+                'md_content': doc_item.md_content[-1].split('\n\n')[0],
+                'who_reference_me': doc_item.who_reference_me,
+                'reference_who': doc_item.reference_who,
+                'tree_path': '->'.join([obj.obj_name for obj in doc_item.tree_path])}
+
+    def generate_main_idea(self, docs):
+        """
+
+        """
+        logger.info("Generation of the main idea")
+        main_project_idea = self.generate_main_project_idea(docs)
+
+        logger.info(
+            f"Successfully generated the main idea"
+        )
+        return main_project_idea
+
+    def summarize_modules(self):
+        logger.info("Modules documentation generation")
+
+        res = summarize_repository(self.meta_info.repo_path, self.meta_info.repo_structure, self.chat_engine)
+
+        self.update_modules(res)
+        self.meta_info.checkpoint(
+            target_dir_path=self.absolute_project_hierarchy_path
+        )
+
+        logger.info(
+            f"Successfully generated module summaries"
+        )
+        return res
+
+    def update_modules(self, module):
+        rel_path = os.path.relpath(module['path'], self.meta_info.repo_path)
+        doc_item = self.search_tree(self.meta_info.target_repo_hierarchical_tree, rel_path)
+        doc_item.md_content.append(module['module_summary'])
+        doc_item.item_status = DocItemStatus.doc_up_to_date
+
+        for sm in module['submodules']:
+            self.update_modules(sm)
+
+    def search_tree(self, doc: DocItem, path: str):
+        if path == '.':
+            return doc
+        else:
+            for ch_doc in doc.children:
+                if ch_doc == path:
+                    return doc.children[ch_doc]
+                else:
+                    found_res = self.search_tree(doc.children[ch_doc], path)
+                if found_res:
+                    return found_res
+
+    def convert_path_to_dot_notation(self, path: Path, class_: str):
+        # Convert to Path object if input is not already one
+        path_obj = Path(path) if isinstance(path, str) else path
+
+        processed_parts = []
+        for part in path_obj.parts:
+            # Remove .py extension from any component
+            if part.endswith('.py'):
+                part = part[:-3]
+            processed_parts.append(part)
+
+        dot_path = '.'.join(processed_parts)
+        return f'::: {dot_path}.{class_}'
+
     def markdown_refresh(self):
+        """刷新最新的文档信息到markdown格式文件夹中"""
         """刷新最新的文档信息到markdown格式文件夹中"""
         with self.runner_lock:
             # 定义 markdown 文件夹路径
             markdown_folder = (
-                Path(self.setting.project.target_repo)
-                / self.setting.project.markdown_docs_name
+                    Path(self.setting.project.target_repo)
+                    / self.setting.project.markdown_docs_name
             )
 
             # 删除并重新创建目录
@@ -171,9 +280,8 @@ class Runner:
             logger.debug(f"Created markdown folder at {markdown_folder}")
 
         # 遍历文件列表生成 markdown
-        file_item_list = self.meta_info.get_all_files()
+        file_item_list = self.meta_info.get_all_files(count_repo=True)
         logger.debug(f"Found {len(file_item_list)} files to process.")
-
         for file_item in tqdm(file_item_list):
             # 检查文档内容
             def recursive_check(doc_item) -> bool:
@@ -184,7 +292,7 @@ class Runner:
                         return True
                 return False
 
-            if not recursive_check(file_item):
+            if not recursive_check(file_item) and file_item.item_type == DocItemType._file:
                 logger.debug(
                     f"No documentation content for: {file_item.get_full_name()}, skipping."
                 )
@@ -192,8 +300,26 @@ class Runner:
 
             # 生成 markdown 内容
             markdown = ""
-            for child in file_item.children.values():
-                markdown += self.to_markdown(child, 2)
+
+            if file_item.item_type == DocItemType._dir:
+                if file_item.md_content:
+                    markdown = file_item.md_content[-1]
+            elif file_item.item_type == DocItemType._repo:
+                markdown += SettingsManager.get_setting().project.main_idea
+            else:
+                markdown += f"# {Path(file_item.obj_name).name.strip('.py').replace("_", " ").title()}\n\n"
+
+                for child in file_item.children.values():
+                    update_doc(child.source_node, child.md_content[-1])
+                    markdown += f"## {child.obj_name}\n{self.convert_path_to_dot_notation(Path(file_item.obj_name), child.obj_name)}\n\n"
+                    for n_child in child.children.values():
+                        update_doc(n_child.source_node, n_child.md_content[-1])
+
+                children_names = list(file_item.children.keys())
+                if children_names:
+                    with open(Path(self.setting.project.target_repo, file_item.obj_name), 'w+', encoding='utf-8') as f:
+                        value = ast.unparse(file_item.children[children_names[0]].source_node.parent)
+                        f.write(value)
 
             if not markdown:
                 logger.warning(
@@ -202,9 +328,18 @@ class Runner:
                 continue
 
             # 确定并创建文件路径
-            file_path = Path(
-                self.setting.project.markdown_docs_name
-            ) / file_item.get_file_name().replace(".py", ".md")
+            if file_item.item_type == DocItemType._dir:
+                file_path = Path(
+                    self.setting.project.markdown_docs_name
+                ) / Path(file_item.obj_name) / "index.md"
+            elif file_item.item_type == DocItemType._repo:
+                file_path = Path(
+                    self.setting.project.markdown_docs_name
+                ) / "index.md"
+            else:
+                file_path = Path(
+                    self.setting.project.markdown_docs_name
+                ) / file_item.get_file_name().replace(".py", ".md")
             abs_file_path = self.setting.project.target_repo / file_path
             logger.debug(f"Writing markdown to: {abs_file_path}")
 
@@ -230,23 +365,6 @@ class Runner:
             f"Markdown documents have been refreshed at {self.setting.project.markdown_docs_name}"
         )
 
-    def to_markdown(self, item, now_level: int) -> str:
-        """将文件内容转化为 markdown 格式的文本"""
-        markdown_content = (
-            "#" * now_level + f" {item.item_type.to_str()} {item.obj_name}"
-        )
-        if "params" in item.content.keys() and item.content["params"]:
-            markdown_content += f"({', '.join(item.content['params'])})"
-        markdown_content += "\n"
-        if item.md_content:
-            markdown_content += f"{item.md_content[-1]}\n"
-        else:
-            markdown_content += "Doc is waiting to be generated...\n"
-        for child in item.children.values():
-            markdown_content += self.to_markdown(child, now_level + 1)
-            markdown_content += "***\n"
-        return markdown_content
-
     def git_commit(self, commit_message):
         try:
             subprocess.check_call(
@@ -265,10 +383,20 @@ class Runner:
         Returns:
             None
         """
-
         if self.meta_info.document_version == "":
-            # 根据document version自动检测是否仍在最初生成的process里(是否为第一次生成)
-            self.first_generate()  # 如果是第一次做文档生成任务，就通过first_generate生成所有文档
+            settings = SettingsManager.get_setting()
+            if settings.project.main_idea:
+                self.generate_doc()
+                self.summarize_modules()
+                self.markdown_refresh()
+            else:
+                self.generate_doc()
+                settings.project.main_idea = self.generate_main_idea(
+                    self.get_top_n_components(self.meta_info.target_repo_hierarchical_tree))
+                self.generate_doc()
+                self.summarize_modules()
+                self.markdown_refresh()
+
             self.meta_info.checkpoint(
                 target_dir_path=self.absolute_project_hierarchy_path,
                 flash_reference_relation=True,
@@ -276,7 +404,7 @@ class Runner:
             return
 
         if (
-            not self.meta_info.in_generation_process
+                not self.meta_info.in_generation_process
         ):  # 如果不是在生成过程中，就开始检测变更
             logger.info("Starting to detect changes.")
 
@@ -369,12 +497,12 @@ class Runner:
         file_dict = {}
         # 因为是新增的项目，所以这个文件里的所有对象都要写一个文档
         for (
-            structure_type,
-            name,
-            start_line,
-            end_line,
-            parent,
-            params,
+                structure_type,
+                name,
+                start_line,
+                end_line,
+                parent,
+                params,
         ) in file_handler.get_functions_and_classes(file_handler.read_file()):
             code_info = file_handler.get_obj_code_info(
                 structure_type, name, start_line, end_line, parent, params
@@ -446,7 +574,7 @@ class Runner:
             )
             # 将更新后的file写回到json文件中
             with open(
-                self.project_manager.project_hierarchy, "w", encoding="utf-8"
+                    self.project_manager.project_hierarchy, "w", encoding="utf-8"
             ) as f:
                 json.dump(json_data, f, indent=4, ensure_ascii=False)
 
@@ -528,7 +656,7 @@ class Runner:
         for obj_name, _ in changes_in_pyfile["added"]:
             for current_object in current_objects.values():  # 引入new_objects的目的是获取到find_all_referencer中必要的参数信息。在changes_in_pyfile['added']中只有对象和其父级结构的名称，缺少其他参数
                 if (
-                    obj_name == current_object["name"]
+                        obj_name == current_object["name"]
                 ):  # 确保只有当added中的对象名称匹配new_objects时才添加引用者
                     # 获取每个需要生成文档的对象的引用者
                     referencer_obj = {
@@ -550,7 +678,7 @@ class Runner:
             for changed_obj in changes_in_pyfile["added"]:  # 对于每一个待处理的对象
                 for ref_obj in referencer_list:
                     if (
-                        changed_obj[0] == ref_obj["obj_name"]
+                            changed_obj[0] == ref_obj["obj_name"]
                     ):  # 在referencer_list中找到它的引用者字典！
                         future = executor.submit(
                             self.update_object,
