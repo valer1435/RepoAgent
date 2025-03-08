@@ -1,6 +1,8 @@
 import fnmatch
 import os
 
+from repo_agent.settings import SettingsManager
+
 
 class GitignoreChecker:
     def __init__(self, directory: str, gitignore_path: str):
@@ -105,12 +107,14 @@ class GitignoreChecker:
         Returns:
             list: A list of paths to files that are not ignored and have the '.py' extension.
         """
+
+        ignored_folders = SettingsManager().get_setting().project.ignore_list
         not_ignored_files = []
         for root, dirs, files in os.walk(self.directory):
             dirs[:] = [
                 d
                 for d in dirs
-                if not self._is_ignored(d, self.folder_patterns, is_dir=True)
+                if not self._is_ignored(d, self.folder_patterns, is_dir=True) and not any([d in i for i in ignored_folders])
             ]
             not_ignored_files += [os.path.relpath(os.path.join(root, d), self.directory) for d in dirs]
             for file in files:

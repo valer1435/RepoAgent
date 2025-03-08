@@ -306,6 +306,7 @@ class FileHandler:
             #     print(f"{Fore.LIGHTYELLOW_EX}[Unstaged ChangeFile] load fake-file-content: {Style.RESET_ALL}{normal_file_names}")
 
             try:
+
                 repo_structure[normal_file_names] = self.generate_file_structure(
                     not_ignored_files
                 )

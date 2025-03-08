@@ -186,8 +186,8 @@ new_description_generation_instruction = (
     "----------"
     "{doc_desc}"
     "----------"
-    " You should return only new content which will replace existing content"
-    "- Write mainly in the desired language. If necessary, you can write with some English words in the analysis and description "
+    " You should return only new content which will replace existing content. Do not explicit the main idea. If main idea cannot help to enhance desctiption - do not change it."
+    " Write mainly in the desired language. If necessary, you can write with some English words in the analysis and description "
     "to enhance the document's readability because you do not need to translate the function name or variable name into the target language.\n"
 )
 

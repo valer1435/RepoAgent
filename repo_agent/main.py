@@ -180,6 +180,49 @@ def run(
         runner.meta_info.target_repo_hierarchical_tree.print_recursive()
         logger.success("Hierarchy printed.")
 
+def run_outside_cli(
+    model,
+    temperature,
+    request_timeout,
+    base_url,
+    target_repo_path,
+    hierarchy_path,
+    markdown_docs_path,
+    ignore_list,
+    language,
+    max_thread_count,
+    log_level,
+    print_hierarchy,
+):
+    """Run the program with the specified parameters."""
+    try:
+        # Fetch and validate the settings using the SettingsManager
+        setting = SettingsManager.initialize_with_params(
+            target_repo=target_repo_path,
+            hierarchy_name=hierarchy_path,
+            markdown_docs_name=markdown_docs_path,
+            ignore_list=[item.strip() for item in ignore_list.split(",") if item],
+            language=language,
+            log_level=log_level,
+            model=model,
+            temperature=temperature,
+            request_timeout=request_timeout,
+            openai_base_url=base_url,
+            max_thread_count=max_thread_count,
+        )
+        set_logger_level_from_config(log_level=log_level)
+    except ValidationError as e:
+        handle_setting_error(e)
+        return
+
+    # 如果设置成功，则运行任务
+    runner = Runner()
+    runner.run()
+    logger.success("Documentation task completed.")
+    if print_hierarchy:
+        runner.meta_info.target_repo_hierarchical_tree.print_recursive()
+        logger.success("Hierarchy printed.")
+
 
 @cli.command()
 def clean():
