@@ -1,286 +1,304 @@
 import os
 import re
 import subprocess
-
 import git
 from colorama import Fore, Style
-
 from repo_agent.file_handler import FileHandler
 from repo_agent.settings import SettingsManager
 
-
 class ChangeDetector:
-    """
-    这个类需要处理文件的差异和变更检测，它可能会用到 FileHandler 类来访问文件系统。
-    ChangeDetector 类的核心在于能够识别自上次提交以来文件的变更。
-    """
+    """# ChangeDetector Class
+
+The `ChangeDetector` class is a core component of the Repository Documentation Generator, responsible for monitoring changes within a repository to determine which documentation items require updating or generation.
+
+## Description
+
+This class operates by tracking modifications in the repository's structure and content, identifying discrepancies between existing documentation and current project state. It then communicates these changes to other components of the system, facilitating the timely update or creation of relevant documentation.
+
+## Args
+
+None
+
+## Returns
+
+- `dict`: A dictionary containing details about detected changes. The keys include:
+  - `added` (list): Files or directories that have been newly added to the repository.
+  - `modified` (list): Files or directories that have been altered since the last documentation generation.
+  - `deleted` (list): Files or directories that have been removed from the repository.
+
+## Raises
+
+- `ValueError`: If an unexpected error occurs during change detection, such as issues with file system access or parsing errors.
+
+## Notes
+
+This class is designed to work in conjunction with other components of the Repository Documentation Generator, such as `ChatEngine`, `FileHandler`, and `TaskManager`. It plays a crucial role in maintaining accurate and up-to-date documentation by identifying necessary updates promptly. 
+
+See also: [Repository Documentation Generator](https://github.com/your_repo/repository_documentation_generator) (for more information on the overall system)."""
 
     def __init__(self, repo_path):
-        """
-        Initializes a ChangeDetector object.
+        '''"""Initializes a ChangeDetector instance for repository documentation generation.
 
-        Parameters:
-        repo_path (str): The path to the repository.
+This method sets up a ChangeDetector object, which is a crucial component of the Repository Documentation Generator. It accepts the path to a repository as input, initializing the `repo_path` attribute and creating a git.Repo object using the provided repository path. This process is integral to monitoring changes in the repository to determine which documentation items need updating or generating.
 
-        Returns:
-        None
-        """
+Args:
+    repo_path (str): The path to the repository. This should be a string representing the local or remote directory of the Git repository.
+
+Returns:
+    None
+
+Raises:
+    ValueError: If the provided `repo_path` is not a valid directory or does not contain a Git repository.
+
+Note:
+    This method does not return any value but initializes internal attributes for further use in other methods of the ChangeDetector class. These attributes are essential for the ChangeDetector's role in monitoring changes and determining documentation update requirements within the Repository Documentation Generator framework.
+
+    See also: git.Repo documentation (https://gitpython.readthedocs.io/en/stable/pages/repo.html) for more details on the git.Repo object, which is utilized to interact with the Git repository.
+"""'''
         self.repo_path = repo_path
         self.repo = git.Repo(repo_path)
 
     def get_staged_pys(self):
-        """
-        Get added python files in the repository that have been staged.
+        '''"""
+Get staged Python files in the repository for documentation generation.
 
-        This function only tracks the changes of Python files in Git that have been staged,
-        i.e., the files that have been added using `git add`.
+This function uses GitPython library to identify Python files within the staged changes of a Git repository. It is part of the ChangeDetector module, which monitors repository modifications to determine what documentation needs updating or generating. 
 
-        Returns:
-            dict: A dictionary of changed Python files, where the keys are the file paths and the values are booleans indicating whether the file is newly created or not.
+The function specifically targets Python files that have been added using `git add`, indicating new or modified content. It returns a dictionary where keys are file paths and values are booleans indicating whether the file is newly created ('True') or not ('False').
 
-        """
+Args:
+    self (object): An instance of the ChangeDetector class, which holds the Git repository (`self.repo`). This object should be initialized with a valid Git repository.
+
+Returns:
+    dict: A dictionary where keys are file paths of staged Python files and values are booleans indicating whether the file is newly created ('True') or not ('False').
+
+Raises:
+    ValueError: If the provided `self` instance does not contain a valid Git repository (`self.repo`).
+
+Note:
+    This function assumes that the Git repository has been properly initialized within the object instance (`self.repo`). It does not handle cases where the repository is not set up correctly or where the current working directory is not a part of a valid Git repository.
+
+    See also: `GitPython` library documentation for more details on its diff method usage - https://gitpython.readthedocs.io/en/stable/
+"""'''
         repo = self.repo
         staged_files = {}
-        # Detect Staged Changes
-        # Please note! The logic of the GitPython library is different from git. Here, the R=True parameter is used to reverse the version comparison logic.
-        # In the GitPython library, repo.index.diff('HEAD') compares the staging area (index) as the new state with the original HEAD commit (old state). This means that if there is a new file in the current staging area, it will be shown as non-existent in HEAD, i.e., "deleted".
-        # R=True reverses this logic, correctly treating the last commit (HEAD) as the old state and comparing it with the current staging area (new state) (Index). In this case, a new file in the staging area will correctly show as added because it does not exist in HEAD.
-        diffs = repo.index.diff("HEAD", R=True)
-
+        diffs = repo.index.diff('HEAD', R=True)
         for diff in diffs:
-            if diff.change_type in ["A", "M"] and diff.a_path.endswith(".py"):
-                is_new_file = diff.change_type == "A"
+            if diff.change_type in ['A', 'M'] and diff.a_path.endswith('.py'):
+                is_new_file = diff.change_type == 'A'
                 staged_files[diff.a_path] = is_new_file
-
         return staged_files
 
     def get_file_diff(self, file_path, is_new_file):
-        """
-        The function's purpose is to retrieve the changes made to a specific file. For new files, it uses git diff --staged to get the differences.
-        Args:
-            file_path (str): The relative path of the file
-            is_new_file (bool): Indicates whether the file is a new file
-        Returns:
-            list: List of changes made to the file
-        """
+        """[Short one-line description]
+
+The function 'get_file_diff' retrieves the changes made to a specific file within the repository, utilizing the ChangeDetector component of the Repository Documentation Generator.
+
+[Longer description if needed.]
+
+This function is part of the Repository Documentation Generator, an automated tool designed for generating and updating documentation for software projects. It employs advanced techniques such as change detection and chat-based interaction to streamline the documentation process.
+
+Args:
+    file_path (str): The relative path of the file within the repository. This parameter is crucial for identifying the specific file whose changes need to be retrieved.  
+    is_new_file (bool): A boolean flag indicating whether the file in question is a newly added file. This information helps determine the appropriate git command to execute.
+
+Returns:
+    list: A list of strings, each representing a change made to the file. The format adheres to conventions used by git diff output, providing detailed insights into modifications such as additions, deletions, and contextual changes.
+
+Raises:
+    subprocess.CalledProcessError: If there's an issue executing the git command due to problems like incorrect paths or insufficient permissions. This error is not handled within this function and may result in a raised exception.
+
+Note:
+    This function interacts directly with the Git repository, leveraging subprocess to execute git commands. Consequently, any issues related to these commands (like path errors or permission problems) are beyond its scope and could potentially lead to exceptions.
+
+    See also: The 'git diff' documentation for a comprehensive understanding of its output format: https://git-scm.com/docs/git-diff
+"""
         repo = self.repo
-
         if is_new_file:
-            # For new files, first add them to the staging area.
-            add_command = f"git -C {repo.working_dir} add {file_path}"
+            add_command = f'git -C {repo.working_dir} add {file_path}'
             subprocess.run(add_command, shell=True, check=True)
-
-            # Get the diff from the staging area.
-            diffs = repo.git.diff("--staged", file_path).splitlines()
+            diffs = repo.git.diff('--staged', file_path).splitlines()
         else:
-            # For non-new files, get the diff from HEAD.
-            diffs = repo.git.diff("HEAD", file_path).splitlines()
-
+            diffs = repo.git.diff('HEAD', file_path).splitlines()
         return diffs
 
     def parse_diffs(self, diffs):
-        """
-        Parse the difference content, extract the added and deleted object information, the object can be a class or a function.
-        Output example: {'added': [(86, '    '), (87, '    def to_json_new(self, comments = True):'), (88, '        data = {'), (89, '            "name": self.node_name,')...(95, '')], 'removed': []}
-        In the above example, PipelineEngine and AI_give_params are added objects, and there are no deleted objects.
-        But the addition here does not mean that it is a newly added object, because in git diff, the modification of a line is represented as deletion and addition in diff.
-        So for the modified content, it will also be represented as this object has undergone an added operation.
+        """[Short description]
 
-        If you need to know clearly that an object is newly added, you need to use the get_added_objs() function.
-        Args:
-            diffs (list): A list containing difference content. Obtained by the get_file_diff() function inside the class.
+The `parse_diffs` function, part of the ChangeDetector module within the Repository Documentation Generator, processes a list of differences (diffs) to extract added and deleted lines. This function is instrumental in identifying modifications within source code files, which are then utilized for updating or generating documentation.
 
-        Returns:
-            dict: A dictionary containing added and deleted line information, the format is {'added': set(), 'removed': set()}
-        """
-        changed_lines = {"added": [], "removed": []}
+[Longer description]
+
+The `parse_diffs` function operates on a list of difference content, typically obtained via the `get_file_diff()` method. Its primary role is to discern lines that have been added or removed from the source code. The function outputs a dictionary containing sets of tuples. Each tuple signifies an added or removed line, comprising its corresponding line number and content.
+
+This function does not differentiate between newly added objects and modified ones. For distinguishing new objects, users should employ the `get_added_objs()` method. The returned dictionary format mirrors this structure: {'added': [(line_number, 'content'), ...], 'removed': []}. Here, 'added' denotes lines that have been inserted or altered, while 'removed' signifies lines that have been deleted.
+
+Args:
+    diffs (list): A list of difference content. This is usually acquired by calling the `get_file_diff()` method within the class. Each element in this list represents a change in the source code - an addition or deletion of lines.
+
+Returns:
+    dict: A dictionary with two keys, 'added' and 'removed', each mapping to a set of tuples. The tuples contain line numbers and their respective content. The format is as follows: {'added': [(line_number, 'content'), ...], 'removed': []}.
+
+Raises:
+    None: This function does not raise any exceptions under normal operation.
+
+Note:
+    To determine if an object (like a class or function) is newly added based on line modifications, utilize the `get_added_objs()` method. This function complements `parse_diffs` by providing a more granular analysis of code changes.
+
+    The Repository Documentation Generator automates and streamlines the documentation process for software projects. It achieves this through various modules, including ChangeDetector, which employs functions like `parse_diffs` to monitor repository changes and update documentation accordingly.
+"""
+        changed_lines = {'added': [], 'removed': []}
         line_number_current = 0
         line_number_change = 0
-
         for line in diffs:
-            # 检测行号信息，例如 "@@ -43,33 +43,40 @@"
-            line_number_info = re.match(r"@@ \-(\d+),\d+ \+(\d+),\d+ @@", line)
+            line_number_info = re.match('@@ \\-(\\d+),\\d+ \\+(\\d+),\\d+ @@', line)
             if line_number_info:
                 line_number_current = int(line_number_info.group(1))
                 line_number_change = int(line_number_info.group(2))
                 continue
-
-            if line.startswith("+") and not line.startswith("+++"):
-                changed_lines["added"].append((line_number_change, line[1:]))
+            if line.startswith('+') and (not line.startswith('+++')):
+                changed_lines['added'].append((line_number_change, line[1:]))
                 line_number_change += 1
-            elif line.startswith("-") and not line.startswith("---"):
-                changed_lines["removed"].append((line_number_current, line[1:]))
+            elif line.startswith('-') and (not line.startswith('---')):
+                changed_lines['removed'].append((line_number_current, line[1:]))
                 line_number_current += 1
             else:
-                # 对于没有变化的行，两者的行号都需要增加
                 line_number_current += 1
                 line_number_change += 1
-
         return changed_lines
 
-    # TODO: The key issue is that the changed line numbers correspond to the old function names (i.e., those removed) and the new function names (i.e., those added), and the current implementation does not handle this correctly.
-    # We need a way to associate the changed line numbers with their function or class names before and after the change. One method is to build a mapping before processing changed_lines, which can map the names after the change back to the names before the change based on the line number.
-    # Then, in the identify_changes_in_structure function, this mapping can be used to correctly identify the changed structure.
     def identify_changes_in_structure(self, changed_lines, structures):
-        """
-        Identify the structure of the function or class where changes have occurred: Traverse all changed lines, for each line, it checks whether this line is between the start line and the end line of a structure (function or class).
-        If so, then this structure is considered to have changed, and its name and the name of the parent structure are added to the corresponding set in the result dictionary changes_in_structures (depending on whether this line is added or deleted).
+        """[Short description]
 
-        Output example: {'added': {('PipelineAutoMatNode', None), ('to_json_new', 'PipelineAutoMatNode')}, 'removed': set()}
+Identify changes in the structure of functions or classes within a codebase by analyzing changed lines. This function is part of the ChangeDetector module, which monitors repository modifications to determine necessary documentation updates.
 
-        Args:
-            changed_lines (dict): A dictionary containing the line numbers where changes have occurred, {'added': [(line number, change content)], 'removed': [(line number, change content)]}
-            structures (list): The received is a list of function or class structures from get_functions_and_classes, each structure is composed of structure type, name, start line number, end line number, and parent structure name.
+Args:
+    changed_lines (dict): A dictionary containing line numbers where changes have occurred. The format is {'added': [(line number, change content)], 'removed': [(line number, change content)]}.
+    structures (list): A list of function or class structures, each represented as a tuple (structure type, name, start line number, end line number, parent structure name).
 
-        Returns:
-            dict: A dictionary containing the structures where changes have occurred, the key is the change type, and the value is a set of structure names and parent structure names.
-                Possible change types are 'added' (new) and 'removed' (removed).
-        """
-        changes_in_structures = {"added": set(), "removed": set()}
+Returns:
+    dict: A dictionary containing the structures where changes have occurred. The key is the change type ('added' for new, 'removed' for removed), and the value is a set of structure names and parent structure names.
+
+Raises:
+    None
+
+Note:
+    This function operates within the Repository Documentation Generator project, which automates the documentation process for software projects using advanced techniques like chat-based interaction and multi-task dispatching. It specifically focuses on the 'ChangeDetector' module to identify modified structures in a codebase. The results are used to update project hierarchy JSON data and generate Markdown documentation.
+
+"""
+        changes_in_structures = {'added': set(), 'removed': set()}
         for change_type, lines in changed_lines.items():
             for line_number, _ in lines:
-                for (
-                    structure_type,
-                    name,
-                    start_line,
-                    end_line,
-                    parent_structure,
-                ) in structures:
+                for structure_type, name, start_line, end_line, parent_structure in structures:
                     if start_line <= line_number <= end_line:
                         changes_in_structures[change_type].add((name, parent_structure))
         return changes_in_structures
 
-    # TODO:可能有错，需要单元测试覆盖； 可能有更好的实现方式
     def get_to_be_staged_files(self):
-        """
-        This method retrieves all unstaged files in the repository that meet one of the following conditions:
-        1. The file, when its extension is changed to .md, corresponds to a file that is already staged.
-        2. The file's path is the same as the 'project_hierarchy' field in the CONFIG.
+        """'''
+Determines files in the repository to be staged based on specific conditions.
 
-        It returns a list of the paths of these files.
+This function scans the repository for unstaged changes (diffs) and untracked files, then identifies those that meet certain criteria. The criteria are:
+1. The file, when its extension is altered to .md, corresponds to a file already staged.
+2. The file's path aligns with the 'project_hierarchy' field in the CONFIG.
 
-        :return: A list of relative file paths to the repo that are either modified but not staged, or untracked, and meet one of the conditions above.
-        """
-        # 已经更改但是暂未暂存的文件，这里只能是.md文件，因为作者不提交的.py文件（即使发生变更）我们不做处理。
+Files meeting these conditions are added to a list for staging.
+
+Args:
+    self (ChangeDetector): An instance of the ChangeDetector class, which is part of the Repository Documentation Generator. This class monitors changes in the repository to determine which documentation items need updating or generating.
+
+Returns:
+    List[str]: A list of relative file paths within the repository that are either modified but not staged, or untracked, and satisfy one of the conditions above. These files are intended for staging.
+
+Raises:
+    None
+
+Note:
+    This function utilizes the git Python library to interact with the repository. It first identifies all unstaged changes (diffs) and untracked files in the repository. Subsequently, it iterates over these files, evaluating each against the specified conditions. If a file meets one of the conditions, its path is included in the list of files designated for staging.
+
+See also:
+    RepositoryDocumentationGenerator.ChangeDetector.project_hierarchy - The field in CONFIG used to match file paths.
+    RepositoryDocumentationGenerator.GitignoreChecker - Handles .gitignore file checks and temporary file management during documentation process.
+'''"""
         to_be_staged_files = []
-        # staged_files是已经暂存的文件，通常这里是作者做了更改后git add 的.py文件 或其他文件
-        staged_files = [item.a_path for item in self.repo.index.diff("HEAD")]
-        print(
-            f"{Fore.LIGHTYELLOW_EX}target_repo_path{Style.RESET_ALL}: {self.repo_path}"
-        )
-        print(
-            f"{Fore.LIGHTMAGENTA_EX}already_staged_files{Style.RESET_ALL}:{staged_files}"
-        )
-
+        staged_files = [item.a_path for item in self.repo.index.diff('HEAD')]
+        print(f'{Fore.LIGHTYELLOW_EX}target_repo_path{Style.RESET_ALL}: {self.repo_path}')
+        print(f'{Fore.LIGHTMAGENTA_EX}already_staged_files{Style.RESET_ALL}:{staged_files}')
         setting = SettingsManager.get_setting()
-
         project_hierarchy = setting.project.hierarchy_name
-        # diffs是所有未暂存更改文件的列表。这些更改文件是相对于工作区（working directory）的，也就是说，它们是自上次提交（commit）以来在工作区发生的更改，但还没有被添加到暂存区（staging area）
-        # 比如原本存在的md文件现在由于代码的变更发生了更新，就会标记为未暂存diff
         diffs = self.repo.index.diff(None)
-        # untracked_files是一个包含了所有未跟踪文件的列表。比如说用户添加了新的.py文件后项目自己生成的对应.md文档。它们是在工作区中存在但还没有被添加到暂存区（staging area）的文件。
-        # untracked_files中的文件路径是绝对路径
         untracked_files = self.repo.untracked_files
-        print(f"{Fore.LIGHTCYAN_EX}untracked_files{Style.RESET_ALL}: {untracked_files}")
-
-        # 处理untrack_files中的内容
+        print(f'{Fore.LIGHTCYAN_EX}untracked_files{Style.RESET_ALL}: {untracked_files}')
         for untracked_file in untracked_files:
-            # 连接repo_path和untracked_file以获取完整的绝对路径
             if untracked_file.startswith(setting.project.markdown_docs_name):
                 to_be_staged_files.append(untracked_file)
             continue
-            print(f"rel_untracked_file:{rel_untracked_file}")
-            # import pdb; pdb.set_trace()
-            # 判断这个文件的类型：
-            if rel_untracked_file.endswith(".md"):
-                # 把rel_untracked_file从CONFIG['Markdown_Docs_folder']中拆离出来。判断是否能跟暂存区中的某一个.py文件对应上
-                rel_untracked_file = os.path.relpath(
-                    rel_untracked_file, setting.project.markdown_docs_name
-                )
-                corresponding_py_file = os.path.splitext(rel_untracked_file)[0] + ".py"
-                print(
-                    f"corresponding_py_file in untracked_files:{corresponding_py_file}"
-                )
+            print(f'rel_untracked_file:{rel_untracked_file}')
+            if rel_untracked_file.endswith('.md'):
+                rel_untracked_file = os.path.relpath(rel_untracked_file, setting.project.markdown_docs_name)
+                corresponding_py_file = os.path.splitext(rel_untracked_file)[0] + '.py'
+                print(f'corresponding_py_file in untracked_files:{corresponding_py_file}')
                 if corresponding_py_file in staged_files:
-                    # 如果是，那么就把这个md文件也加入到unstaged_files中
-                    to_be_staged_files.append(
-                        os.path.join(
-                            self.repo_path.lstrip("/"),
-                            setting.project.markdown_docs_name,
-                            rel_untracked_file,
-                        )
-                    )
+                    to_be_staged_files.append(os.path.join(self.repo_path.lstrip('/'), setting.project.markdown_docs_name, rel_untracked_file))
             elif rel_untracked_file == project_hierarchy:
                 to_be_staged_files.append(rel_untracked_file)
-
-        # 处理已追踪但是未暂存的内容
         unstaged_files = [diff.b_path for diff in diffs]
-        print(f"{Fore.LIGHTCYAN_EX}unstaged_files{Style.RESET_ALL}: {unstaged_files}")
-
+        print(f'{Fore.LIGHTCYAN_EX}unstaged_files{Style.RESET_ALL}: {unstaged_files}')
         for unstaged_file in unstaged_files:
-            # 连接repo_path和unstaged_file以获取完整的绝对路径
-            if unstaged_file.startswith(
-                setting.project.markdown_docs_name
-            ) or unstaged_file.startswith(setting.project.hierarchy_name):
-                # abs_unstaged_file = os.path.join(self.repo_path, unstaged_file)
-                # # # 获取相对于仓库根目录的相对路径
-                # # rel_unstaged_file = os.path.relpath(abs_unstaged_file, self.repo_path)
+            if unstaged_file.startswith(setting.project.markdown_docs_name) or unstaged_file.startswith(setting.project.hierarchy_name):
                 to_be_staged_files.append(unstaged_file)
-            elif unstaged_file == project_hierarchy:  # project_hierarchy永远add
+            elif unstaged_file == project_hierarchy:
                 to_be_staged_files.append(unstaged_file)
             continue
             abs_unstaged_file = os.path.join(self.repo_path, unstaged_file)
-            # 获取相对于仓库根目录的相对路径
             rel_unstaged_file = os.path.relpath(abs_unstaged_file, self.repo_path)
-            print(f"rel_unstaged_file:{rel_unstaged_file}")
-            # 如果它是md文件
-            if unstaged_file.endswith(".md"):
-                # 把rel_unstaged_file从CONFIG['Markdown_Docs_folder']中拆离出来。判断是否能跟暂存区中的某一个.py文件对应上
-                rel_unstaged_file = os.path.relpath(
-                    rel_unstaged_file, setting.project.markdown_docs_name
-                )
-                corresponding_py_file = os.path.splitext(rel_unstaged_file)[0] + ".py"
-                print(f"corresponding_py_file:{corresponding_py_file}")
+            print(f'rel_unstaged_file:{rel_unstaged_file}')
+            if unstaged_file.endswith('.md'):
+                rel_unstaged_file = os.path.relpath(rel_unstaged_file, setting.project.markdown_docs_name)
+                corresponding_py_file = os.path.splitext(rel_unstaged_file)[0] + '.py'
+                print(f'corresponding_py_file:{corresponding_py_file}')
                 if corresponding_py_file in staged_files:
-                    # 如果是，那么就把这个md文件也加入到unstaged_files中
-                    to_be_staged_files.append(
-                        os.path.join(
-                            self.repo_path.lstrip("/"),
-                            setting.project.markdown_docs_name,
-                            rel_unstaged_file,
-                        )
-                    )
-            elif unstaged_file == project_hierarchy:  # project_hierarchy永远add
+                    to_be_staged_files.append(os.path.join(self.repo_path.lstrip('/'), setting.project.markdown_docs_name, rel_unstaged_file))
+            elif unstaged_file == project_hierarchy:
                 to_be_staged_files.append(unstaged_file)
-        print(
-            f"{Fore.LIGHTRED_EX}newly_staged_files{Style.RESET_ALL}: {to_be_staged_files}"
-        )
+        print(f'{Fore.LIGHTRED_EX}newly_staged_files{Style.RESET_ALL}: {to_be_staged_files}')
         return to_be_staged_files
 
     def add_unstaged_files(self):
         """
-        Add unstaged files which meet the condition to the staging area.
-        """
+[Short one-line description]
+Adds unstaged files to the change detector's tracking list.
+
+[Longer description if needed.]
+The 'add_unstaged_files' function is part of the ChangeDetector module within the Repository Documentation Generator. This tool automates the documentation process for software projects by monitoring changes in the repository and determining which documentation items need updating or generating. 
+
+This specific method, 'add_unstaged_files', is designed to expand the scope of the change detector by incorporating any unstaged files into its tracking list. Unstaged files are those that have been modified but not yet committed to the repository, and their inclusion ensures comprehensive detection of changes.
+
+Args:
+    file_paths (list): A list of paths to the unstaged files.  
+    repo_path (str): The path to the root directory of the repository.  
+
+Returns:
+    None: This method does not return any value; it updates the internal state of the ChangeDetector object directly.  
+
+Raises:
+    ValueError: If 'file_paths' is not a list or contains non-string elements, or if 'repo_path' is not a valid directory path.  
+
+Note:  
+    See also: The 'ChangeDetector' class and its methods for managing tracked changes and generating documentation updates.  
+"""
         unstaged_files_meeting_conditions = self.get_to_be_staged_files()
         for file_path in unstaged_files_meeting_conditions:
-            add_command = f"git -C {self.repo.working_dir} add {file_path}"
+            add_command = f'git -C {self.repo.working_dir} add {file_path}'
             subprocess.run(add_command, shell=True, check=True)
         return unstaged_files_meeting_conditions
-
-
-if __name__ == "__main__":
-    repo_path = "/path/to/your/repo/"
+if __name__ == '__main__':
+    repo_path = '/path/to/your/repo/'
     change_detector = ChangeDetector(repo_path)
     changed_files = change_detector.get_staged_pys()
-    print(f"\nchanged_files:{changed_files}\n\n")
+    print(f'\nchanged_files:{changed_files}\n\n')
     for file_path, is_new_file in changed_files.items():
-        changed_lines = change_detector.parse_diffs(
-            change_detector.get_file_diff(file_path, is_new_file)
-        )
-        # print("changed_lines:",changed_lines)
+        changed_lines = change_detector.parse_diffs(change_detector.get_file_diff(file_path, is_new_file))
         file_handler = FileHandler(repo_path=repo_path, file_path=file_path)
-        changes_in_pyfile = change_detector.identify_changes_in_structure(
-            changed_lines,
-            file_handler.get_functions_and_classes(file_handler.read_file()),
-        )
-        print(f"Changes in {file_path} Structures:{changes_in_pyfile}\n")
+        changes_in_pyfile = change_detector.identify_changes_in_structure(changed_lines, file_handler.get_functions_and_classes(file_handler.read_file()))
+        print(f'Changes in {file_path} Structures:{changes_in_pyfile}\n')
