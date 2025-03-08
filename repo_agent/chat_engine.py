@@ -120,7 +120,6 @@ class ChatEngine:
                 referencer_content=referencer_content,
                 language=setting.project.language)
 
-
     def generate_doc(self, doc_item: DocItem):
         """Generates documentation for a given DocItem."""
         settings = SettingsManager.get_setting()
@@ -130,18 +129,8 @@ class ChatEngine:
             messages = self.build_prompt(doc_item)
 
         try:
-            response = self.llm.stream_chat(messages)
-            answer = ""
-            for chunk in response:
-                answer += chunk.delta
-            # logger.debug(f"LLM Prompt Tokens: {response.raw.usage.prompt_tokens}")  # type: ignore
-            # logger.debug(
-            #     f"LLM Completion Tokens: {response.raw.usage.completion_tokens}"  # type: ignore
-            # )
-            # logger.debug(
-            #     f"Total LLM Token Count: {response.raw.usage.total_tokens}"  # type: ignore
-            # )
-            print(answer)
+            response = self.llm.chat(messages)
+            answer = response.message.content
             return answer.replace("```python\n", "").replace("```", "")
         except Exception as e:
             logger.error(f"Error in llamaindex chat call: {e}")
