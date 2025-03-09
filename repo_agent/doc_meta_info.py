@@ -485,6 +485,7 @@ Note:
 This docstring adheres to the Google docstring conventions, providing clear descriptions of the arguments, return type, exceptions raised, and a note on its purpose within the framework."""
     repo_path: Path = ''
     document_version: str = ''
+    main_idea: str = ""
     repo_structure: Dict[str, Any] = field(default_factory=dict)
     target_repo_hierarchical_tree: 'DocItem' = field(default_factory=lambda: DocItem())
     white_list: Any[List] = None

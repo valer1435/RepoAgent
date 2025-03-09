@@ -67,6 +67,7 @@ Note:
         if not self.absolute_project_hierarchy_path.exists():
             self.meta_info = MetaInfo.init_meta_info(file_path_reflections, jump_files)
             self.meta_info.checkpoint(target_dir_path=self.absolute_project_hierarchy_path)
+            setting = SettingsManager.get_setting().project.main_idea = self.meta_info.main_idea
         else:
             setting = SettingsManager.get_setting()
             project_abs_path = setting.project.target_repo
