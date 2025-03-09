@@ -4,9 +4,9 @@ from typing import List, Dict, Any
 from repo_agent.settings import SettingsManager
 
 def summarize_repository(root_dir: str, repo_structure, chat_engine) -> Dict[str, Any]:
-    """Recursively summarizes documentation pages within a repository directory structure.
+    """Recursively generates summaries for Python modules and submodules within a repository's directory structure.
 
-This function leverages the Repository Agent's capabilities to analyze and summarize Python projects at the repository level, ensuring comprehensive and up-to-date documentation.
+This function leverages the Repository Agent's capabilities to analyze and summarize Python projects at the repository level, ensuring comprehensive and up-to-date documentation by utilizing large language models (LLMs) through the `ChatEngine` class.
 
 Args:
     root_dir (str): Path to the root directory of the documentation repository.
@@ -71,7 +71,7 @@ Notes:
 def create_module_summary(name: str, file_summaries: List[str], submodule_summaries: List[str], chat_engine) -> str:
     """Generate a summary for a Python module by combining file and submodule summaries.
 
-This function leverages the `ChatEngine` instance to summarize the contents of a module, integrating details from both files and submodules within it.
+This function utilizes the `ChatEngine` instance to create a comprehensive summary of a module, integrating details from both files and submodules within it. The Repository Agent tool automates documentation generation for complex Python projects, ensuring high-quality and consistent documentation across all modules.
 
 Args:
     name (str): The name of the module.

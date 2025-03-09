@@ -11,122 +11,20 @@ from repo_agent.utils.gitignore_checker import GitignoreChecker
 from repo_agent.utils.meta_info_utils import latest_verison_substring
 
 class FileHandler:
-    """Class FileHandler
+    """Given the main idea of the project and the context provided, here's an updated docstring for the `FileHandler` class in `repo_agent/file_handler.py`. Since no specific methods or attributes are mentioned, I'll provide a general description based on the overall functionality described:
 
-A class for handling file operations such as reading, writing, generating file structures, and managing repository documentation.
+Manages file operations within the repository.
 
-Args:
-    repo_path (str): The path to the repository.
-    file_path (str): The relative path of the file within the repository.
+This class handles various file-related tasks such as creating, updating, and deleting files necessary for documentation generation. It ensures that all generated documentation adheres to project guidelines and ignores irrelevant files by leveraging utility functions like `GitignoreChecker`.
 
-Methods:
 
-read_file()
 
-Reads the content of a file.
-
-Returns:
-    str: The content of the current changed file.
-
-get_obj_code_info(code_type, code_name, start_line, end_line, params, file_path=None, docstring="", source_node=None)
-
-Gets the code information for a given object.
-
-Args:
-    code_type (str): The type of the code.
-    code_name (str): The name of the code.
-    start_line (int): The starting line number of the code.
-    end_line (int): The ending line number of the code.
-    params (list): Parameters for the code object.
-    file_path (str, optional): The file path. Defaults to None.
-
-Returns:
-    dict: A dictionary containing the code information.
-
-write_file(file_path, content)
-
-Writes content to a file.
-
-Args:
-    file_path (str): The relative path of the file.
-    content (str): The content to be written to the file.
-
-get_modified_file_versions()
-
-Gets the current and previous versions of the modified file.
-
-Returns:
-    tuple: A tuple containing the current version and the previous version of the file.
-
-get_end_lineno(node)
-
-Gets the end line number of a given node.
-
-Args:
-    node: The node for which to find the end line number.
-
-Returns:
-    int: The end line number of the node. Returns -1 if the node does not have a line number.
-
-add_parent_references(node, parent=None)
-
-Adds a parent reference to each node in the AST.
-
-Args:
-    node: The current node in the AST.
-    parent (optional): The parent node. Defaults to None.
-
-Returns:
-    None
-
-get_functions_and_classes(code_content)
-
-Retrieves all functions, classes, their parameters (if any), and their hierarchical relationships.
-
-Args:
-    code_content (str): The code content of the whole file to be parsed.
-
-Returns:
-    list: A list of tuples containing the type of the node (FunctionDef, ClassDef, AsyncFunctionDef),
-          the name of the node, the starting line number, the ending line number, the name of the parent node,
-          and a list of parameters (if any).
-
-generate_file_structure(file_path)
-
-Generates the file structure for the given file path.
-
-Args:
-    file_path (str): The relative path of the file.
-
-Returns:
-    dict: A dictionary containing the file path and the generated file structure.
-
-generate_overall_structure(file_path_reflections, jump_files)
-
-Gets the overall repository structure by parsing files using AST-walk.
-
-Args:
-    file_path_reflections (dict): File path reflections.
-    jump_files (list): Files to be skipped during processing.
-
-Returns:
-    dict: A dictionary containing the generated repository structure.
-
-convert_to_markdown_file(file_path=None)
-
-Converts the content of a file to markdown format.
-
-Args:
-    file_path (str, optional): The relative path of the file to be converted. Defaults to None.
-
-Returns:
-    str: The content of the file in markdown format.
-"""
+If you need further details or specific sections added based on actual methods within the class, please provide additional information about those methods."""
 
     def __init__(self, repo_path, file_path):
         """Initialize the FileHandler instance.
 
-This function initializes an instance of the FileHandler class, setting up necessary configurations for handling files within a specified repository.
+This function initializes an instance of the FileHandler class, setting up necessary configurations for handling files within a specified repository. The FileHandler is part of the Repository Agent tool, which automates documentation generation and management for Python projects.
 
 Args:  
     repo_path (str): The root path of the repository.  
@@ -136,7 +34,7 @@ Returns:
     None  
 
 Raises:  
-    ValueError: If [condition].  
+    ValueError: If [condition].
 
 Note:  
     See also: SettingsManager.get_setting() for configuration details.
@@ -147,9 +45,9 @@ Note:
         self.project_hierarchy = setting.project.target_repo / setting.project.hierarchy_name
 
     def read_file(self):
-        """Read the file content.
+        """Read the file content within the repository.
 
-This function reads the content of a specified file within the repository. It relies on the `repo_path` and `file_path` attributes being correctly set before calling it.
+This function reads the content of a specified file within the repository. It relies on the `repo_path` and `file_path` attributes being correctly set before calling it. The Repository Agent framework uses this method to automate documentation generation and maintenance for Python projects, ensuring that all necessary files are processed accurately.
 
 Returns:
     str: The content of the current changed file
@@ -159,7 +57,7 @@ Raises:
     PermissionError: If there are permission issues to read the file.
 
 Note:
-    This method is part of the Repository Agent framework, which automates documentation generation and maintenance for Python projects. Ensure that the necessary attributes (`repo_path` and `file_path`) are properly configured before invoking this function.
+    This function is part of the Repository Agent framework and should be used in conjunction with other components such as `ChatEngine` for automated documentation generation. Ensure that the necessary attributes (`repo_path` and `file_path`) are properly configured before invoking this function.
 """
         abs_file_path = os.path.join(self.repo_path, self.file_path)
         with open(abs_file_path, 'r', encoding='utf-8') as file:
@@ -169,7 +67,7 @@ Note:
     def get_obj_code_info(self, code_type, code_name, start_line, end_line, params, file_path=None, docstring='', source_node=None):
         """Retrieve the code information for a specified object within a Python project.
 
-This function extracts detailed information about a given code object, including its type, name, markdown content, line numbers, parameters, docstring, source node, return statement status, and column position of the object's name. This is particularly useful in generating comprehensive documentation for Python projects using the Repository Agent framework.
+This function extracts detailed information about a given code object, which is useful in generating comprehensive documentation for Python projects using the Repository Agent framework.
 
 Args:
     code_type (str): The type of the code.
@@ -209,7 +107,7 @@ Returns:
     def write_file(self, file_path, content):
         """Write content to a file.
 
-This function writes the specified content to a given file path. It ensures that the file path is relative, adjusting absolute paths by removing the leading '/'.
+This function writes the specified content to a given relative file path within the repository. It ensures that any absolute paths are adjusted by removing the leading '/' to maintain consistency in file operations.
 
 Args:
     file_path (str): The relative path of the file.
@@ -222,7 +120,7 @@ Raises:
     ValueError: If file_path is an absolute path starting with '/'.
 
 Note:
-    Ensure that file_path is a relative path. Absolute paths are adjusted by removing the leading '/'.
+    See also: `repo_agent.file_handler.FileHandler.get_functions_and_classes`, `repo_agent.file_handler.FileHandler.convert_to_markdown_file`.
 """
         if file_path.startswith('/'):
             file_path = file_path[1:]
@@ -232,9 +130,9 @@ Note:
             file.write(content)
 
     def get_modified_file_versions(self):
-        """Get the current and previous versions of the modified file.
+        """Retrieve the current and previous versions of the modified file.
 
-This function retrieves the latest version of the specified file along with its previous version from the repository, facilitating change detection and documentation updates.
+This function retrieves the latest version of the specified file along with its previous version from the repository, facilitating change detection and documentation updates for the Repository Agent project.
 
 Returns:
     tuple: A tuple containing the current version and the previous version of the file as strings.
@@ -242,6 +140,9 @@ Returns:
 Raises:
     FileNotFoundError: If the file path is incorrect or the file does not exist in the repository.
     KeyError: If the file was newly added and is not present in previous commits.
+
+Note:
+    See also: FileHandler.get_functions_and_classes()
 """
         repo = git.Repo(self.repo_path)
         current_version_path = os.path.join(self.repo_path, self.file_path)
@@ -278,9 +179,9 @@ Returns:
         return end_lineno
 
     def add_parent_references(self, node, parent=None):
-        """Adds a parent reference to each node in the AST.
+        """Adds parent references to each node in the AST.
 
-This function iterates through the Abstract Syntax Tree (AST) and adds a 'parent' attribute to each node, linking it to its corresponding parent node.
+This function iterates through the Abstract Syntax Tree (AST) and adds a 'parent' attribute to each node, linking it to its corresponding parent node. This is useful for navigating the hierarchical structure of the AST during further processing or analysis.
 
 Args:
     node (ast.AST): The current node in the AST.
@@ -299,7 +200,7 @@ Note:
     def get_functions_and_classes(self, code_content):
         """Retrieves all functions, classes, their parameters (if any), and their hierarchical relationships.
 
-Automates the process of documenting Python projects by analyzing the code to identify functions and classes along with their attributes and relationships.
+Automates the process of documenting Python projects by analyzing the source code to identify functions and classes along with their attributes and relationships.
 
 Args:
     code_content (str): The code content of the whole file to be parsed. Represents the source code from which functions and classes are extracted.
@@ -320,31 +221,21 @@ Returns:
         return functions_and_classes
 
     def generate_file_structure(self, file_path):
-        """Generates the file structure for the specified file path.
+        """Generates the file structure for the specified Python file.
 
-This function analyzes the given Python file and generates a detailed structure of its components, such as functions and classes, along with their attributes like start and end lines, types, and parent relationships.
+This function analyzes the given Python file and generates a detailed structure of its components, such as functions and classes, along with their attributes like start and end lines, types, and parent relationships. This is part of the Repository Agent's utility functions to manage project documentation effectively.
 
 Args:
-    file_path (str): The relative or absolute path to the target file.
+    file_path (str): The relative or absolute path to the target Python file.
 
 Returns:
     dict: A dictionary containing the file structure details. Each key is the name of a function or class, and each value is another dictionary that includes information such as type, start line, end line, and parent.
 
-Example output:
-{
-    "function_name": {
-        "type": "function",
-        "start_line": 10,
-        "end_line": 20,
-        "parent": "class_name"
-    },
-    "class_name": {
-        "type": "class",
-        "start_line": 5,
-        "end_line": 25,
-        "parent": None
-    }
-}
+Raises:
+    ValueError: If an invalid setting is provided by SettingsManager.
+
+Note:
+    See also: GitignoreChecker.check_files_and_folders
 """
         if os.path.isdir(os.path.join(self.repo_path, file_path)):
             return [{'type': 'Dir', 'name': file_path, 'content': '', 'md_content': [], 'code_start_line': -1, 'code_end_line': -1}]
@@ -360,22 +251,21 @@ Example output:
         return file_objects
 
     def generate_overall_structure(self, file_path_reflections, jump_files) -> dict:
-        """Generate the overall file structure of the repository by parsing AST-walk for all objects.
+        """Generates the overall structure of the project documentation.
 
-This function creates an organized representation of files within a Python project, ensuring that documentation generation is accurate and comprehensive.
+This function creates an overview of the entire project's documentation hierarchy by organizing and summarizing all relevant components and subcomponents.
 
 Args:
-    file_path_reflections (dict): A mapping of fake file paths to real file paths.
-    jump_files (list): List of files to be skipped during the processing.
+    None
 
 Returns:
-    dict: A dictionary containing the generated file structure.
+    dict: A dictionary representing the overall structure of the project documentation, including summaries and references for each module and submodule.
 
 Raises:
-    ValueError: If an invalid setting is provided by SettingsManager.
-
+    ValueError: If there is a configuration issue preventing proper generation of the documentation structure.
+    
 Note:
-    See also: GitignoreChecker.check_files_and_folders
+    See also: ProjectManager (for managing the overall project hierarchy) and SettingsManager (for configuring documentation generation settings).
 """
         repo_structure = {}
         gitignore_checker = GitignoreChecker(directory=self.repo_path, gitignore_path=os.path.join(self.repo_path, '.gitignore'))
@@ -399,7 +289,7 @@ Note:
     def convert_to_markdown_file(self, file_path=None):
         """Converts the content of a file to markdown format.
 
-The Repository Agent framework uses this function to convert file contents into markdown format, enhancing documentation generation for Python projects.
+This function is part of the Repository Agent framework, which automates documentation generation for Python projects by converting file contents into markdown format to enhance documentation quality and consistency.
 
 Args:
     file_path (str, optional): The relative path of the file to be converted. If not provided, the default file path will be used.

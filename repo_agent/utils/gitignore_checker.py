@@ -3,20 +3,31 @@ import os
 from repo_agent.settings import SettingsManager
 
 class GitignoreChecker:
-    """Initialize the GitignoreChecker with a specific directory and the path to a .gitignore file.
+    """Initialize the GitignoreChecker instance.
+
+This method initializes an instance of the GitignoreChecker class by setting up the directory and .gitignore file path, and loading patterns from the .gitignore file.
 
 Args:
     directory (str): The directory to be checked.
     gitignore_path (str): The path to the .gitignore file.
 
-Note:  
-    See also: _load_gitignore_patterns, check_files_and_folders
+Returns:
+    None
+
+Raises:
+    ValueError: If either `directory` or `gitignore_path` is invalid.
+
+Note:
+    See also: _load_gitignore_patterns method for more details on how patterns are loaded.
 
 
 Load and parse the .gitignore file, then split the patterns into folder and file patterns. If the specified .gitignore file is not found, fall back to the default path.
 
 Returns:
     tuple: A tuple containing two lists - one for folder patterns and one for file patterns.
+
+Raises:
+    FileNotFoundError: If the specified .gitignore file cannot be found.
 
 
 Parse the .gitignore content and return patterns as a list.
@@ -57,7 +68,7 @@ Returns:
     def __init__(self, directory: str, gitignore_path: str):
         """Initialize the GitignoreChecker instance.
 
-This method initializes an instance of the GitignoreChecker class by setting up the directory and .gitignore file path, and loading patterns from the .gitignore file.
+This method initializes an instance of the GitignoreChecker class by setting up the directory and .gitignore file path, and loading patterns from the .gitignore file. This is part of the Repository Agent's utility functions designed to manage file operations and ensure that generated documentation adheres to project guidelines while ignoring irrelevant files.
 
 Args:
     directory (str): The directory to be checked.
@@ -79,7 +90,7 @@ Note:
     def _load_gitignore_patterns(self) -> tuple:
         """Load the .gitignore file and parse its patterns into folder and file categories.
 
-If the specified .gitignore file is not found, the function falls back to a default path.
+If the specified .gitignore file is not found, the function falls back to a default path. This functionality ensures that irrelevant files are ignored during documentation generation, maintaining project cleanliness and consistency.
 
 Args:
     None
@@ -89,6 +100,9 @@ Returns:
 
 Raises:
     FileNotFoundError: If the specified .gitignore file cannot be found.
+
+Note:
+    See also: _parse_gitignore method for more details on how patterns are parsed.
 """
         try:
             with open(self.gitignore_path, 'r', encoding='utf-8') as file:
@@ -104,7 +118,7 @@ Raises:
     def _parse_gitignore(gitignore_content: str) -> list:
         """Parse the .gitignore file content and extract patterns as a list.
 
-This function processes the content of a .gitignore file and returns a list of patterns that are defined within it.
+This function processes the content of a .gitignore file and returns a list of patterns that are defined within it, ensuring that irrelevant files are ignored during documentation generation.
 
 Args:
     gitignore_content (str): The content of the .gitignore file to be parsed.
@@ -126,7 +140,7 @@ Note:
     def _split_gitignore_patterns(gitignore_patterns: list) -> tuple:
         """Split the .gitignore patterns into folder and file patterns.
 
-This function processes the list of patterns from the .gitignore file and categorizes them into two distinct lists: one for folder patterns and another for file patterns.
+This function processes the list of patterns from the .gitignore file and categorizes them into two distinct lists: one for folder patterns and another for file patterns. This is useful in managing project structure by ensuring that documentation generation adheres to project guidelines and ignores irrelevant files.
 
 Args:
     gitignore_patterns (list): A list of patterns extracted from the .gitignore file.
@@ -147,18 +161,18 @@ Returns:
     def _is_ignored(path: str, patterns: list, is_dir: bool=False) -> bool:
         """Check if the given path matches any of the specified patterns.
 
-This function evaluates whether a given file or directory path is ignored based on a list of patterns, similar to how `.gitignore` files operate.
+This function evaluates whether a given file or directory path is ignored based on a list of patterns, similar to how `.gitignore` files operate. This utility is part of the Repository Agent's functionality for managing and documenting repository contents efficiently by ensuring that irrelevant files are excluded from documentation generation.
 
 Args:
     path (str): The path to check.
     patterns (list): A list of patterns to match against the path.
-    is_dir (bool): True if the path is a directory, False otherwise. Defaults to False.
+    is_dir (bool, optional): True if the path is a directory, False otherwise. Defaults to False.
 
 Returns:
     bool: True if the path matches any pattern in the list, False otherwise.
 
 Note:
-    This function is part of the Repository Agent's utility module for managing and documenting repository contents efficiently.
+    See also: GitignoreChecker for more details on managing ignored files within the Repository Agent.
 """
         for pattern in patterns:
             if fnmatch.fnmatch(path, pattern):
@@ -169,7 +183,8 @@ Note:
 
     def check_files_and_folders(self) -> list:
         """Check all files and folders in the given directory against the split gitignore patterns.
-Return a list of paths to Python files that are not ignored.
+
+This function identifies Python files that are not ignored by the .gitignore rules within a specified repository directory, ensuring that only relevant files are included in documentation generation processes.
 
 Args:
     None

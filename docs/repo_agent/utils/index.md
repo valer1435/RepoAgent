@@ -1,13 +1,7 @@
-# Utils
+# Utilities Module
 
 ## Overview
-The `utils` module contains various utility functions and classes that support the core functionality of the Repository Agent framework. These utilities are designed to handle tasks such as updating documentation strings, managing `.gitignore` files, and generating fake files based on unstaged changes.
+The Utilities Module contains various helper functions and classes designed to support the core functionalities of the Repository Agent. These utilities assist in managing file operations, updating documentation, and handling project-specific configurations.
 
 ## Purpose
-The purpose of the `utils` module is to provide a set of helper tools that enhance the efficiency and accuracy of the Repository Agent's operations. Specifically:
-
-- **Docstring Updater**: Provides functionality to update documentation strings within the codebase.
-- **Gitignore Checker**: Manages `.gitignore` files by parsing patterns and checking paths against them.
-- **Meta Info Utilities**: Generates fake files based on unstaged changes, deletes these files when necessary, and removes fake files from specified directories.
-
-These utilities collectively support tasks such as documentation generation, change detection, and file management within the Repository Agent framework.
+The primary purpose of this module is to provide a suite of utility tools that enhance the efficiency and effectiveness of the Repository Agent's documentation generation process. Specifically, it includes functions for parsing `.gitignore` files, generating fake test files, and deleting them when no longer needed. These utilities ensure that the generated documentation adheres to project guidelines by ignoring irrelevant files and facilitating testing procedures.

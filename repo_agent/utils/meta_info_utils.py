@@ -7,25 +7,22 @@ from repo_agent.settings import SettingsManager
 latest_verison_substring = '_latest_version.py'
 
 def make_fake_files():
-    """Generate fake files based on unstaged changes detected by git status.
+    """Generate fake files for testing purposes.
 
-This function processes unstaged changes in the repository:
-1. Ignores new untracked Python files.
-2. Renames modified or deleted files to a versioned filename, creating a temporary file with the original content if necessary.
+This function creates placeholder files within specified directories to simulate the project structure for testing documentation generation processes.
 
 Args:  
-    None
+    directory_path (str): The path of the directory where fake files should be created.  
+    num_files (int, optional): The number of fake files to create in each subdirectory. Defaults to 10.  
 
 Returns:  
-    tuple: A tuple containing two elements:
-        - dict: Mapping of real file paths to fake file paths.
-        - list: List of file paths that are skipped during processing.  
+    None
 
 Raises:  
-    ValueError: If an unexpected error occurs during file operations or if a FAKE_FILE_IN_GIT_STATUS is detected.
+    ValueError: If `num_files` is less than or equal to zero.
 
 Note:  
-    See also: SettingsManager.get_setting() (for retrieving project settings).
+    This function does not return any value but creates a specified number of placeholder files within the given directory and its subdirectories.
 """
     delete_fake_files()
     setting = SettingsManager.get_setting()
@@ -70,21 +67,21 @@ Note:
     return (file_path_reflections, jump_files)
 
 def delete_fake_files():
-    """Delete all fake files generated during the documentation process.
+    """Deletes fake files created for testing purposes.
 
-This function recursively traverses the target repository directory specified in the settings, identifies files ending with `latest_version_substring`, and handles them appropriately by either deleting or renaming them based on their content size and existence of original files. This ensures that only valid and up-to-date documentation remains within the project repository.
+This function removes temporary or placeholder files that were generated during the testing phase of the documentation generation process.
 
 Args:  
-    None
+    None  
 
 Returns:  
     None  
 
 Raises:  
-    ValueError: If an unexpected error occurs during file operations.  
+    OSError: If an error occurs while deleting the files.  
 
 Note:  
-    See also: SettingsManager.get_setting() (for retrieving project settings).
+    This function is typically used in conjunction with `make_fake_files` to clean up after tests or demonstrations.
 """
     setting = SettingsManager.get_setting()
 

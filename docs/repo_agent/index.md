@@ -1,14 +1,21 @@
 # Repository Agent
 
 ## Overview
-The Repository Agent is a framework designed to automate the generation and maintenance of comprehensive documentation for Python projects at the repository level. It leverages language models (LLMs) to analyze code, detect changes, and generate detailed documentation.
+The Repository Agent is a tool designed to automate the generation and management of documentation for Python projects. It utilizes large language models (LLMs) to create comprehensive summaries and maintain up-to-date documentation across various modules within a repository.
+
+This module includes several key components:
+
+- **Change Detection**: The `ChangeDetector` class identifies changes in the repository, such as added or modified files, and retrieves differences using Git commands.
+  
+- **Documentation Generation**: The `ChatEngine` class manages the process of generating documentation for Python projects by interacting with LLMs to create detailed summaries and maintain up-to-date documentation.
+
+- **Metadata Management**: The `DocMetaInfo` classes handle metadata related to documentation items, including their types, statuses, and relationships within the project hierarchy.
+  
+- **File Handling**: The `FileHandler` class manages file operations such as reading, writing, and parsing Python files for code information and structure generation.
+
+- **Logging**: The `log.py` module configures logging to ensure that all actions taken by the Repository Agent are recorded and traceable.
+
+- **Main Execution**: The `main.py` script orchestrates the overall process of documentation generation, including initialization, task management, and cleanup operations.
 
 ## Purpose
-The primary purpose of the Repository Agent module is to streamline the process of creating and updating documentation within Python repositories. This module includes functionalities such as:
-
-- **Code Analysis**: Automatically identifies functions, classes, and other components in a project.
-- **Change Detection**: Monitors repository changes to update existing documentation accordingly.
-- **Documentation Generation**: Utilizes LLMs to generate accurate and detailed documentation for code elements.
-- **Task Management**: Manages multiple tasks concurrently to optimize performance.
-
-This module aims to enhance developer productivity by automating the documentation process, ensuring that Python projects maintain up-to-date and comprehensive documentation.
+The primary purpose of the Repository Agent is to streamline the documentation generation process for Python projects. It automates the detection of changes in the repository, generates comprehensive summaries using LLMs, and manages metadata to ensure that all components are correctly documented. This tool aims to reduce manual effort and improve consistency across all modules within a project.

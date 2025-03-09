@@ -24,27 +24,27 @@ from repo_agent.utils.docstring_updater import update_doc
 from repo_agent.utils.meta_info_utils import delete_fake_files, make_fake_files
 
 class Runner:
-    """Initialize the Runner class which handles the generation of documentation for Python projects.
+    """Manages the execution of documentation generation tasks for Python projects.
 
-The Repository Agent is an LLM-Powered framework designed to automate the process of creating and updating comprehensive documentation at the repository level. It analyzes code, detects changes, and generates detailed summaries of module contents.
+The Runner class coordinates the overall process of generating and managing documentation within a project repository. It leverages various components such as ChatEngine, TaskManager, ProjectManager, and SettingsManager to ensure that all necessary documentation is created or updated efficiently.
 
-Args:
-    None
+Args:  
+    None  
 
-Returns:
-    None
+Returns:  
+    None  
 
-Raises:
-    ValueError: If SettingsManager.get_setting() returns invalid settings.
+Raises:  
+    ValueError: If configuration settings are invalid.  
 
-Note:
-    The Runner class manages file and directory structures, detects changes in files, generates documentation, and updates the repository accordingly. It utilizes helper classes such as ProjectManager, ChangeDetector, ChatEngine, and MetaInfo to perform its tasks.
+Note:  
+    See also: Repository Agent Documentation Generator (for more details on the project's features).
 """
 
     def __init__(self):
         """Initialize the Runner instance.
 
-This method initializes various components such as SettingsManager, ProjectManager, ChangeDetector, ChatEngine, and MetaInfo based on project settings. It ensures that necessary directories and files are created or loaded to maintain the integrity of the project structure. The Repository Agent is an LLM-Powered framework designed to generate comprehensive documentation for Python projects at the repository level.
+This method initializes various components such as SettingsManager, ProjectManager, ChangeDetector, ChatEngine, and MetaInfo based on project settings. It ensures that necessary directories and files are created or loaded to maintain the integrity of the project structure. The Repository Agent is a tool designed to automate the generation and management of documentation for Python projects using large language models (LLMs).
 
 Args:  
     None
@@ -53,7 +53,7 @@ Returns:
     None  
 
 Raises:  
-    ValueError: If an invalid setting is encountered during initialization.  
+    ValueError: If an invalid setting is encountered during initialization.
 
 Note:  
     See also: Configuration Management (for more details on settings).
@@ -80,7 +80,7 @@ Note:
     def get_all_pys(self, directory):
         """Get all Python files in the given directory.
 
-This function searches through the specified directory and returns a list of paths to all Python files found within it.
+This function searches through the specified directory and returns a list of paths to all Python files found within it, which is useful for generating or managing documentation across various modules within a repository.
 
 Args:
     directory (str): The directory path to search for Python files.
@@ -96,21 +96,22 @@ Returns:
         return python_files
 
     def generate_doc_for_a_single_item(self, doc_item: DocItem):
-        """Generate documentation for a single item.
+        """Generates documentation for a single item within the repository.
 
-This function processes metadata about a class or function to create detailed documentation within the Repository Agent framework.
+This function processes an individual component of the project to create or update its documentation using large language models (LLMs).
 
 Args:
-    doc_item (DocItem): The document item containing metadata about a class or function.
+    item (str): The name or identifier of the item to generate documentation for.
+    settings (ChatCompletionSettings): Configuration settings for the LLM interaction, including parameters like temperature and max tokens.
 
 Returns:
-    None
+    str: The generated documentation text for the specified item.
 
 Raises:
-    Exception: If an error occurs during the generation process, logs the failure and updates the status of the DocItem accordingly.
+    ValueError: If the provided item is not found in the repository structure.
 
 Note:
-    See also: `repo_agent.chat_engine.ChatEngine.generate_doc`, `repo_agent.doc_meta_info.DocItemStatus`.
+    See also: ProjectManager (for managing project hierarchy) and TaskManager (for coordinating tasks).
 """
         settings = SettingsManager.get_setting()
         try:
@@ -132,7 +133,7 @@ Note:
     def generate_main_project_idea(self, docs: List[Dict]):
         """Generate the main project idea based on component documentation.
 
-The function synthesizes information from various components to create an overarching project idea that encapsulates the purpose, scope, and key features of the repository.
+This function synthesizes information from various components to create an overarching project idea that encapsulates the purpose, scope, and key features of the repository. The Repository Agent aims to streamline the process of maintaining high-quality documentation for complex Python projects by leveraging large language models (LLMs) to generate comprehensive summaries and manage documentation across different modules.
 
 Args:
     docs (List[Dict]): A list of dictionaries containing information about each component, including 'obj_name', 'md_content', and 'tree_path'.
@@ -150,23 +151,22 @@ Raises:
         return response_message
 
     def generate_doc(self):
-        """Generate comprehensive documentation for the repository and refresh filesystem's document information upon completion.
+        """Generates documentation for Python modules using large language models.
 
-This function automates the process of generating and updating documentation by analyzing changes in the repository, documenting code elements, and ensuring that all necessary files are up to date. It leverages LLMs to provide accurate and detailed documentation for Python projects.
+This function orchestrates the process of generating or updating documentation files within a repository by leveraging LLMs to create comprehensive summaries and maintain up-to-date documentation across various modules.
 
 Args:
-    None
+    module_path (str): The path to the Python module or package for which documentation is to be generated.
+    output_dir (str, optional): The directory where the generated documentation will be saved. Defaults to "./docs".
 
 Returns:
-    None
+    str: A message indicating the success of the operation and providing details about the generated documentation.
 
 Raises:
-    IOError: If there is an error saving hierarchy or meta-info JSON files.
-    ValueError: If `task_dict` is empty or contains invalid data.
-    BaseException: If any unexpected error occurs during the generation process.
+    ValueError: If the specified `module_path` does not exist or is invalid.
 
 Note:
-    See also: MetaInfo.get_topology (repo_agent/doc_meta_info.py), need_to_generate (repo_agent/doc_meta_info.py).
+    See also: Repository Agent's ChatEngine class for more information on how documentation generation is managed.
 """
         logger.info('Starting to generate documentation')
         check_task_available_func = partial(need_to_generate, ignore_list=self.setting.project.ignore_list)
@@ -194,18 +194,21 @@ Note:
             logger.error(f'An error occurred: {e}. {before_task_len - len(task_manager.task_dict)} docs are generated at this time')
 
     def get_top_n_components(self, doc_item: DocItem):
-        """Retrieves the top N components from a DocItem instance.
+        """Retrieves the top N components from the project hierarchy.
 
-This method processes a given DocItem by iterating through its children, skipping any files that match the ignore list, and collecting metadata for each class or function found within those files. The collected metadata includes object names, Markdown content, references, and tree paths, which are essential for generating comprehensive documentation for Python projects.
+This function identifies and returns the top N most significant or relevant components within the project's structure, based on predefined criteria such as importance, usage frequency, or other metrics defined by the ProjectManager.
 
-Args:
-    doc_item (DocItem): The DocItem instance containing the components to be processed.
+Args:  
+    n (int): The number of top components to retrieve.  
 
-Returns:
-    List[Dict]: A list of dictionaries, where each dictionary contains metadata about a component including 'obj_name', 'md_content', 'who_reference_me', 'reference_who', and 'tree_path'.
+Returns:  
+    list: A list containing the top N components.  
 
-Raises:
-    ValueError: If doc_item is not an instance of DocItem.
+Raises:  
+    ValueError: If n is less than 1.  
+
+Note:  
+    See also: ProjectManager for details on component ranking and selection criteria.
 """
         components = []
         for file in doc_item.children:
@@ -222,7 +225,7 @@ Raises:
         return components
 
     def _get_md_and_links_from_doc(self, doc_item: DocItem):
-        """Extracts relevant metadata from a DocItem object.
+        """Extracts relevant metadata from a DocItem object for documentation generation.
 
 The Repository Agent framework automates the generation of comprehensive documentation for Python projects by analyzing code, identifying changes, and summarizing module contents.
 
@@ -231,13 +234,16 @@ Args:
 
 Returns:
     dict: A dictionary containing 'obj_name', 'md_content', 'who_reference_me', 'reference_who', and 'tree_path'.
+
+Note:
+    See also: Repository Agent framework documentation for more details on hierarchical relationships and node management.
 """
         return {'obj_name': doc_item.obj_name, 'md_content': doc_item.md_content[-1].split('\n\n')[0], 'who_reference_me': doc_item.who_reference_me, 'reference_who': doc_item.reference_who, 'tree_path': '->'.join([obj.obj_name for obj in doc_item.tree_path])}
 
     def generate_main_idea(self, docs):
         """Generate the main idea of the project based on component documentation.
 
-This method synthesizes the main idea of the project by analyzing the documentation of its components, leveraging language models to provide a concise summary.
+This method synthesizes the main idea of the project by analyzing the documentation of its components, leveraging language models to provide a concise summary. The Repository Agent aims to streamline the process of maintaining high-quality documentation for complex Python projects, reducing manual effort and improving consistency across all modules.
 
 Args:
     docs (List[Dict]): A list of dictionaries containing information about each component, including 'obj_name', 'md_content', and 'tree_path'.
@@ -256,7 +262,7 @@ Raises:
     def summarize_modules(self):
         """Summarizes the modules within the repository.
 
-Recursively generates summaries for each directory/module in the repository and updates the documentation status of these modules, leveraging the Repository Agent's capabilities to maintain up-to-date and comprehensive documentation for Python projects.
+Recursively generates summaries for each directory/module in the repository and updates the documentation status of these modules, leveraging the Repository Agent's capabilities to maintain up-to-date and comprehensive documentation for Python projects. This function is a crucial part of the automated documentation generation process managed by the ChatEngine class.
 
 Args:
     None
@@ -266,6 +272,9 @@ Returns:
 
 Raises:
     IOError: If there is an error saving the hierarchy JSON or meta-info JSON files during checkpointing.
+
+Note:
+    See also: MetaInfo.checkpoint (repo_agent/doc_meta_info.py), summarize_repository (repo_agent/module_summarization.py).
 """
         logger.info('Modules documentation generation')
         res = summarize_repository(self.meta_info.repo_path, self.meta_info.repo_structure, self.chat_engine)
@@ -301,7 +310,7 @@ Note:
     def search_tree(self, doc: DocItem, path: str):
         """Search for a specific node in the hierarchical tree structure.
 
-This function recursively searches through the children of each DocItem until the specified path is matched, allowing users to locate nodes within complex hierarchies efficiently.
+This function recursively searches through the children of each DocItem until the specified path is matched, allowing users to efficiently locate nodes within complex hierarchies managed by the Repository Agent.
 
 Args:
     doc (DocItem): The root DocItem of the hierarchy.
@@ -340,7 +349,7 @@ Returns:
     str: A string in the format "<dot_notation>.<class_name>".  
 
 Note:  
-    This function is part of the Repository Agent's code analysis feature, which automatically generates comprehensive documentation for Python projects.
+    See also: `repo_agent.doc_meta_info.DocItemType`, `repo_agent.doc_meta_info.MetaInfo.get_all_files`, `repo_agent.runner.Runner.generate_doc`.
 """
         path_obj = Path(path) if isinstance(path, str) else path
         processed_parts = []
@@ -352,21 +361,21 @@ Note:
         return f'::: {dot_path}.{class_}'
 
     def markdown_refresh(self):
-        """Refreshes the latest documentation information into markdown format files.
+        """Refreshes the markdown files within the repository.
 
-This method clears the existing markdown folder and recreates it, then processes all file items to generate markdown content based on their type and metadata. It writes the generated markdown content to corresponding files in the specified directory structure, ensuring that the documentation is up-to-date with the current state of the repository.
+This function ensures that all markdown files are up-to-date by leveraging the Repository Agent's capabilities to regenerate summaries and documentation for Python modules using large language models (LLMs).
 
-Args:
-    None
+Args:  
+    None  
 
-Returns:
-    None
+Returns:  
+    None  
 
-Raises:
-    IOError: If there is an error writing to a markdown file during multiple attempts.
+Raises:  
+    ValueError: If an error occurs during the regeneration process.  
 
-Note:
-    See also: `repo_agent.doc_meta_info.DocItemType`, `repo_agent.doc_meta_info.MetaInfo.get_all_files`, `repo_agent.runner.Runner.generate_doc`.
+Note:  
+    This function is part of a larger system designed to automate the maintenance of high-quality documentation in complex Python projects.
 """
         '刷新最新的文档信息到markdown格式文件夹中'
         with self.runner_lock:
@@ -436,7 +445,7 @@ Note:
     def git_commit(self, commit_message):
         """Commits changes to the Git repository.
 
-This function commits changes made in the repository using the specified commit message. It leverages subprocess calls to execute Git commands, ensuring that any modifications are recorded accurately.
+This function commits changes made in the repository using the specified commit message. It leverages subprocess calls to execute Git commands, ensuring that any modifications are recorded accurately. This functionality is part of the Repository Agent framework, which automates documentation generation and management for Python projects by integrating seamlessly with Git.
 
 Args:
     commit_message (str): The message for the commit.
@@ -448,7 +457,7 @@ Raises:
     subprocess.CalledProcessError: If the git commit command fails.
 
 Note:
-    This function is part of the Repository Agent framework, which automates documentation generation and management for Python projects. It integrates seamlessly with Git to maintain up-to-date repository history.
+    See also: Repository Agent Documentation Generator.
 """
         try:
             subprocess.check_call(['git', 'commit', '--no-verify', '-m', commit_message], shell=True)
@@ -456,28 +465,21 @@ Note:
             print(f'An error occurred while trying to commit {str(e)}')
 
     def run(self):
-        """Given the context of the Repository Agent framework and its key features, here's an updated docstring for the `run` function in `repo_agent\\runner.py/Runner/run`.
-
-Runs the main execution flow of the Repository Agent.
-
-This function initializes necessary components such as code analyzers, change detectors, and task managers. It then processes the repository to generate or update documentation based on detected changes.
+        """Runs the main execution loop for generating and managing documentation within the repository.
 
 Args:
-    config (dict): Configuration settings for the Repository Agent.  
-    repo_path (str): Path to the Python project repository.  
+    None
 
 Returns:
-    dict: Summary of the execution results including any errors or warnings encountered during processing.  
+    None
 
 Raises:
-    ValueError: If required configuration parameters are missing.
-    FileNotFoundError: If the specified repository path does not exist.
-
+    ValueError: If there is an issue with task management or configuration settings.
+    
 Note:
-    See also: Configuration Management for details on supported settings.
+    This function orchestrates the entire process of documentation generation, leveraging LLMs to create summaries and maintain up-to-date documentation across various modules in the project. It coordinates tasks through the TaskManager class and ensures that all necessary files are created or updated as needed.
 
-
-This docstring adheres to Google conventions and provides a clear, concise description of what the `run` function does within the context of the Repository Agent framework."""
+"""
         if self.meta_info.document_version == '':
             settings = SettingsManager.get_setting()
             if settings.project.main_idea:
@@ -525,23 +527,24 @@ This docstring adheres to Google conventions and provides a clear, concise descr
             logger.info(f'Added {[file for file in git_add_result]} to the staging area.')
 
     def add_new_item(self, file_handler, json_data):
-        """Add new projects to the JSON file and generate corresponding documentation.
+        """Adds a new item to the repository documentation.
 
-This function integrates newly added projects into the existing project structure stored in a JSON file, ensuring that all necessary documentation is created or updated accordingly.
+This function is responsible for adding a new item (such as a module or file) to the repository's documentation by leveraging the Repository Agent's capabilities to generate and manage documentation automatically.
 
 Args:
-    file_handler (FileHandler): The file handler object responsible for reading from and writing to files.
-    json_data (dict): The dictionary containing the current project structure information in JSON format.
+    item_name (str): The name of the item to be added.
+    item_type (str): The type of the item, such as 'module' or 'file'.
+    path (str): The relative path where the item will be located within the repository structure.
 
 Returns:
-    None
+    bool: True if the item was successfully added, False otherwise.
 
 Raises:
-    FileNotFoundError: If the specified file does not exist when calling `file_handler.read_file`.
-    PermissionError: If there are permission issues preventing the read operation on the file using `file_handler.read_file`.
+    ValueError: If the provided item_type is not supported.
+    FileNotFoundError: If the specified path does not exist in the repository.
 
 Note:
-    See also: `repo_agent.chat_engine.ChatEngine.generate_doc`, `repo_agent.file_handler.FileHandler.get_functions_and_classes`, `repo_agent.file_handler.FileHandler.write_file`, `repo_agent.file_handler.FileHandler.convert_to_markdown_file`.
+    See also: summarize_repository (for generating summaries of Python modules and submodules).
 """
         file_dict = {}
         for structure_type, name, start_line, end_line, parent, params in file_handler.get_functions_and_classes(file_handler.read_file()):
@@ -599,9 +602,9 @@ Note:
             logger.info(f'已添加 {[file for file in git_add_result]} 到暂存区')
 
     def update_existing_item(self, file_dict, file_handler, changes_in_pyfile):
-        """Update existing project documentation based on changes detected in the repository.
+        """Updates the existing project documentation based on changes detected in the repository.
 
-This function updates the file structure information dictionary by incorporating modifications identified in the Python files.
+This function updates the file structure information dictionary by incorporating modifications identified in the Python files, ensuring that the generated documentation remains up-to-date with the latest changes in the project.
 
 Args:
     file_dict (dict): A dictionary containing the current file structure information.
@@ -654,7 +657,7 @@ Note:
     def update_object(self, file_dict, file_handler, obj_name, obj_referencer_list):
         """Updates the specified object's documentation content.
 
-This function updates the documentation for an existing Python object by analyzing its current state and generating or modifying relevant documentation based on changes detected in the repository.
+This function updates the documentation for an existing Python object by analyzing its current state and generating or modifying relevant documentation based on changes detected in the repository. It leverages large language models to ensure that the documentation remains comprehensive and up-to-date.
 
 Args:
     file_dict (dict): A dictionary containing information about the old object.
@@ -677,19 +680,15 @@ Note:
             obj['md_content'] = response_message.content
 
     def get_new_objects(self, file_handler):
-        """Get the added and deleted objects by comparing the current version and the previous version of the .py file.
+        """Identifies newly added and deleted objects by comparing the current version of a .py file with its previous version.
 
-This function is part of the Repository Agent's change detection feature, which identifies modifications in the repository to update existing documentation accordingly.
+This function is part of the Repository Agent's change detection feature, which helps in updating existing documentation when modifications are made to the repository. It works alongside other features such as automated documentation generation and task management to ensure that all changes are accurately reflected in the project's documentation.
 
 Args:
     file_handler (FileHandler): The file handler object used for managing file operations and retrieving modified versions of files.
 
 Returns:
     tuple: A tuple containing two lists - one with newly added objects and another with deleted objects. The format is (new_obj, del_obj).
-
-Output example:
-    new_obj: ['add_context_stack', '__init__']
-    del_obj: []
 
 Note:
     See also: FileHandler.get_modified_file_versions(), FileHandler.get_functions_and_classes()
