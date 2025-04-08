@@ -8,22 +8,22 @@ latest_verison_substring = '_latest_version.py'
 
 def make_fake_files():
     """Generate fake files for testing purposes.
-
-This function creates placeholder files within specified directories to simulate the project structure for testing documentation generation processes.
-
-Args:  
-    directory_path (str): The path of the directory where fake files should be created.  
-    num_files (int, optional): The number of fake files to create in each subdirectory. Defaults to 10.  
-
-Returns:  
-    None
-
-Raises:  
-    ValueError: If `num_files` is less than or equal to zero.
-
-Note:  
-    This function does not return any value but creates a specified number of placeholder files within the given directory and its subdirectories.
-"""
+    
+    This function creates placeholder files within specified directories to simulate the project structure for testing documentation generation processes. It also handles the renaming and creation of temporary files based on the current state of the repository.
+    
+    Args:  
+        None  
+    
+    Returns:  
+        tuple: A tuple containing two elements:
+            - file_path_reflections (dict): A dictionary mapping original file paths to their latest version file paths.
+            - jump_files (list): A list of files that were skipped or ignored during the process.
+    
+    Raises:  
+        ValueError: If `num_files` is less than or equal to zero.
+    
+    Note:  
+        This function does not return any value but creates a specified number of placeholder files within the given directory and its subdirectories. It is typically used in conjunction with `delete_fake_files` to clean up after tests or demonstrations."""
     delete_fake_files()
     setting = SettingsManager.get_setting()
     repo = git.Repo(setting.project.target_repo)
@@ -68,40 +68,38 @@ Note:
 
 def delete_fake_files():
     """Deletes fake files created for testing purposes.
-
-This function removes temporary or placeholder files that were generated during the testing phase of the documentation generation process.
-
-Args:  
-    None  
-
-Returns:  
-    None  
-
-Raises:  
-    OSError: If an error occurs while deleting the files.  
-
-Note:  
-    This function is typically used in conjunction with `make_fake_files` to clean up after tests or demonstrations.
-"""
+    
+    This method removes temporary or placeholder files that were generated during the testing phase of the documentation generation process.
+    
+    Args:  
+        None  
+    
+    Returns:  
+        None  
+    
+    Raises:  
+        OSError: If an error occurs while deleting the files.  
+    
+    Note:  
+        This method is typically used in conjunction with `make_fake_files` to clean up after tests or demonstrations."""
     setting = SettingsManager.get_setting()
 
     def gci(filepath):
         """Removes fake files from the specified directory.
-
-This function recursively traverses the given filepath and processes each file or subdirectory. If a file ends with `latest_version_substring`, it checks for an original Python file without this substring. It either deletes or renames the file based on its size and existence of the original file.
-
-Args:
-    filepath (str): The directory path to traverse and process files from.
-
-Returns:
-    None
-
-Raises:
-    ValueError: If `latest_version_substring` is not defined in the settings.
     
-Note:
-    See also: `setting.project.target_repo` for context on relative paths.
-"""
+    This method recursively traverses the given filepath and processes each file or subdirectory. If a file ends with `latest_version_substring`, it checks for an original Python file without this substring. It either deletes or renames the file based on its size and existence of the original file.
+    
+    Args:
+        filepath (str): The directory path to traverse and process files from.
+    
+    Returns:
+        None
+    
+    Raises:
+        ValueError: If `latest_version_substring` is not defined in the settings.
+    
+    Note:
+        See also: `setting.project.target_repo` for context on relative paths."""
         files = os.listdir(filepath)
         for fi in files:
             fi_d = os.path.join(filepath, fi)

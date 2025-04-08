@@ -8,140 +8,142 @@ from repo_agent.settings import SettingsManager
 
 class ChangeDetector:
     """Class ChangeDetector
-
-The ChangeDetector class is designed to handle file differences and change detection within a Git repository as part of the Repository Agent framework. It focuses on identifying changes in Python files that have been staged using `git add` and integrates with other components to automate documentation generation.
-
-Args:
-    repo_path (str): The path to the repository.
-
-Note:  
-    See also: Repository Agent Documentation Generator.
-
-
-def __init__(self, repo_path):
-Initializes a ChangeDetector object for monitoring changes in the specified repository.
-
-Args:
-    repo_path (str): The path to the repository.
-
-Returns:
-    None
-
-Raises:
-    ValueError: If the repository path is invalid or does not exist.
     
-Note:
-    See also: git.Repo documentation for more information on initializing a Git repository object.
-
-
-def get_staged_pys(self):
-Identifies Python files in Git that have been staged using `git add`.
-
-Returns:
-    dict: A dictionary where keys are file paths of changed Python files and values are booleans indicating whether each file is newly created or not.
-
-Raises:
-    None
-
-
-def get_file_diff(self, file_path, is_new_file):
-Retrieves the differences made to a specific file using Git commands.
-
-Args:
-    file_path (str): The relative path of the file.
-    is_new_file (bool): Indicates whether the file is a new file.
-
-Returns:
-    list: List of changes made to the file, represented as lines from git diff output.
-
-Raises:
-    subprocess.CalledProcessError: If the Git command execution fails.
-
-
-def parse_diffs(self, diffs):
-Processes differences detected in files within a repository and identifies added or removed lines.
-
-Args:
-    diffs (list): A list containing difference content. Obtained by the get_file_diff() function inside the class.
-
-Returns:
-    dict: A dictionary containing added and deleted line information with keys 'added' and 'removed'. Each key maps to a list of tuples where each tuple contains the line number and the corresponding code line.
-
-
-def identify_changes_in_structure(self, changed_lines, structures):
-Identifies the structures (functions or classes) where changes have occurred based on the changed lines.
-
-Args:
-    changed_lines (dict): A dictionary containing the line numbers where changes have occurred. The format is {'added': [(line number, change content)], 'removed': [(line number, change content)]}.
-    structures (list): A list of function or class structures from get_functions_and_classes. Each structure contains the type, name, start line number, end line number, and parent structure name.
-
-Returns:
-    dict: A dictionary containing the names of structures where changes have occurred. The key is the change type ('added' for new structures, 'removed' for removed structures), and the value is a set of tuples (structure name, parent structure name).
-
-Examples:
-changed_lines = {'added': [(10, 'new line'), (20, 'another new line')], 'removed': []}
-structures = [('function', 'func_name', 5, 15, None), ('class', 'ClassName', 16, 30, '__main__')]
-result = identify_changes_in_structure(changed_lines, structures)
-print(result)  # Output: {'added': {('func_name', None)}, 'removed': set()}
-
-Note:
-    See also: process_file_changes (for context on how this function is used).
-
-
-def get_to_be_staged_files(self):
-Identifies unstaged files that meet specific conditions and returns their paths.
-
-Returns:
-    List[str]: A list of relative file paths within the repository that are either modified but not staged, or untracked, and meet one of the specified conditions.
-
-
-def add_unstaged_files(self):
-Adds unstaged files which meet specific conditions to the Git staging area.
-
-Returns:
-    List[str]: A list of relative file paths within the repository that were added to the staging area.
-
-Raises:
-    subprocess.CalledProcessError: If a git add command fails.
-"""
+    The ChangeDetector class is designed to handle file differences and change detection within a Git repository as part of the Repository Agent framework. It focuses on identifying changes in Python files that have been staged using `git add` and integrates with other components to automate documentation generation.
+    
+    Args:
+        repo_path (str): The path to the repository.
+    
+    Note:  
+        See also: Repository Agent Documentation Generator.
+    
+    def __init__(self, repo_path):
+    Initializes a ChangeDetector object for monitoring changes in the specified repository.
+    
+    Args:
+        repo_path (str): The path to the repository.
+    
+    Returns:
+        None
+    
+    Raises:
+        ValueError: If the repository path is invalid or does not exist.
+        
+    Note:
+        See also: git.Repo documentation for more information on initializing a Git repository object.
+    
+    def get_staged_pys(self):
+    Identifies Python files in Git that have been staged using `git add`.
+    
+    Returns:
+        dict: A dictionary where keys are file paths of changed Python files and values are booleans indicating whether each file is newly created or not.
+    
+    Raises:
+        None
+    
+    Note:
+        The logic of the GitPython library differs from git. Here, the R=True parameter is used to reverse the version comparison logic.
+    
+    def get_file_diff(self, file_path, is_new_file):
+    Retrieves the differences made to a specific file using Git commands.
+    
+    Args:
+        file_path (str): The relative path of the file.
+        is_new_file (bool): Indicates whether the file is a new file.
+    
+    Returns:
+        list: List of changes made to the file, represented as lines from git diff output.
+    
+    Raises:
+        subprocess.CalledProcessError: If the Git command execution fails.
+    
+    Note:
+        See also: ChangeDetector
+    
+    def parse_diffs(self, diffs):
+    Processes differences detected in files within a repository and identifies added or removed lines.
+    
+    Args:
+        diffs (list): A list containing difference content. Obtained by the get_file_diff() function inside the class.
+    
+    Returns:
+        dict: A dictionary containing added and deleted line information with keys 'added' and 'removed'. Each key maps to a list of tuples where each tuple contains the line number and the corresponding code line.
+    
+    Note:
+        See also: ChangeDetector
+    
+    def identify_changes_in_structure(self, changed_lines, structures):
+    Identifies the structures (functions or classes) where changes have occurred based on the changed lines.
+    
+    Args:
+        changed_lines (dict): A dictionary containing the line numbers where changes have occurred. The format is {'added': [(line number, change content)], 'removed': [(line number, change content)]}.
+        structures (list): A list of function or class structures from get_functions_and_classes. Each structure contains the type, name, start line number, end line number, and parent structure name.
+    
+    Returns:
+        dict: A dictionary containing the names of structures where changes have occurred. The key is the change type ('added' for new structures, 'removed' for removed structures), and the value is a set of tuples (structure name, parent structure name).
+    
+    Note:
+        See also: process_file_changes (for context on how this function is used).
+    
+    def get_to_be_staged_files(self):
+    Identifies unstaged files that meet specific conditions and returns their paths.
+    
+    Returns:
+        List[str]: A list of relative file paths within the repository that are either modified but not staged, or untracked, and meet one of the specified conditions.
+    
+    Raises:
+        ValueError: If an invalid setting key is provided when calling SettingsManager.get_setting().
+    
+    Note:
+        See also: Configuration management (if applicable).
+    
+    def add_unstaged_files(self):
+    Adds unstaged files which meet specific conditions to the Git staging area.
+    
+    Returns:
+        List[str]: A list of relative file paths within the repository that were added to the staging area.
+    
+    Raises:
+        subprocess.CalledProcessError: If a git add command fails.
+    
+    Note:
+        See also: ChangeDetector.get_to_be_staged_files"""
 
     def __init__(self, repo_path):
         """Initializes a ChangeDetector object.
-
-The ChangeDetector class monitors the specified repository for modifications and updates documentation accordingly as part of the Repository Agent framework, which automates the generation and management of Python project documentation using large language models (LLMs).
-
-Args:
-    repo_path (str): The path to the repository.
-
-Returns:
-    None
-
-Raises:
-    ValueError: If the repository path is invalid or does not exist.
     
-Note:
-    See also: git.Repo documentation for more information on initializing a Git repository object.
-"""
+    The ChangeDetector class monitors the specified repository for modifications and updates documentation accordingly as part of the Repository Agent framework, which automates the generation and management of Python project documentation using large language models (LLMs).
+    
+    Args:
+        repo_path (str): The path to the repository.
+    
+    Returns:
+        None
+    
+    Raises:
+        ValueError: If the repository path is invalid or does not exist.
+    
+    Note:
+        See also: git.Repo documentation for more information on initializing a Git repository object."""
         self.repo_path = repo_path
         self.repo = git.Repo(repo_path)
 
     def get_staged_pys(self):
         """Get added Python files in the repository that have been staged.
-
-This function identifies Python files in Git that have been staged using `git add`. It is part of the Repository Agent framework, which automates documentation generation and management for Python projects by analyzing code changes and updating documentation accordingly.
-
-Args:
-    None
-
-Returns:
-    dict: A dictionary where keys are file paths of changed Python files and values are booleans indicating whether each file is newly created or not.
-
-Raises:
-    None
-
-Note:
-    The logic of the GitPython library differs from git. Here, the R=True parameter is used to reverse the version comparison logic.
-"""
+    
+    This method identifies Python files in Git that have been staged using `git add`. It is part of the Repository Agent framework, which automates documentation generation and management for Python projects by analyzing code changes and updating documentation accordingly.
+    
+    Args:
+        None
+    
+    Returns:
+        dict: A dictionary where keys are file paths of changed Python files and values are booleans indicating whether each file is newly created or not.
+    
+    Raises:
+        None
+    
+    Note:
+        The logic of the GitPython library differs from git. Here, the R=True parameter is used to reverse the version comparison logic."""
         repo = self.repo
         staged_files = {}
         diffs = repo.index.diff('HEAD', R=True)
@@ -152,23 +154,22 @@ Note:
         return staged_files
 
     def get_file_diff(self, file_path, is_new_file):
-        """Retrieve the differences made to a specific file using Git commands.
-
-This function is part of the Repository Agent framework, which automates documentation generation and maintenance for Python projects by analyzing code changes and updating documentation accordingly.
-
-Args:
-    file_path (str): The relative path of the file.
-    is_new_file (bool): Indicates whether the file is a new file.
-
-Returns:
-    list: List of changes made to the file, represented as lines from git diff output.
-
-Raises:
-    subprocess.CalledProcessError: If the Git command execution fails.
-
-Note:
-    See also: ChangeDetector
-"""
+        """Retrieves the differences made to a specific file using Git commands.
+    
+    This method is part of the Repository Agent framework, which automates documentation generation and maintenance for Python projects by analyzing code changes and updating documentation accordingly.
+    
+    Args:
+        file_path (str): The relative path of the file.
+        is_new_file (bool): Indicates whether the file is a new file.
+    
+    Returns:
+        list: List of changes made to the file, represented as lines from git diff output.
+    
+    Raises:
+        subprocess.CalledProcessError: If the Git command execution fails.
+    
+    Note:
+        See also: ChangeDetector"""
         repo = self.repo
         if is_new_file:
             add_command = f'git -C {repo.working_dir} add {file_path}'
@@ -179,19 +180,18 @@ Note:
         return diffs
 
     def parse_diffs(self, diffs):
-        """Parse the difference content from diffs and extract added and deleted line information.
-
-This function processes the differences detected in files within a repository, identifying lines that have been added or removed. It is an essential part of the Repository Agent's change detection feature, which helps maintain up-to-date documentation by tracking modifications in Python projects.
-
-Args:
-    diffs (list): A list containing difference content. Obtained by the get_file_diff() function inside the class.
-
-Returns:
-    dict: A dictionary containing added and removed lines, with keys 'added' and 'removed'. Each key maps to a list of tuples where each tuple contains the line number and the corresponding code line.
-
-Note:
-    See also: ChangeDetector
-"""
+        """Parses the difference content from diffs and extracts added and deleted line information.
+    
+    This method processes the differences detected in files within a repository, identifying lines that have been added or removed. It is an essential part of the Repository Agent's change detection feature, which helps maintain up-to-date documentation by tracking modifications in Python projects.
+    
+    Args:
+        diffs (list): A list containing difference content. Obtained by the get_file_diff() method inside the class.
+    
+    Returns:
+        dict: A dictionary containing added and removed lines, with keys 'added' and 'removed'. Each key maps to a list of tuples where each tuple contains the line number and the corresponding code line.
+    
+    Note:
+        See also: ChangeDetector"""
         changed_lines = {'added': [], 'removed': []}
         line_number_current = 0
         line_number_change = 0
@@ -213,27 +213,19 @@ Note:
         return changed_lines
 
     def identify_changes_in_structure(self, changed_lines, structures):
-        """Identify the structures where changes have occurred based on the changed lines.
-
-This function traverses all changed lines and checks if each line falls within the start and end lines of a structure (function or class). If so, it adds the name and parent structure name to the corresponding set in the result dictionary `changes_in_structures`.
-
-Args:
-    changed_lines (dict): A dictionary containing the line numbers where changes have occurred. The format is {'added': [(line number, change content)], 'removed': [(line number, change content)]}.
-    structures (list): A list of function or class structures from get_functions_and_classes. Each structure contains the type, name, start line number, end line number, and parent structure name.
-
-Returns:
-    dict: A dictionary containing the names of structures where changes have occurred. The key is the change type ('added' for new structures, 'removed' for removed structures), and the value is a set of tuples (structure name, parent structure name).
-
-Examples:
-changed_lines = {'added': [(10, 'new line'), (20, 'another new line')], 'removed': []}
-structures = [('function', 'func_name', 5, 15, None), ('class', 'ClassName', 16, 30, '__main__')]
-result = identify_changes_in_structure(changed_lines, structures)
-print(result)  # Output: {'added': {('func_name', None)}, 'removed': set()}
-
-
-Note:
-    See also: process_file_changes (for context on how this function is used).
-"""
+        """Identifies the structures where changes have occurred based on the changed lines.
+    
+    This method traverses all changed lines and checks if each line falls within the start and end lines of a structure (function or class). If so, it adds the name and parent structure name to the corresponding set in the result dictionary `changes_in_structures`.
+    
+    Args:
+        changed_lines (dict): A dictionary containing the line numbers where changes have occurred. The format is {'added': [(line number, change content)], 'removed': [(line number, change content)]}.
+        structures (list): A list of function or class structures from get_functions_and_classes. Each structure contains the type, name, start line number, end line number, and parent structure name.
+    
+    Returns:
+        dict: A dictionary containing the names of structures where changes have occurred. The key is the change type ('added' for new structures, 'removed' for removed structures), and the value is a set of tuples (structure name, parent structure name).
+    
+    Note:
+        See also: process_file_changes (for context on how this method is used)."""
         changes_in_structures = {'added': set(), 'removed': set()}
         for change_type, lines in changed_lines.items():
             for line_number, _ in lines:
@@ -244,21 +236,20 @@ Note:
 
     def get_to_be_staged_files(self):
         """Retrieves all unstaged files in the repository that meet specific conditions.
-
-This method identifies files that are either modified but not staged or untracked, and checks if they match one of two criteria: their path corresponds to a staged file with a different extension (e.g., .md for a staged .py file), or their path matches the 'project_hierarchy' field in the CONFIG. It returns a list of these files.
-
-Args:
-    None
-
-Returns:
-    List[str]: A list of relative file paths within the repository that are either modified but not staged, or untracked, and meet one of the specified conditions.
-
-Raises:
-    ValueError: If an invalid setting key is provided when calling SettingsManager.get_setting().
-
-Note:
-    See also: Configuration management (if applicable).
-"""
+    
+    This method identifies files that are either modified but not staged or untracked, and checks if they match one of two criteria: their path corresponds to a staged file with a different extension (e.g., .md for a staged .py file), or their path matches the 'project_hierarchy' field in the CONFIG. It returns a list of these files.
+    
+    Args:  
+        None  
+    
+    Returns:  
+        List[str]: A list of relative file paths within the repository that are either modified but not staged, or untracked, and meet one of the specified conditions.
+    
+    Raises:  
+        ValueError: If an invalid setting key is provided when calling SettingsManager.get_setting().
+    
+    Note:  
+        See also: Configuration management (if applicable)."""
         to_be_staged_files = []
         staged_files = [item.a_path for item in self.repo.index.diff('HEAD')]
         print(f'{Fore.LIGHTYELLOW_EX}target_repo_path{Style.RESET_ALL}: {self.repo_path}')
@@ -304,22 +295,21 @@ Note:
         return to_be_staged_files
 
     def add_unstaged_files(self):
-        """Add unstaged files which meet specific conditions to the staging area.
-
-This function identifies unstaged files that either match certain criteria or are untracked, then adds these files to the Git staging area using appropriate Git commands. This is part of the Repository Agent's workflow for automating documentation generation and management in Python projects.
-
-Args:
-    None
-
-Returns:
-    List[str]: A list of relative file paths within the repository that were added to the staging area.
-
-Raises:
-    subprocess.CalledProcessError: If a git add command fails.
-
-Note:
-    See also: ChangeDetector.get_to_be_staged_files
-"""
+        """Adds unstaged files which meet specific conditions to the staging area.
+    
+    This method identifies unstaged files that either match certain criteria or are untracked, then adds these files to the Git staging area using appropriate Git commands. This is part of the Repository Agent's workflow for automating documentation generation and management in Python projects.
+    
+    Args:
+        None
+    
+    Returns:
+        List[str]: A list of relative file paths within the repository that were added to the staging area.
+    
+    Raises:
+        subprocess.CalledProcessError: If a git add command fails.
+    
+    Note:
+        See also: ChangeDetector.get_to_be_staged_files"""
         unstaged_files_meeting_conditions = self.get_to_be_staged_files()
         for file_path in unstaged_files_meeting_conditions:
             add_command = f'git -C {self.repo.working_dir} add {file_path}'

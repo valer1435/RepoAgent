@@ -21,46 +21,88 @@ from repo_agent.utils.meta_info_utils import latest_verison_substring
 
 @unique
 class EdgeType(Enum):
-    """Edge type enumeration for the Repository Agent.
-
-This enum defines the different types of edges in the repository agent system, which is an LLM-Powered framework designed to generate comprehensive documentation for Python projects at the repository level.
-
-Args:
-    None
-
-Returns:
-    Enum: An enumeration representing edge types.
-
-Raises:
-    None
-
-Note:
-    See also: Specific use cases for each edge type.
-"""
+    """EdgeType class.  
+    
+    This enum defines the different types of edges in the repository agent system, which automates the generation of documentation for Python projects using large language models (LLMs). It provides a robust set of tools to manage the documentation process, ensuring that the documentation is up-to-date and reflects the current state of the project.
+    
+    Args:  
+        None
+    
+    Returns:  
+        Enum: An enumeration representing edge types.
+    
+    Raises:  
+        None
+    
+    Note:  
+        See also: Specific use cases for each edge type."""
     reference_edge = auto()
     subfile_edge = auto()
     file_item_edge = auto()
 
 @unique
 class DocItemType(Enum):
-    """Given the context of the Repository Agent project, here's an updated docstring for the `DocItemType` class in `repo_agent\\doc_meta_info.py`. The main idea is to provide a clear description of what this class represents within the documentation generation process.
-
-Represents different types of items that can be documented within a repository.  
-
-This class defines various item types used by the Repository Agent for categorizing and managing documentation tasks.
-
-Args:  
-    None
-
-Returns:  
-    None
-
-Raises:  
-    None
-
-Note:  
-    This class is used internally to classify Python modules, functions, classes, etc., ensuring that each type of item is handled appropriately during the documentation generation process.
-"""
+    """Represents different types of items that can be documented within a repository.
+    
+    This class defines various item types used by the Repository Agent for categorizing and managing documentation tasks.
+    
+    Args:
+        None
+    
+    Returns:
+        None
+    
+    Raises:
+        None
+    
+    Note:
+        This class is used internally to classify Python modules, functions, classes, etc., ensuring that each type of item is handled appropriately during the documentation generation process.
+    
+    ### to_str
+    
+    Converts the DocItemType instance to its corresponding string representation.
+    
+    This method ensures accurate string representations of `DocItemType` instances, which is crucial for generating and managing documentation within the Repository Agent framework.
+    
+    Args:
+        None
+    
+    Returns:
+        str: The string representation of the DocItemType.
+    
+    Note:
+        See also: MetaInfo.to_hierarchy_json (repo_agent/doc_meta_info.py).
+    
+    ### print_self
+    
+    Prints the name of the current DocItemType instance with appropriate color formatting.
+    
+    This method uses ANSI escape codes to apply colors based on the type of DocItemType, enhancing readability and organization in the documentation output.
+    
+    Args:
+        None
+    
+    Returns:
+        str: A string containing the colored name of the DocItemType instance.
+    
+    ### get_edge_type
+    
+    Gets the edge type between two document item types.
+    
+    This method determines the relationship or connection type between two specified document item types within the Repository Agent framework.
+    
+    Args:
+        from_item_type (DocItemType): The starting document item type.
+        to_item_type (DocItemType): The ending document item type.
+    
+    Returns:
+        DocEdgeType: The edge type between the two specified document item types.
+    
+    Raises:
+        ValueError: If either `from_item_type` or `to_item_type` is not a valid DocItemType.
+    
+    Note:
+        See also: DocItemType (for more information on document item types)."""
     _repo = auto()
     _dir = auto()
     _file = auto()
@@ -72,18 +114,17 @@ Note:
 
     def to_str(self):
         """Converts the DocItemType instance to its corresponding string representation.
-
-This function ensures accurate string representations of `DocItemType` instances, which is crucial for generating and managing documentation within the Repository Agent framework.
-
-Args:
-    None
-
-Returns:
-    str: The string representation of the DocItemType.
-
-Note:
-    See also: MetaInfo.to_hierarchy_json (repo_agent/doc_meta_info.py).
-"""
+    
+    This method ensures accurate string representations of `DocItemType` instances, which is crucial for generating and managing documentation within the Repository Agent framework.
+    
+    Args:
+        None
+    
+    Returns:
+        str: The string representation of the DocItemType.
+    
+    Note:
+        See also: MetaInfo.to_hierarchy_json (repo_agent/doc_meta_info.py)."""
         if self == DocItemType._class:
             return 'ClassDef'
         elif self == DocItemType._function:
@@ -98,18 +139,20 @@ Note:
 
     def print_self(self):
         """Prints the name of the current DocItemType instance with appropriate color formatting.
-
-The Repository Agent is an LLM-Powered framework designed to automate the generation and management of comprehensive documentation for Python projects at the repository level. It analyzes code, identifies changes, and maintains up-to-date summaries across various modules within a project's directory structure.
-
-Args:
-    None
-
-Returns:
-    str: A string containing the colored name of the DocItemType instance.
-
-Notes:
-    The function uses ANSI escape codes to apply colors based on the type of DocItemType.
-"""
+    
+    This method applies color formatting to the name of the DocItemType instance using ANSI escape codes based on the type of the instance. It is part of the Repository Agent framework, which automates the generation and management of comprehensive documentation for Python projects.
+    
+    Args:
+        None
+    
+    Returns:
+        str: A string containing the colored name of the DocItemType instance.
+    
+    Raises:
+        None
+    
+    Note:
+        The function uses ANSI escape codes to apply colors based on the type of DocItemType."""
         color = Fore.WHITE
         if self == DocItemType._dir:
             color = Fore.GREEN
@@ -123,47 +166,41 @@ Notes:
 
     def get_edge_type(self, from_item_type: DocItemType, to_item_type: DocItemType):
         """Gets the edge type between two document item types.
-
-This function determines the relationship or connection type between two specified document item types within the Repository Agent framework, which is designed to automate documentation generation for Python projects using large language models (LLMs).
-
-Args:  
-    from_item_type (DocItemType): The starting document item type.  
-    to_item_type (DocItemType): The ending document item type.  
-
-Returns:  
-    DocEdgeType: The edge type between the two specified document item types.  
-
-Raises:  
-    ValueError: If either `from_item_type` or `to_item_type` is not a valid DocItemType.  
-
-Note:  
-    See also: DocItemType (for more information on document item types).  
-"""
+    
+    This method determines the relationship or connection type between two specified document item types within the Repository Agent framework, which is designed to automate documentation generation for Python projects using large language models (LLMs).
+    
+    Args:  
+        from_item_type (DocItemType): The starting document item type.  
+        to_item_type (DocItemType): The ending document item type.  
+    
+    Returns:  
+        DocEdgeType: The edge type between the two specified document item types.  
+    
+    Raises:  
+        ValueError: If either `from_item_type` or `to_item_type` is not a valid DocItemType.  
+    
+    Note:  
+        See also: DocItemType (for more information on document item types)."""
         pass
 
 @unique
 class DocItemStatus(Enum):
-    """Given the context of the Repository Agent project, here's an updated docstring for the `DocItemStatus` class in `repo_agent\\doc_meta_info.py`. The docstring follows Google conventions and provides a clear description based on the main idea of the project.
-
-Represents the status of a documentation item within the repository agent system.  
-
-This class encapsulates information about the current state of a specific documentation item, such as its generation status or any associated errors.
-
-Args:  
-    status (str): The current status of the documentation item. Defaults to 'pending'.  
-    error_message (Optional[str]): An optional message describing any encountered errors. Defaults to None.  
-
-Returns:  
-    DocItemStatus: A new instance representing the status of a documentation item.  
-
-Raises:  
-    ValueError: If an invalid status is provided.  
-
-Note:  
-    See also: ProjectManager, TaskManager.
-
-
-This docstring adheres to the Google conventions and provides clear descriptions for the parameters, return type, and potential exceptions. It also includes a note referencing related classes within the project context."""
+    """Represents the status of a documentation item within the repository agent system.  
+    
+    This class encapsulates information about the current state of a specific documentation item, such as its generation status or any associated errors.
+    
+    Args:  
+        status (str): The current status of the documentation item. Defaults to 'pending'.  
+        error_message (Optional[str]): An optional message describing any encountered errors. Defaults to None.  
+    
+    Returns:  
+        DocItemStatus: A new instance representing the status of a documentation item.  
+    
+    Raises:  
+        ValueError: If an invalid status is provided.  
+    
+    Note:  
+        See also: ProjectManager, TaskManager."""
     doc_up_to_date = auto()
     doc_has_not_been_generated = auto()
     code_changed = auto()
@@ -171,27 +208,22 @@ This docstring adheres to the Google conventions and provides clear descriptions
     referencer_not_exist = auto()
 
 def need_to_generate(doc_item: DocItem, ignore_list: List[str]=[]) -> bool:
-    """Given the context of the Repository Agent project and the function `need_to_generate`, which presumably plays a role in determining whether documentation needs to be generated for specific components, here is an updated docstring following Google conventions:
-
-Determines if documentation generation is required for a given component.
-
-This function checks if there are any changes or missing documentation that necessitate generating new or updating existing documentation files. It evaluates the current state of the repository and project settings to decide on the necessity of documentation generation tasks.
-
-Args:
-    component (str): The name or identifier of the component to evaluate.
-    settings_manager (SettingsManager): An instance managing configuration settings for documentation generation.
-
-Returns:
-    bool: True if documentation generation is required, False otherwise.
-
-Raises:
-    ValueError: If the provided component does not exist in the project structure.
-
-Note:
-    See also: summarize_repository, TaskManager
-
-
-This docstring adheres to the Google style guide and provides clear information about what the function `need_to_generate` does, its parameters, return type, potential exceptions, and relevant references."""
+    """Determines if documentation generation is required for a given component.
+    
+    This function checks if there are any changes or missing documentation that necessitate generating new or updating existing documentation files. It evaluates the current state of the repository and project settings to decide on the necessity of documentation generation tasks.
+    
+    Args:
+        doc_item (DocItem): The documentation item to evaluate.
+        ignore_list (List[str]): List of paths or patterns to ignore when generating documentation. Defaults to [].
+    
+    Returns:
+        bool: True if documentation generation is required, False otherwise.
+    
+    Raises:
+        None
+    
+    Note:
+        See also: DocItem.get_full_name, DocItemStatus"""
     if doc_item.item_status == DocItemStatus.doc_up_to_date:
         return False
     rel_file_path = doc_item.get_full_name()
@@ -207,25 +239,42 @@ This docstring adheres to the Google style guide and provides clear information 
 
 @dataclass
 class DocItem:
-    """Given the context of the Repository Agent project, here's an updated docstring for the `DocItem` class in `repo_agent\\doc_meta_info.py`. The main idea is to manage metadata information related to documentation items within the repository.
-
-Represents a documentation item with associated metadata.  
-
-This class encapsulates details about individual documentation items such as file paths, content summaries, and other relevant attributes needed for generating or updating documentation files.
-
-Args:  
-    path (str): The file path of the documentation item. Defaults to an empty string if unspecified.
-    summary (str): A brief summary or description of the documentation item's contents. Defaults to an empty string if unspecified.
-    tags (List[str]): Tags or labels associated with the documentation item for categorization purposes. Defaults to an empty list if unspecified.
-
-Returns:  
-    DocItem: An instance representing a specific documentation item within the repository.
-
-Notes:  
-    See also: ProjectManager, TaskManager
-
-
-This docstring adheres to Google conventions and provides clear information about what the `DocItem` class represents and how it is used in the context of the Repository Agent project."""
+    """Represents a documentation item with associated metadata.
+    
+    This class encapsulates details about individual documentation items such as file paths, content summaries, and other relevant attributes needed for generating or updating documentation files.
+    
+    Args:
+        path (str): The file path of the documentation item. Defaults to an empty string if unspecified.
+        summary (str): A brief summary or description of the documentation item's contents. Defaults to an empty string if unspecified.
+        tags (List[str]): Tags or labels associated with the documentation item for categorization purposes. Defaults to an empty list if unspecified.
+    
+    Returns:
+        DocItem: An instance representing a specific documentation item within the repository.
+    
+    Note:
+        See also: ProjectManager, TaskManager
+    
+    Attributes:
+        item_type (DocItemType): The type of the documentation item.
+        item_status (DocItemStatus): The status of the documentation item.
+        obj_name (str): The name of the object.
+        code_start_line (int): The starting line number of the code.
+        code_end_line (int): The ending line number of the code.
+        source_node (Optional[ast.stmt]): The source node of the code.
+        md_content (List[str]): The markdown content of the documentation item.
+        content (Dict[Any, Any]): Additional content information.
+        children (Dict[str, DocItem]): Child documentation items.
+        father (Optional[DocItem]): The parent documentation item.
+        depth (int): The depth of the node in the tree.
+        tree_path (List[DocItem]): The path from the root to this node.
+        max_reference_ansce (Optional[DocItem]): The maximum reference ancestor.
+        reference_who (List[DocItem]): The list of items this item references.
+        who_reference_me (List[DocItem]): The list of items that reference this item.
+        special_reference_type (List[bool]): Special reference types.
+        reference_who_name_list (List[str]): The list of names of items this item references.
+        who_reference_me_name_list (List[str]): The list of names of items that reference this item.
+        has_task (bool): Indicates if the item has a task.
+        multithread_task_id (int): The task ID for multithreaded processing."""
     item_type: DocItemType = DocItemType._class_function
     item_status: DocItemStatus = DocItemStatus.doc_has_not_been_generated
     obj_name: str = ''
@@ -250,19 +299,18 @@ This docstring adheres to Google conventions and provides clear information abou
     @staticmethod
     def has_ans_relation(now_a: DocItem, now_b: DocItem):
         """Check if there is an ancestor relationship between two nodes and return the earlier node if it exists.
-
-This function is part of the Repository Agent framework, which uses large language models (LLMs) to generate comprehensive documentation for Python projects at the repository level. The function helps in identifying hierarchical relationships within the project's structure.
-
-Args:
-    now_a (DocItem): The first node.
-    now_b (DocItem): The second node.
-
-Returns:
-    DocItem or None: The earlier node if an ancestor relationship exists, otherwise None.
-
-Note:
-    See also: Repository Agent framework documentation for more details on hierarchical relationships and node management.
-"""
+    
+    This method is part of the Repository Agent framework, which automates the generation of documentation for Python projects using large language models (LLMs). It helps in identifying hierarchical relationships within the project's structure.
+    
+    Args:
+        now_a (DocItem): The first node.
+        now_b (DocItem): The second node.
+    
+    Returns:
+        DocItem or None: The earlier node if an ancestor relationship exists, otherwise None.
+    
+    Note:
+        See also: Repository Agent framework documentation for more details on hierarchical relationships and node management."""
         if now_b in now_a.tree_path:
             return now_b
         if now_a in now_b.tree_path:
@@ -271,18 +319,17 @@ Note:
 
     def get_travel_list(self):
         """Returns a list of DocItem objects representing the tree structure in pre-order traversal.
-
-This function retrieves a hierarchical representation of documentation items, starting from the root node and including all its descendants recursively. It is part of the Repository Agent's functionality to manage and generate comprehensive documentation for Python projects by leveraging large language models (LLMs).
-
-Args:  
-    None
-
-Returns:  
-    List[DocItem]: A list of DocItem objects in pre-order traversal order.
-
-Note:  
-    See also: MetaInfo.get_task_manager (if applicable).
-"""
+    
+    This method retrieves a hierarchical representation of documentation items, starting from the root node and including all its descendants recursively. It is part of the Repository Agent's functionality to manage and generate comprehensive documentation for Python projects by leveraging large language models (LLMs).
+    
+    Args:  
+        None
+    
+    Returns:  
+        List[DocItem]: A list of DocItem objects in pre-order traversal order.
+    
+    Note:  
+        See also: MetaInfo.get_task_manager (if applicable)."""
         now_list = [self]
         for _, child in self.children.items():
             now_list = now_list + child.get_travel_list()
@@ -290,21 +337,20 @@ Note:
 
     def check_depth(self):
         """Recursively calculates the depth of a tree node.
-
-This function computes the depth of a given tree node by traversing its parent nodes until reaching the root. It assumes that the input is a valid tree node and does not handle invalid inputs gracefully.
-
-Args:
-    None
-
-Returns:
-    int: The depth of the node.
-
-Raises:
-    ValueError: If the input is not a valid tree node.
-
-Note:
-    See also: DocItemType, DocItemStatus, DocItem
-"""
+    
+    This method computes the depth of a given tree node by traversing its parent nodes until reaching the root. It assumes that the input is a valid tree node and does not handle invalid inputs gracefully.
+    
+    Args:
+        None
+    
+    Returns:
+        int: The depth of the node.
+    
+    Raises:
+        ValueError: If the input is not a valid tree node.
+    
+    Note:
+        See also: DocItemType, DocItemStatus, DocItem"""
         if len(self.children) == 0:
             self.depth = 0
             return self.depth
@@ -316,46 +362,51 @@ Note:
         return self.depth
 
     def parse_tree_path(self, now_path):
-        """Recursively parses the tree path by appending the current node to the given path.
-
-This function plays a crucial role in constructing hierarchical tree structures within the Repository Agent, particularly after parsing file hierarchies and establishing parent-child relationships between nodes.
-
-Args:
-    now_path (list): The current path in the tree.
-
-Returns:
-    None
-
-Note:  
-    This method is called during the construction of the hierarchical tree structure to maintain accurate node paths.
-"""
+        """Parses the tree path recursively by appending the current node to the given path.
+    
+    This method is crucial for constructing hierarchical tree structures within the Repository Agent, particularly after parsing file hierarchies and establishing parent-child relationships between nodes.
+    
+    Args:
+        now_path (list): The current path in the tree.
+    
+    Returns:
+        None
+    
+    Raises:
+        ValueError: If the current node is invalid or cannot be appended to the path.
+    
+    Note:
+        This method is called during the construction of the hierarchical tree structure to maintain accurate node paths."""
         self.tree_path = now_path + [self]
         for key, child in self.children.items():
             child.parse_tree_path(self.tree_path)
 
     def get_file_name(self):
         """Get the file name of the object.
-
-This function retrieves the file name associated with an object, including the ".py" extension. It is part of the Repository Agent's utility functions designed to manage documentation generation for Python projects.
-
-Returns:
-    str: The file name of the object, including the ".py" extension.
-
-Note:
-    See also: `repo_agent.doc_meta_info.DocItem.get_full_name`.
-"""
+    
+    This method retrieves the file name associated with an object, including the ".py" extension. It is part of the Repository Agent's utility functions designed to manage documentation generation for Python projects.
+    
+    Returns:
+        str: The file name of the object, including the ".py" extension.
+    
+    Note:
+        See also: `repo_agent.doc_meta_info.DocItem.get_full_name`."""
         full_name = self.get_full_name()
         return full_name.split('.py')[0] + '.py'
 
     def get_full_name(self, strict=False):
         """Returns the full name of the documentation item.
-
-Args:  
-    self (DocItem): The instance of the DocItem class.
-
-Returns:  
-    str: The full name of the documentation item.
-"""
+    
+    This method constructs the full name of the documentation item by traversing the hierarchy of parent items. If the `strict` parameter is set to `True`, it ensures that the name is unique by appending a suffix if a name conflict is detected.
+    
+    Args:
+        strict (bool): If True, ensures that the name is unique by appending a suffix if a name conflict is detected. Defaults to False.
+    
+    Returns:
+        str: The full name of the documentation item.
+    
+    Note:
+        See also: `repo_agent.doc_meta_info.DocItem.get_file_name`."""
         if self.father == None:
             return self.obj_name
         name_list = []
@@ -375,19 +426,18 @@ Returns:
         return '/'.join(name_list)
 
     def find(self, recursive_file_path: list) -> Optional[DocItem]:
-        """Search for a file within the repository hierarchy based on the given path list.
-
-This function searches through the repository structure to locate files specified by the provided paths, aiding in the automation of documentation generation and management tasks.
-
-Args:
-    recursive_file_path (list): The list of file paths to search for.
-
-Returns:
-    Optional[DocItem]: The corresponding file if found, otherwise None.
-
-Note:  
-    See also: DocItemType (for item type definitions).
-"""
+        """Searches for a file within the repository hierarchy based on the given path list.
+    
+    This method traverses the repository structure to locate files specified by the provided paths, aiding in the automation of documentation generation and management tasks.
+    
+    Args:
+        recursive_file_path (list): The list of file paths to search for.
+    
+    Returns:
+        Optional[DocItem]: The corresponding file if found, otherwise None.
+    
+    Note:
+        See also: DocItemType (for item type definitions)."""
         assert self.item_type == DocItemType._repo
         pos = 0
         now = self
@@ -401,19 +451,18 @@ Note:
     @staticmethod
     def check_has_task(now_item: DocItem, ignore_list: List[str]=[]):
         """Checks if the current documentation item has tasks.
-
-Determines whether the given documentation item needs to be processed for task generation, considering its children recursively. This function is part of the Repository Agent's task management system, which efficiently handles multiple tasks concurrently to optimize performance and resource utilization.
-
-Args:
-    now_item (DocItem): The documentation item to check.
-    ignore_list (List[str]): List of paths or patterns to ignore when generating documentation. Defaults to [].
-
-Returns:
-    None: This function modifies the `has_task` attribute of the `now_item`.
-
-Note:
-    See also: need_to_generate
-"""
+    
+    Determines whether the given documentation item needs to be processed for task generation, considering its children recursively. This method is part of the Repository Agent's task management system, which efficiently handles multiple tasks concurrently to optimize performance and resource utilization.
+    
+    Args:
+        now_item (DocItem): The documentation item to check.
+        ignore_list (List[str]): List of paths or patterns to ignore when generating documentation. Defaults to [].
+    
+    Returns:
+        None: This method modifies the `has_task` attribute of the `now_item`.
+    
+    Note:
+        See also: need_to_generate"""
         if need_to_generate(now_item, ignore_list=ignore_list):
             now_item.has_task = True
         for _, child in now_item.children.items():
@@ -421,24 +470,24 @@ Note:
             now_item.has_task = child.has_task or now_item.has_task
 
     def print_recursive(self, indent=0, print_content=False, diff_status=False, ignore_list: List[str]=[]):
-        """Given the context of the Repository Agent project, here's an updated docstring for the `print_recursive` function in `repo_agent/doc_meta_info.py/DocItem/print_recursive`. The main idea is to ensure that the documentation reflects its role within the larger system of automated documentation generation.
-
-Prints a DocItem object and all its children recursively.  
-
-This function is used to display detailed information about a DocItem and any nested items it contains, facilitating debugging and inspection during the documentation generation process.
-
-Args:  
-    self (DocItem): The current DocItem instance to be printed.  
-
-Returns:  
-    None: This method does not return any value.  
-
-Raises:  
-    ValueError: If an invalid item type is encountered during recursion.  
-
-Note:  
-    See also: `summarize_repository` for the broader context of how this function fits into the overall documentation generation process.
-"""
+        """Prints a DocItem object and all its children recursively.
+    
+    This method displays detailed information about a DocItem and any nested items it contains, facilitating debugging and inspection during the documentation generation process.
+    
+    Args:
+        indent (int): The number of indentation levels to use. Defaults to 0.
+        print_content (bool): Whether to print the content of the DocItem. Defaults to False.
+        diff_status (bool): Whether to print the difference status. Defaults to False.
+        ignore_list (List[str]): List of paths or patterns to ignore when generating documentation. Defaults to an empty list.
+    
+    Returns:
+        None: This method does not return any value.
+    
+    Raises:
+        ValueError: If an invalid item type is encountered during recursion.
+    
+    Note:
+        See also: `summarize_repository` for the broader context of how this method fits into the overall documentation generation process."""
 
         def print_indent(indent=0):
             if indent == 0:
@@ -459,26 +508,25 @@ Note:
 
 def find_all_referencer(repo_path, variable_name, file_path, line_number, column_number, in_file_only=False):
     """Find all references of a variable within a repository.
-
-This function uses the Jedi library to locate all instances where a specified variable is referenced in a given file or across files, based on the `in_file_only` parameter setting. It supports automated documentation generation for Python projects by identifying and documenting variable usage throughout the codebase.
-
-Args:
-    repo_path (str): The root path of the repository.
-    variable_name (str): The name of the variable to search for.
-    file_path (str): The relative path of the file where the reference is located.
-    line_number (int): The line number in `file_path` where the reference starts.
-    column_number (int): The column number in `line_number` where the reference starts.
-    in_file_only (bool, optional): If True, only search for references within the same file. Defaults to False.
-
-Returns:
-    list: A list of tuples containing the relative path of the referencing file, line number, and column number of each reference.
-
-Raises:
-    ValueError: If an error occurs during the reference search process.
     
-Note:
-    See also: `repo_agent/doc_meta_info.py/MetaInfo/parse_reference/walk_file` (if applicable).
-"""
+    This method uses the Jedi library to locate all instances where a specified variable is referenced in a given file or across files, based on the `in_file_only` parameter setting. It supports automated documentation generation for Python projects by identifying and documenting variable usage throughout the codebase.
+    
+    Args:
+        repo_path (str): The root path of the repository.
+        variable_name (str): The name of the variable to search for.
+        file_path (str): The relative path of the file where the reference is located.
+        line_number (int): The line number in `file_path` where the reference starts.
+        column_number (int): The column number in `line_number` where the reference starts.
+        in_file_only (bool, optional): If True, only search for references within the same file. Defaults to False.
+    
+    Returns:
+        list: A list of tuples containing the relative path of the referencing file, line number, and column number of each reference.
+    
+    Raises:
+        ValueError: If an error occurs during the reference search process.
+    
+    Note:
+        See also: `repo_agent/doc_meta_info.py/MetaInfo/parse_reference/walk_file` (if applicable)."""
     script = jedi.Script(path=os.path.join(repo_path, file_path))
     try:
         if in_file_only:
@@ -494,26 +542,36 @@ Note:
 
 @dataclass
 class MetaInfo:
-    """Given the context of the Repository Agent project and the `MetaInfo` class within it, here's an updated docstring for the `MetaInfo` class:
-
-Manages metadata information related to Python modules and submodules.
-
-This class is responsible for storing and retrieving key metadata about Python files and directories within a repository. It ensures that all necessary details are available for documentation generation processes managed by other components of the Repository Agent.
-
-Args:  
-    module_path (str): The path to the Python module or directory being documented.
-    summary (str, optional): A brief summary of the module's functionality. Defaults to an empty string.
-    dependencies (list[str], optional): List of external dependencies required for the module. Defaults to an empty list.
-
-Returns:  
-    None
-
-Raises:  
-    ValueError: If `module_path` is not a valid path or does not exist.
-
-Note:  
-    See also: ProjectManager, ChatEngine
-"""
+    """Manages metadata information related to Python modules and submodules.
+    
+    This class is responsible for storing and retrieving key metadata about Python files and directories within a repository. It ensures that all necessary details are available for documentation generation processes managed by other components of the Repository Agent.
+    
+    Args:  
+        module_path (str): The path to the Python module or directory being documented.
+        summary (str, optional): A brief summary of the module's functionality. Defaults to an empty string.
+        dependencies (list[str], optional): List of external dependencies required for the module. Defaults to an empty list.
+    
+    Returns:  
+        None
+    
+    Raises:  
+        ValueError: If `module_path` is not a valid path or does not exist.
+    
+    Note:  
+        See also: ProjectManager, ChatEngine
+    
+    Attributes:
+        repo_path (Path): The root directory of the repository.
+        document_version (str): The version of the document.
+        main_idea (str): The main idea or purpose of the repository.
+        repo_structure (Dict[str, Any]): The structure of the repository.
+        target_repo_hierarchical_tree (DocItem): The hierarchical tree representation of the repository.
+        white_list (List): A list of whitelisted items.
+        fake_file_reflection (Dict[str, str]): A dictionary mapping fake files to their real counterparts.
+        jump_files (List[str]): A list of files to be skipped.
+        deleted_items_from_older_meta (List[List]): A list of items deleted from the older metadata.
+        in_generation_process (bool): Indicates if the documentation generation process is active.
+        checkpoint_lock (threading.Lock): A lock for checkpoint operations."""
     repo_path: Path = ''
     document_version: str = ''
     main_idea: str = ''
@@ -529,23 +587,22 @@ Note:
     @staticmethod
     def init_meta_info(file_path_reflections, jump_files) -> MetaInfo:
         """Initializes metadata for the documentation generation process.
-
-This function sets up initial metadata required for generating or updating documentation within a Python project repository.
-
-Args:  
-    repo_path (str): The path to the root directory of the repository. Defaults to None if not provided.
-    config_file (str): Path to the configuration file containing settings for documentation generation. Defaults to 'config.yaml' if not specified.
-
-Returns:  
-    dict: A dictionary containing initialized metadata and configurations needed for further processing.
-
-Raises:  
-    ValueError: If the provided repository path does not exist or is invalid.
-    FileNotFoundError: If the specified configuration file cannot be found.
-
-Note:  
-    See also: SettingsManager, ChatEngine
-"""
+    
+    This method sets up initial metadata required for generating or updating documentation within a Python project repository. It uses the `FileHandler` to generate the overall structure of the repository and then converts this structure into metadata using the `MetaInfo.from_project_hierarchy_json` method.
+    
+    Args:  
+        file_path_reflections (list): A list of file paths for reflections.  
+        jump_files (list): A list of files to be skipped during the generation process.
+    
+    Returns:  
+        MetaInfo: A `MetaInfo` object containing initialized metadata and configurations needed for further processing.
+    
+    Raises:  
+        ValueError: If the provided repository path does not exist or is invalid.  
+        FileNotFoundError: If the specified configuration file cannot be found.
+    
+    Note:  
+        See also: `SettingsManager`, `ChatEngine`"""
         setting = SettingsManager.get_setting()
         project_abs_path = setting.project.target_repo
         print(f'{Fore.LIGHTRED_EX}Initializing MetaInfo: {Style.RESET_ALL}from {project_abs_path}')
@@ -560,22 +617,21 @@ Note:
     @staticmethod
     def from_checkpoint_path(checkpoint_dir_path: Path, repo_structure: Optional[Dict[str, Any]]=None) -> MetaInfo:
         """Load and return the MetaInfo object from an existing checkpoint directory.
-
-This function reconstructs the project hierarchy and metadata by parsing metainfo files within the specified checkpoint directory, encapsulating the information in a MetaInfo object. This is part of the Repository Agent's functionality to manage and generate documentation for Python projects.
-
-Args:
-    checkpoint_dir_path (Path): The path to the checkpoint directory containing metainfo files.
-    repo_structure (Optional[Dict[str, Any]], optional): An optional repository structure to use for parsing. Defaults to None.
-
-Returns:
-    MetaInfo: A MetaInfo object representing the parsed project hierarchy and metadata from the checkpoint directory.
-
-Raises:
-    ValueError: If the input JSON is invalid or missing required keys.
-
-Note:
-    See also: MetaInfo.from_project_hierarchy_json
-"""
+    
+    This method reconstructs the project hierarchy and metadata by parsing metainfo files within the specified checkpoint directory, encapsulating the information in a MetaInfo object. This is part of the Repository Agent's functionality to manage and generate documentation for Python projects.
+    
+    Args:
+        checkpoint_dir_path (Path): The path to the checkpoint directory containing metainfo files.
+        repo_structure (Optional[Dict[str, Any]], optional): An optional repository structure to use for parsing. Defaults to None.
+    
+    Returns:
+        MetaInfo: A MetaInfo object representing the parsed project hierarchy and metadata from the checkpoint directory.
+    
+    Raises:
+        ValueError: If the input JSON is invalid or missing required keys.
+    
+    Note:
+        See also: MetaInfo.from_project_hierarchy_json"""
         setting = SettingsManager.get_setting()
         project_hierarchy_json_path = checkpoint_dir_path / 'project_hierarchy.json'
         with open(project_hierarchy_json_path, 'r', encoding='utf-8') as reader:
@@ -594,23 +650,22 @@ Note:
         return metainfo
 
     def checkpoint(self, target_dir_path: str | Path, flash_reference_relation=False):
-        """Given the context of the Repository Agent project, here's an updated docstring for the `checkpoint` function in `repo_agent\\doc_meta_info.py/MetaInfo/checkpoint`.
-
-Records the current state of documentation generation.
-
-Args:
-    status (str): The status message to be recorded. Defaults to "Documentation checkpoint".
-    timestamp (bool): Whether to include a timestamp in the record. Defaults to True.
-    details (dict, optional): Additional details to be included in the checkpoint record.
-
-Returns:
-    str: A string representing the checkpoint record.
-
-Raises:
-    ValueError: If status is not provided or is an empty string.
-
-
-This docstring adheres to Google conventions and provides a clear description of what the `checkpoint` function does within the context of the Repository Agent project."""
+        """Records the current state of documentation generation.
+    
+    This method saves the current state of the documentation to a specified directory, including the project hierarchy and meta information. It ensures that the documentation is up-to-date and can be used for further processing or display.
+    
+    Args:
+        target_dir_path (str | Path): The path to the directory where the checkpoint files will be saved.
+        flash_reference_relation (bool): If True, the latest bidirectional reference relations will be written back to the meta file. Defaults to False.
+    
+    Returns:
+        None
+    
+    Raises:
+        IOError: If there is an error saving the hierarchy JSON or meta-info JSON files.
+    
+    Note:
+        See also: MetaInfo.to_hierarchy_json (repo_agent/doc_meta_info.py), SettingsManager.get_setting (repo_agent/settings.py)."""
         with self.checkpoint_lock:
             target_dir = Path(target_dir_path)
             logger.debug(f'Checkpointing MetaInfo to directory: {target_dir}')
@@ -637,21 +692,20 @@ This docstring adheres to Google conventions and provides a clear description of
 
     def print_task_list(self, task_dict: Dict[Task]):
         """Prints the task list in a formatted table.
-
-This function displays a detailed overview of tasks within the Repository Agent framework, leveraging PrettyTable for visual clarity. It ensures that dependency information is truncated to maintain readability if it exceeds 20 characters. This feature supports the project's task management by providing a clear and concise view of ongoing tasks.
-
-Args:
-    task_dict (Dict[str, Task]): Dictionary containing tasks where keys are task IDs and values are Task objects.
-
-Returns:
-    None
-
-Raises:
-    ValueError: If `task_dict` is empty or contains invalid data.
-
-Notes:
-    See also: TaskManager class for managing multiple tasks efficiently.
-"""
+    
+    This method displays a detailed overview of tasks within the Repository Agent framework, leveraging PrettyTable for visual clarity. It ensures that dependency information is truncated to maintain readability if it exceeds 20 characters. This feature supports the project's task management by providing a clear and concise view of ongoing tasks.
+    
+    Args:
+        task_dict (Dict[str, Task]): Dictionary containing tasks where keys are task IDs and values are Task objects.
+    
+    Returns:
+        None
+    
+    Raises:
+        ValueError: If `task_dict` is empty or contains invalid data.
+    
+    Note:
+        See also: TaskManager class for managing multiple tasks efficiently."""
         task_table = PrettyTable(['task_id', 'Doc Generation Reason', 'Path', 'dependency'])
         for task_id, task_info in task_dict.items():
             remain_str = 'None'
@@ -664,21 +718,20 @@ Notes:
 
     def get_all_files(self, count_repo=False) -> List[DocItem]:
         """Retrieve all files within the specified directory.
-
-This function scans through the given directory and retrieves a list of all files present, including those in subdirectories.
-
-Args:  
-    directory_path (str): The path to the root directory from which files are retrieved.  
-
-Returns:  
-    List[str]: A list containing the paths of all files found within the specified directory and its subdirectories.  
-
-Raises:  
-    FileNotFoundError: If the provided directory does not exist.  
-
-Note:  
-    This function is used by the Repository Agent to gather a comprehensive list of files for documentation purposes.
-"""
+    
+    This method scans through the given directory and retrieves a list of all files present, including those in subdirectories. It can also optionally include repository nodes in the list.
+    
+    Args:  
+        count_repo (bool): Whether to include repository nodes in the list. Defaults to False.
+    
+    Returns:  
+        List[DocItem]: A list containing the paths of all files found within the specified directory and its subdirectories.
+    
+    Raises:  
+        FileNotFoundError: If the provided directory does not exist.
+    
+    Note:  
+        This method is used by the Repository Agent to gather a comprehensive list of files for documentation purposes."""
         files = []
 
         def walk_tree(now_node):
@@ -693,22 +746,21 @@ Note:
 
     def find_obj_with_lineno(self, file_node: DocItem, start_line_num) -> DocItem:
         """Finds the object corresponding to a given line number within a file.
-
-In the Repository Agent framework, each `DocItem._file` establishes which objects correspond to all lines in the file, ensuring that a line belongs exclusively to one object without overlapping with its children's ranges.
-
-Args:
-    file_node (DocItem): The root node representing the file.
-    start_line_num (int): The line number for which to find the corresponding object.
-
-Returns:
-    DocItem: The object corresponding to the specified line number.
-
-Raises:
-    AssertionError: If `file_node` is None or if a child's content is missing.
-
-Note:
-    See also: `DocItem` class.
-"""
+    
+    In the Repository Agent framework, each `DocItem._file` establishes which objects correspond to all lines in the file, ensuring that a line belongs exclusively to one object without overlapping with its children's ranges.
+    
+    Args:
+        file_node (DocItem): The root node representing the file.
+        start_line_num (int): The line number for which to find the corresponding object.
+    
+    Returns:
+        DocItem: The object corresponding to the specified line number.
+    
+    Raises:
+        AssertionError: If `file_node` is None or if a child's content is missing.
+    
+    Note:
+        See also: `DocItem` class."""
         now_node = file_node
         assert now_node != None
         while len(now_node.children) > 0:
@@ -724,22 +776,21 @@ Note:
         return now_node
 
     def parse_reference(self):
-        """Parse bidirectional reference relationships within the repository.
-
-This function iterates through all files in the repository to extract reference information for each file, considering white-listed objects if specified. It also handles special cases such as references from untracked or unstaged versions of files. This functionality is crucial for maintaining accurate and up-to-date documentation across complex Python projects by ensuring that all inter-file dependencies are correctly identified.
-
-Args:  
-    None
-
-Returns:  
-    None  
-
-Raises:  
-    AssertionError: If a file node's full name ends with `latest_version_substring` or if the relative file path is in jump_files.  
-
-Note:  
-    See also: get_all_files (repo_agent/doc_meta_info.py), find_all_referencer (external dependency).
-"""
+        """Parses bidirectional reference relationships within the repository.
+    
+    This method iterates through all files in the repository to extract reference information for each file, considering white-listed objects if specified. It also handles special cases such as references from untracked or unstaged versions of files. This functionality is crucial for maintaining accurate and up-to-date documentation across complex Python projects by ensuring that all inter-file dependencies are correctly identified.
+    
+    Args:  
+        None
+    
+    Returns:  
+        None
+    
+    Raises:  
+        AssertionError: If a file node's full name ends with `latest_version_substring` or if the relative file path is in `jump_files`.
+    
+    Note:  
+        See also: `get_all_files` (repo_agent/doc_meta_info.py), `find_all_referencer` (external dependency)."""
         file_nodes = self.get_all_files()
         white_list_file_names, white_list_obj_names = ([], [])
         if self.white_list != None:
@@ -794,19 +845,21 @@ Note:
 
     def get_task_manager(self, now_node: DocItem, task_available_func) -> TaskManager:
         """Retrieves the task manager instance for managing documentation generation tasks.
-
-Args:  
-    None  
-
-Returns:  
-    TaskManager: The task manager instance responsible for coordinating documentation generation tasks.  
-
-Raises:  
-    ValueError: If the task manager cannot be initialized properly.  
-
-Note:  
-    See also: TaskManager (for more details on task management).  
-"""
+    
+    This method initializes and returns a `TaskManager` instance that is responsible for coordinating and managing the tasks required for generating documentation. It filters and sorts the documentation items based on the provided `task_available_func` and the white list, and then adds tasks to the `TaskManager` while handling dependencies and potential circular references.
+    
+    Args:  
+        now_node (DocItem): The current documentation item node.  
+        task_available_func (Callable[[DocItem], bool]): A function that determines if a documentation item is available for task generation.
+    
+    Returns:  
+        TaskManager: The task manager instance responsible for coordinating documentation generation tasks.
+    
+    Raises:  
+        ValueError: If the task manager cannot be initialized properly.
+    
+    Note:  
+        See also: TaskManager (for more details on task management)."""
         doc_items = now_node.get_travel_list()
         if self.white_list != None:
 
@@ -863,42 +916,40 @@ Note:
 
     def get_topology(self, task_available_func) -> TaskManager:
         """Retrieves the topological structure of the project.
-
-This function fetches the hierarchical layout of the project's components, which is essential for generating accurate documentation summaries and managing tasks efficiently.
-
-Args:  
-    None  
-
-Returns:  
-    dict: A dictionary representing the project's topology. The keys are module names or paths, and the values are their respective submodules or dependencies.  
-
-Raises:  
-    ValueError: If an error occurs while retrieving the topology data.  
-
-Note:  
-    This function is integral to the Repository Agent's ability to understand and document complex Python projects.
-"""
+    
+    This method fetches the hierarchical layout of the project's components, which is essential for generating accurate documentation summaries and managing tasks efficiently.
+    
+    Args:  
+        task_available_func (Callable[[DocItem], bool]): A function that determines if a documentation item is available for task generation.
+    
+    Returns:  
+        TaskManager: The task manager instance responsible for coordinating documentation generation tasks.
+    
+    Raises:  
+        ValueError: If an error occurs while retrieving the topology data.
+    
+    Note:  
+        This function is integral to the Repository Agent's ability to understand and document complex Python projects."""
         self.parse_reference()
         task_manager = self.get_task_manager(self.target_repo_hierarchical_tree, task_available_func=task_available_func)
         return task_manager
 
     def _map(self, deal_func: Callable):
         """Maps a given function over all nodes.
-
-This function applies the specified `deal_func` to each node in the collection, performing the same operation on every node without returning any values. This is useful for tasks such as updating or processing nodes uniformly across a graph or tree structure within the Repository Agent framework.
-
-Args:
-    deal_func (Callable): The function used to process each node.
-
-Returns:
-    None: No return value is provided.
-
-Raises:
-    None: No exceptions are raised.
-
-Notes:
-    See also: _map function.
-"""
+    
+    This method applies the specified `deal_func` to each node in the collection, performing the same operation on every node without returning any values. This is useful for tasks such as updating or processing nodes uniformly across a graph or tree structure within the Repository Agent framework.
+    
+    Args:
+        deal_func (Callable): The function used to process each node.
+    
+    Returns:
+        None: No return value is provided.
+    
+    Raises:
+        None: No exceptions are raised.
+    
+    Note:
+        See also: _map function."""
 
         def travel(now_item: DocItem):
             deal_func(now_item)
@@ -908,21 +959,20 @@ Notes:
 
     def load_doc_from_older_meta(self, older_meta: MetaInfo):
         """Load documentation from an older version of meta information.
-
-This method merges the documentation from an older version of the metadata into the current version, updating the status of items based on changes in the source code or references. This is particularly useful for maintaining up-to-date documentation as the project evolves over time.
-
-Args:  
-    older_meta (MetaInfo): The older version of MetaInfo containing previously generated documentation.
-
-Returns:  
-    None
-
-Raises:  
-    AssertionError: If a file node's full name ends with `latest_version_substring` or if the relative file path is in jump_files.  
-
-Note:  
-    See also: parse_reference (repo_agent/doc_meta_info.py), get_all_files (repo_agent/doc_meta_info.py).
-"""
+    
+    This method merges the documentation from an older version of the metadata into the current version, updating the status of items based on changes in the source code or references. This is particularly useful for maintaining up-to-date documentation as the project evolves over time.
+    
+    Args:  
+        older_meta (MetaInfo): The older version of MetaInfo containing previously generated documentation.
+    
+    Returns:  
+        None
+    
+    Raises:  
+        AssertionError: If a file node's full name ends with `latest_version_substring` or if the relative file path is in `jump_files`.
+    
+    Note:  
+        See also: `parse_reference` (repo_agent/doc_meta_info.py), `get_all_files` (repo_agent/doc_meta_info.py)."""
         logger.info('merge doc from an older version of metainfo')
         root_item = self.target_repo_hierarchical_tree
         deleted_items = []
@@ -991,21 +1041,20 @@ Note:
     @staticmethod
     def from_project_hierarchy_path(repo_path: str) -> MetaInfo:
         """Converts the project hierarchy JSON from the specified repository path into a MetaInfo object.
-
-This function reads a flattened project hierarchy JSON file located at "project_hierarchy.json" within the given repository path, then converts it to a MetaInfo object. The Repository Agent framework uses this process to generate comprehensive documentation for Python projects by analyzing code and identifying changes in the repository structure.
-
-Args:  
-    repo_path (str): The root directory of the repository containing the project_hierarchy.json file.  
-
-Returns:  
-    MetaInfo: A MetaInfo object representing the project hierarchy.  
-
-Raises:  
-    NotImplementedError: If the project_hierarchy.json file does not exist at the specified path.  
-
-Note:  
-    See also: from_project_hierarchy_json (if applicable).  
-"""
+    
+    This method reads a flattened project hierarchy JSON file located at "project_hierarchy.json" within the given repository path, then converts it to a MetaInfo object. The Repository Agent framework uses this process to generate comprehensive documentation for Python projects by analyzing code and identifying changes in the repository structure.
+    
+    Args:  
+        repo_path (str): The root directory of the repository containing the project_hierarchy.json file.  
+    
+    Returns:  
+        MetaInfo: A MetaInfo object representing the project hierarchy.  
+    
+    Raises:  
+        NotImplementedError: If the project_hierarchy.json file does not exist at the specified path.  
+    
+    Note:  
+        See also: from_project_hierarchy_json (if applicable)."""
         project_hierarchy_json_path = os.path.join(repo_path, 'project_hierarchy.json')
         logger.info(f'parsing from {project_hierarchy_json_path}')
         if not os.path.exists(project_hierarchy_json_path):
@@ -1015,19 +1064,18 @@ Note:
         return MetaInfo.from_project_hierarchy_json(project_hierarchy_json)
 
     def to_hierarchy_json(self, flash_reference_relation=False):
-        """Convert the document metadata into a hierarchical JSON representation for Repository Agent documentation.
-
-The Repository Agent framework generates comprehensive documentation for Python projects by analyzing code, detecting changes, and summarizing module contents. This function converts document metadata into a structured JSON format that can be used for further processing or display in the generated documentation.
-
-Args:
-    flash_reference_relation (bool): If True, the latest bidirectional reference relations will be written back to the meta file. Defaults to False.
-
-Returns:
-    dict: A dictionary representing the hierarchical JSON structure of the document metadata.
-
-Note:
-    See also: MetaInfo.get_all_files (repo_agent/doc_meta_info.py), DocItemType.to_str (repo_agent/doc_meta_info.py).
-"""
+        """Converts the document metadata into a hierarchical JSON representation for Repository Agent documentation.
+    
+    The Repository Agent framework generates comprehensive documentation for Python projects by analyzing code, detecting changes, and summarizing module contents. This method converts document metadata into a structured JSON format that can be used for further processing or display in the generated documentation.
+    
+    Args:
+        flash_reference_relation (bool): If True, the latest bidirectional reference relations will be written back to the meta file. Defaults to False.
+    
+    Returns:
+        dict: A dictionary representing the hierarchical JSON structure of the document metadata.
+    
+    Note:
+        See also: MetaInfo.get_all_files (repo_agent/doc_meta_info.py), DocItemType.to_str (repo_agent/doc_meta_info.py)."""
         hierachy_json = {}
         file_item_list = self.get_all_files()
         for file_item in file_item_list:
@@ -1068,18 +1116,21 @@ Note:
     @staticmethod
     def from_project_hierarchy_json(project_hierarchy_json, repo_structure: Optional[Dict[str, Any]]=None) -> MetaInfo:
         """Converts project hierarchy JSON into metadata information.
-
-This function processes the hierarchical structure of a Python project represented in JSON format and extracts relevant metadata for documentation purposes.
-
-Args:
-    project_hierarchy_json (dict): The JSON representation of the project's directory structure, containing details about modules, submodules, and files.
-
-Returns:
-    dict: A dictionary containing extracted metadata information from the project hierarchy.
-
-Raises:
-    ValueError: If the input is not a valid JSON object representing the project hierarchy.
-"""
+    
+    This method processes the hierarchical structure of a Python project represented in JSON format and extracts relevant metadata for documentation purposes.
+    
+    Args:
+        project_hierarchy_json (dict): The JSON representation of the project's directory structure, containing details about modules, submodules, and files.
+        repo_structure (Optional[Dict[str, Any]]): An optional dictionary representing the repository structure to use for parsing. Defaults to None.
+    
+    Returns:
+        MetaInfo: A MetaInfo object containing extracted metadata information from the project hierarchy.
+    
+    Raises:
+        ValueError: If the input is not a valid JSON object representing the project hierarchy.
+    
+    Note:
+        See also: DocItem, DocItemType, DocItemStatus, SettingsManager, MetaInfo.init_meta_info, MetaInfo.from_checkpoint_path, MetaInfo.from_project_hierarchy_path."""
         setting = SettingsManager.get_setting()
         target_meta_info = MetaInfo(repo_structure=project_hierarchy_json, target_repo_hierarchical_tree=DocItem(item_type=DocItemType._repo, obj_name='full_repo'))
         for file_name, file_content in tqdm(project_hierarchy_json.items(), desc='parsing parent relationship'):
