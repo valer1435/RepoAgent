@@ -59,6 +59,8 @@ Focus: Ensure accuracy, adherence to Google conventions, and consistency with th
 
 Notes:
 
+For ClassDef objects put only description section
+
 Do not add methods descriptions for class docstrings.
 
 Return docstring as plaintext - do not put it in any ``` or triple double quotes. 
@@ -133,7 +135,7 @@ Focus: Ensure accuracy, adherence to Google conventions, and consistency with th
 
 Notes:
 
-Do not add methods descriptions for class docstrings.
+For ClassDef objects put only description section
 
 Return docstring as plaintext - do not put it in any ``` or triple double quotes. 
 

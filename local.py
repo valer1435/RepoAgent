@@ -9,15 +9,14 @@ run_outside_cli(
     0.1,
     180,
     'http://10.32.2.11:8031/v1',
-    r'E:\programming\RepoAgent',
+    r'E:\programming\ra',
     hierarchy_path='.project_doc_record',
     markdown_docs_path='docs_',
     ignore_list=".venv,tests,deployment,examples,alembic,docs,tests,test,projects,benchmarks,cmake,csrc,docs,examples,tests,tools",
     language='English',
     max_thread_count=6,
     log_level='INFO',
-    print_hierarchy=True,
-    parse_references=True
+    print_hierarchy=True
 )
 
 # run_outside_cli(
