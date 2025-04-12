@@ -161,7 +161,7 @@ class Runner:
         for part in path_obj.parts:
             if part.endswith('.py'):
                 part = part[:-3]
-            if part != '__init__':
+            if part == '__init__':
                 continue
             processed_parts.append(part)
         dot_path = '.'.join(processed_parts)
