@@ -27,7 +27,9 @@ class Runner:
     def __init__(self):
         self.setting = SettingsManager.get_setting()
         self.absolute_project_hierarchy_path = self.setting.project.target_repo / self.setting.project.hierarchy_name
-        self.project_manager = ProjectManager(repo_path=self.setting.project.target_repo, project_hierarchy=self.setting.project.hierarchy_name)
+        shutil.copy('mkdocs.yml', Path(self.absolute_project_hierarchy_path, 'mkdocs.yaml'))
+        self.project_manager = ProjectManager(repo_path=self.setting.project.target_repo,
+                                              project_hierarchy=self.setting.project.hierarchy_name)
         self.change_detector = ChangeDetector(repo_path=self.setting.project.target_repo)
         self.chat_engine = ChatEngine(project_manager=self.project_manager)
         file_path_reflections, jump_files = make_fake_files()
@@ -161,7 +163,7 @@ class Runner:
         for part in path_obj.parts:
             if part.endswith('.py'):
                 part = part[:-3]
-            if part != '__init__':
+            if part == '__init__':
                 continue
             processed_parts.append(part)
         dot_path = '.'.join(processed_parts)
@@ -365,18 +367,6 @@ class Runner:
             obj['md_content'] = response_message.content
 
     def get_new_objects(self, file_handler):
-        """Identifies newly added and deleted objects by comparing the current version of a .py file with its previous version.
-    
-    This method is part of the Repository Agent's change detection feature, which helps in updating existing documentation when modifications are made to the repository. It works alongside other features such as automated documentation generation and task management to ensure that all changes are accurately reflected in the project's documentation.
-    
-    Args:
-        file_handler (FileHandler): The file handler object used for managing file operations and retrieving modified versions of files.
-    
-    Returns:
-        tuple: A tuple containing two lists - one with newly added objects and another with deleted objects. The format is (new_obj, del_obj).
-    
-    Note:
-        See also: FileHandler.get_modified_file_versions(), FileHandler.get_functions_and_classes()"""
         current_version, previous_version = file_handler.get_modified_file_versions()
         parse_current_py = file_handler.get_functions_and_classes(current_version)
         parse_previous_py = file_handler.get_functions_and_classes(previous_version) if previous_version else []
@@ -385,7 +375,3 @@ class Runner:
         new_obj = list(current_obj - previous_obj)
         del_obj = list(previous_obj - current_obj)
         return (new_obj, del_obj)
-if __name__ == '__main__':
-    runner = Runner()
-    runner.run()
-    logger.info('文档任务完成。')

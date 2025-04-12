@@ -184,3 +184,5 @@ config.toml
 
 # Gradio
 .gradio
+
+local.py
