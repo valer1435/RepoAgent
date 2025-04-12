@@ -23,7 +23,7 @@ Note:
     lines = new_docstring.split('\n')
     if len(lines) > 1:
         lines[1:] = [indent + line for line in lines[1:]]
-    processed_doc = '\n'+indent+'\n'.join(lines)+indent+'\n'
+    processed_doc = '\n'+indent+'\n'.join(lines)+'\n'+indent
     if ast.get_docstring(node) is None:
         node.body.insert(0, ast.Expr(value=ast.Str(s=processed_doc)))
     else:
