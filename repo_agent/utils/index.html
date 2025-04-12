@@ -133,7 +133,11 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-hidden="true"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
     
   
 </form>
@@ -200,7 +204,7 @@
   
     
   
-  Project Overview
+  Overview of the Project
 
       </a>
     </li>
@@ -279,7 +283,7 @@
         
   
   <span class="md-ellipsis">
-    Project Overview
+    Overview of the Project
   </span>
   
 
@@ -803,15 +807,15 @@
 
 <h1 id="utils-module">Utils Module<a class="headerlink" href="#utils-module" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>The <code>Utils</code> module is a collection of utility functions and classes designed to support the automation of documentation generation and management for a Git repository, with a specific focus on Python files. This module includes tools for updating docstrings, checking <code>.gitignore</code> patterns, and managing file operations such as creating and deleting fake files. These utilities ensure that the documentation process is efficient and that the documentation remains synchronized with the codebase.</p>
+<p>The <code>Utils</code> module is a collection of utility classes and functions designed to support the automation of documentation generation and management for a Git repository. It includes tools for updating docstrings, handling <code>.gitignore</code> files, and managing temporary and fake files for untracked and modified content. These utilities are essential for ensuring that the documentation process is efficient, accurate, and reflects the current state of the codebase.</p>
 <h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
-<p>The primary purpose of the <code>Utils</code> module is to provide essential functionalities that facilitate the automated generation and management of documentation. Specifically, it aims to:</p>
+<p>The primary purpose of the <code>Utils</code> module is to provide a set of reusable and efficient tools that facilitate the documentation generation process. Specifically, it aims to:</p>
 <ol>
-<li><strong>Update Docstrings</strong>: Automatically update the docstrings of Abstract Syntax Tree (AST) nodes with new documentation.</li>
-<li><strong>Check Gitignore Patterns</strong>: Determine which files and directories are ignored by the <code>.gitignore</code> file, ensuring that only relevant files are processed for documentation.</li>
-<li><strong>Manage File Operations</strong>: Create and delete fake files to track untracked and modified files, and recover the latest versions of these files when necessary.</li>
+<li><strong>Update Docstrings</strong>: Automatically update the docstrings of Abstract Syntax Tree (AST) nodes to ensure that function and class documentation is accurate and up-to-date.</li>
+<li><strong>Handle .gitignore Files</strong>: Provide a utility to check files and folders against a <code>.gitignore</code> file, allowing the tool to exclude ignored files from the documentation process.</li>
+<li><strong>Manage Temporary and Fake Files</strong>: Create and manage temporary and fake files for untracked and modified content, ensuring that the repository's state is preserved and that changes are accurately reflected in the documentation.</li>
 </ol>
-<p>By integrating these utilities, the module helps streamline the documentation process, making it easier for developers to maintain accurate and comprehensive documentation, especially in large and frequently updated repositories.</p>
+<p>By integrating these utilities, the <code>Utils</code> module helps streamline the documentation process, making it easier to maintain high-quality documentation for large and complex repositories.</p>
 
 
 
