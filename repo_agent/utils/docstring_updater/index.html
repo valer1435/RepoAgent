@@ -200,7 +200,7 @@
   
     
   
-  Repository Agent: Automated Documentation Generation for Python Projects
+  Project Overview
 
       </a>
     </li>
@@ -279,7 +279,7 @@
         
   
   <span class="md-ellipsis">
-    Repository Agent: Automated Documentation Generation for Python Projects
+    Project Overview
   </span>
   
 
@@ -870,8 +870,8 @@
 <a id="repo_agent.utils.docstring_updater.update_doc"></a>
     <div class="doc doc-contents first">
 
-        <p>Updates the docstring of an AST node.</p>
-<p>This method updates the docstring of an AST node with a new docstring. It ensures that the docstring is properly indented and inserted or updated in the node's body. This is part of the Repository Agent framework, which automates the generation and maintenance of high-quality documentation for Python projects.</p>
+        <p>Updates the docstring of an AST node with a new docstring.</p>
+<p>This method processes the new docstring to ensure proper indentation and updates the node's docstring. If the node does not have an existing docstring, it inserts a new one. If the node already has a docstring, it replaces the existing one. This is particularly useful for automating the generation and management of documentation in a Git repository, ensuring that the documentation remains synchronized with the codebase.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -894,7 +894,7 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The AST node to update.</p>
+                <p>The AST node to update. This can be any node type, including <code>ast.Module</code>.</p>
               </div>
             </td>
             <td>
@@ -910,7 +910,7 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>The new docstring to set for the node.</p>
+                <p>The new docstring to be set for the node.</p>
               </div>
             </td>
             <td>
@@ -935,7 +935,30 @@
             </td>
             <td>
               <div class="doc-md-description">
-                <p>ast.AST: The updated AST node.</p>
+                <p>ast.AST: The updated AST node with the new docstring.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>ValueError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If the node is not an instance of <code>ast.AST</code>.</p>
               </div>
             </td>
           </tr>
@@ -945,7 +968,7 @@
 
 <details class="note" open>
   <summary>Note</summary>
-  <p>This method is used to maintain and update the documentation of Python modules and submodules by modifying their AST nodes. It is a crucial component of the Repository Agent's automated documentation generation process, ensuring that all changes in the repository are reflected accurately in the documentation.</p>
+  <p>This method is a core component of the documentation management tool, which automates the detection of changes, manages file operations, and generates detailed documentation using a language model.</p>
 </details>
             <details class="quote">
               <summary>Source code in <code>repo_agent\utils\docstring_updater.py</code></summary>
@@ -976,22 +999,22 @@
 <span class="normal"><a href="#__codelineno-0-27">27</a></span>
 <span class="normal"><a href="#__codelineno-0-28">28</a></span>
 <span class="normal"><a href="#__codelineno-0-29">29</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="k">def</span> <span class="nf">update_doc</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">new_docstring</span><span class="p">):</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Updates the docstring of an AST node.</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Updates the docstring of an AST node with a new docstring.</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="sd">    This method updates the docstring of an AST node with a new docstring. It ensures that the docstring is properly indented and inserted or updated in the node&#39;s body. This is part of the Repository Agent framework, which automates the generation and maintenance of high-quality documentation for Python projects.</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="sd">    This method processes the new docstring to ensure proper indentation and updates the node&#39;s docstring. If the node does not have an existing docstring, it inserts a new one. If the node already has a docstring, it replaces the existing one. This is particularly useful for automating the generation and management of documentation in a Git repository, ensuring that the documentation remains synchronized with the codebase.</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a>
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="sd">    Args:</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="sd">        node (ast.AST): The AST node to update.</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="sd">        new_docstring (str): The new docstring to set for the node.</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="sd">        node (ast.AST): The AST node to update. This can be any node type, including `ast.Module`.</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="sd">        new_docstring (str): The new docstring to be set for the node.</span>
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a>
 </span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="sd">    Returns:</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">        ast.AST: The updated AST node.</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">        ast.AST: The updated AST node with the new docstring.</span>
 </span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a>
 </span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    Raises:</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">        None</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">        ValueError: If the node is not an instance of `ast.AST`.</span>
 </span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a>
 </span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    Note:</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">        This method is used to maintain and update the documentation of Python modules and submodules by modifying their AST nodes. It is a crucial component of the Repository Agent&#39;s automated documentation generation process, ensuring that all changes in the repository are reflected accurately in the documentation.&quot;&quot;&quot;</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">        This method is a core component of the documentation management tool, which automates the detection of changes, manages file operations, and generates detailed documentation using a language model.&quot;&quot;&quot;</span>
 </span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="n">indent</span> <span class="o">=</span> <span class="s1">&#39;    &#39;</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Module</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
 </span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a>    <span class="n">lines</span> <span class="o">=</span> <span class="n">new_docstring</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 </span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>

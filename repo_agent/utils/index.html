@@ -200,7 +200,7 @@
   
     
   
-  Repository Agent: Automated Documentation Generation for Python Projects
+  Project Overview
 
       </a>
     </li>
@@ -279,7 +279,7 @@
         
   
   <span class="md-ellipsis">
-    Repository Agent: Automated Documentation Generation for Python Projects
+    Project Overview
   </span>
   
 
@@ -803,15 +803,15 @@
 
 <h1 id="utils-module">Utils Module<a class="headerlink" href="#utils-module" title="Permanent link">&para;</a></h1>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>The <code>Utils</code> module is a collection of utility functions and classes designed to support the core functionalities of the Repository Agent. These utilities are essential for tasks such as updating docstrings, managing <code>.gitignore</code> patterns, and handling test files. The module ensures that the Repository Agent can efficiently and accurately perform its documentation generation and management tasks.</p>
+<p>The <code>Utils</code> module is a collection of utility functions and classes designed to support the automation of documentation generation and management for a Git repository, with a specific focus on Python files. This module includes tools for updating docstrings, checking <code>.gitignore</code> patterns, and managing file operations such as creating and deleting fake files. These utilities ensure that the documentation process is efficient and that the documentation remains synchronized with the codebase.</p>
 <h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
-<p>The primary purpose of the <code>Utils</code> module is to:</p>
+<p>The primary purpose of the <code>Utils</code> module is to provide essential functionalities that facilitate the automated generation and management of documentation. Specifically, it aims to:</p>
 <ol>
-<li><strong>Update Docstrings</strong>: Provide a mechanism to update the docstrings of Abstract Syntax Tree (AST) nodes, ensuring that the documentation within the code is accurate and up-to-date.</li>
-<li><strong>Manage <code>.gitignore</code> Patterns</strong>: Offer tools to parse and check <code>.gitignore</code> patterns, helping to exclude unnecessary files and directories from the documentation generation process.</li>
-<li><strong>Handle Test Files</strong>: Facilitate the creation and deletion of fake files for testing purposes, ensuring that the testing environment is clean and reliable.</li>
+<li><strong>Update Docstrings</strong>: Automatically update the docstrings of Abstract Syntax Tree (AST) nodes with new documentation.</li>
+<li><strong>Check Gitignore Patterns</strong>: Determine which files and directories are ignored by the <code>.gitignore</code> file, ensuring that only relevant files are processed for documentation.</li>
+<li><strong>Manage File Operations</strong>: Create and delete fake files to track untracked and modified files, and recover the latest versions of these files when necessary.</li>
 </ol>
-<p>By providing these utilities, the <code>Utils</code> module enhances the overall functionality and reliability of the Repository Agent, making it a robust tool for automated documentation generation.</p>
+<p>By integrating these utilities, the module helps streamline the documentation process, making it easier for developers to maintain accurate and comprehensive documentation, especially in large and frequently updated repositories.</p>
 
 
 
