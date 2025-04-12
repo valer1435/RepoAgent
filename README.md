@@ -3,7 +3,7 @@
 This is a fork with some enhancements of RepoAgent, thanks to them for nice job.
 Please refer to [Original repo](https://github.com/OpenBMB/RepoAgent) for additional information.
 
-With this project you can generate 
+With this project you can generate good looking documentation for your python project just in one click!
 
 ## ✨ New features, comparing with original project
 
