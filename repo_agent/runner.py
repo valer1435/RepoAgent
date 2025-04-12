@@ -161,8 +161,9 @@ class Runner:
         for part in path_obj.parts:
             if part.endswith('.py'):
                 part = part[:-3]
-                if part != '__init__':
-                    processed_parts.append(part)
+            if part != '__init__':
+                continue
+            processed_parts.append(part)
         dot_path = '.'.join(processed_parts)
         return f'::: {dot_path}.{class_}'
 
