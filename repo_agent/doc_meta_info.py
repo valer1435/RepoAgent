@@ -17,6 +17,7 @@ from repo_agent.file_handler import FileHandler
 from repo_agent.log import logger
 from repo_agent.multi_task_dispatch import Task, TaskManager
 from repo_agent.settings import SettingsManager
+from repo_agent.utils.docstring_updater import remove_docstrings
 from repo_agent.utils.meta_info_utils import latest_verison_substring
 
 @unique
@@ -722,7 +723,7 @@ Note:
         with open(checkpoint_dir_path / 'meta-info.json', 'r', encoding='utf-8') as reader:
             meta_data = json.load(reader)
             metainfo.repo_path = setting.project.target_repo
-            metainfo.main_idea = setting.project.main_idea
+            metainfo.main_idea = meta_data['main_idea']
             metainfo.document_version = meta_data['doc_version']
             metainfo.fake_file_reflection = meta_data['fake_file_reflection']
             metainfo.jump_files = meta_data['jump_files']
@@ -764,7 +765,12 @@ Note:
             except IOError as e:
                 logger.error(f'Failed to save hierarchy JSON to {hierarchy_file}: {e}')
             meta_info_file = target_dir / 'meta-info.json'
-            meta = {'main_idea': SettingsManager().get_setting().project.main_idea, 'doc_version': self.document_version, 'in_generation_process': self.in_generation_process, 'fake_file_reflection': self.fake_file_reflection, 'jump_files': self.jump_files, 'deleted_items_from_older_meta': self.deleted_items_from_older_meta}
+            meta = {'main_idea': SettingsManager().get_setting().project.main_idea,
+                    'doc_version': self.document_version,
+                    'in_generation_process': self.in_generation_process,
+                    'fake_file_reflection': self.fake_file_reflection,
+                    'jump_files': self.jump_files,
+                    'deleted_items_from_older_meta': self.deleted_items_from_older_meta}
             try:
                 with meta_info_file.open('w', encoding='utf-8') as writer:
                     json.dump(meta, writer, indent=2, ensure_ascii=False)
@@ -1099,7 +1105,7 @@ Note:
             result_item.item_status = now_older_item.item_status
             if 'code_content' in now_older_item.content.keys():
                 assert 'code_content' in result_item.content.keys()
-                if now_older_item.content['code_content'] != result_item.content['code_content']:
+                if remove_docstrings(now_older_item.content['code_content']) != remove_docstrings(result_item.content['code_content']):
                     result_item.item_status = DocItemStatus.code_changed
             for _, child in now_older_item.children.items():
                 travel(child)

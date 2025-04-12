@@ -1,4 +1,6 @@
 import ast
+import re
+
 
 def update_doc(node, new_docstring):
     """Updates the docstring of an AST node.
@@ -21,9 +23,13 @@ Note:
     lines = new_docstring.split('\n')
     if len(lines) > 1:
         lines[1:] = [indent + line for line in lines[1:]]
-    processed_doc = '\n'+indent+'\n'.join(lines)+'\n'
+    processed_doc = '\n'+indent+'\n'.join(lines)+indent+'\n'
     if ast.get_docstring(node) is None:
         node.body.insert(0, ast.Expr(value=ast.Str(s=processed_doc)))
     else:
         node.body[0] = ast.Expr(value=ast.Str(s=processed_doc))
     return node
+
+def remove_docstrings(code):
+    pattern = re.compile(r'^\s*("""|\'\'\').*?^\s*\1', re.DOTALL | re.MULTILINE)
+    return pattern.sub('', code)
