@@ -14,39 +14,43 @@ except metadata.PackageNotFoundError:
 @click.group()
 @click.version_option(version_number)
 def cli():
-    """CLI function for the repo_agent module.
-
-This function serves as the entry point for the command-line interface of the repo_agent module. It is designed to automate the generation and management of documentation for a Git repository. The function currently does not take any arguments, return any values, or raise any exceptions. It is a placeholder and is intended to be expanded with additional functionality to integrate various features such as detecting changes, handling file operations, managing project settings, generating summaries for modules and directories, and enhancing user interaction through a chat engine and multi-task dispatch system.
-
-Args:
-    None
-
-Returns:
-    None
-
-Raises:
-    None
-
-Note:
-    See also: repo_agent\\__main__.py (if applicable)."""
+    """
+    CLI function for the repo_agent module.
+    
+    This function serves as the entry point for the command-line interface of the repo_agent module. It is designed to automate the generation and management of documentation for a Git repository. The function currently does not take any arguments, return any values, or raise any exceptions. It is a placeholder and is intended to be expanded with additional functionality to integrate various features such as detecting changes, handling file operations, managing project settings, generating summaries for modules and directories, and enhancing user interaction through a chat engine and multi-task dispatch system.
+    
+    Args:
+        None
+    
+    Returns:
+        None
+    
+    Raises:
+        None
+    
+    Note:
+        See also: repo_agent\\__main__.py (if applicable).
+    """
     pass
 
 def handle_setting_error(e: ValidationError):
-    """Handles and displays configuration errors from a ValidationError.
-
-This method iterates over the errors in a ValidationError, formats them into user-friendly messages, and prints them to the console. If any required field is missing, it instructs the user to set the corresponding environment variable. After displaying all errors, it raises a ClickException to terminate the program.
-
-Args:
-    e (ValidationError): The ValidationError object containing the configuration errors.
-
-Returns:
-    None: This method does not return any value.
-
-Raises:
-    click.ClickException: If there are configuration errors, this exception is raised to terminate the program.
-
-Note:
-    This method is used to handle and display errors during the initialization of settings in the `run`, `run_outside_cli`, and `diff` methods. It ensures that the user is informed about any missing or incorrect configuration settings, helping to maintain the integrity and functionality of the documentation generation process."""
+    """
+    Handles and displays configuration errors from a ValidationError.
+    
+    This method iterates over the errors in a ValidationError, formats them into user-friendly messages, and prints them to the console. If any required field is missing, it instructs the user to set the corresponding environment variable. After displaying all errors, it raises a ClickException to terminate the program.
+    
+    Args:
+        e (ValidationError): The ValidationError object containing the configuration errors.
+    
+    Returns:
+        None: This method does not return any value.
+    
+    Raises:
+        click.ClickException: If there are configuration errors, this exception is raised to terminate the program.
+    
+    Note:
+        This method is used to handle and display errors during the initialization of settings in the `run`, `run_outside_cli`, and `diff` methods. It ensures that the user is informed about any missing or incorrect configuration settings, helping to maintain the integrity and functionality of the documentation generation process. The tool is designed to automate the generation and management of documentation for a Git repository, integrating various functionalities to detect changes, handle file operations, manage tasks, and configure settings.
+    """
     for error in e.errors():
         field = error['loc'][-1]
         if error['type'] == 'missing':
@@ -70,32 +74,34 @@ Note:
 @click.option('--log-level', '-ll', default='INFO', show_default=True, help='Sets the logging level (e.g., DEBUG, INFO, WARNING, ERROR, CRITICAL) for the application. Default is INFO.', type=click.Choice([level.value for level in LogLevel], case_sensitive=False))
 @click.option('--print-hierarchy', '-pr', is_flag=True, show_default=True, default=False, help='If set, prints the hierarchy of the target repository when finished running the main task.')
 def run(model, temperature, request_timeout, base_url, target_repo_path, hierarchy_path, markdown_docs_path, ignore_list, language, max_thread_count, log_level, print_hierarchy):
-    """Runs the documentation generation process with specified settings.
-
-This method initializes the settings, sets the logger level, and runs the documentation generation process. If the `print_hierarchy` flag is set, it prints the hierarchical tree of the target repository. The tool automates the generation and management of documentation for a Git repository, integrating functionalities to detect changes, handle file operations, manage project settings, and generate summaries for modules and directories.
-
-Args:
-    model (str): The model to use for documentation generation.
-    temperature (float): The temperature setting for the model.
-    request_timeout (int): The timeout for API requests in seconds.
-    base_url (str): The base URL for the API.
-    target_repo_path (str): The path to the target repository.
-    hierarchy_path (str): The path to the hierarchy file.
-    markdown_docs_path (str): The path to the markdown documents directory.
-    ignore_list (str): A comma-separated list of items to ignore.
-    language (str): The language for the documentation.
-    max_thread_count (int): The maximum number of threads to use.
-    log_level (str): The log level for the application.
-    print_hierarchy (bool): Whether to print the hierarchical tree of the target repository.
-
-Returns:
-    None
-
-Raises:
-    ValidationError: If the settings initialization fails due to invalid parameters.
-
-Note:
-    This method is the entry point for the documentation generation process and handles initialization, execution, and logging. It is particularly useful for large repositories where manual tracking and updating of documentation can be time-consuming and error-prone."""
+    """
+    Runs the documentation generation process with specified settings.
+    
+    This method initializes the settings, sets the logger level, and runs the documentation generation process. If the `print_hierarchy` flag is set, it prints the hierarchical tree of the target repository. The tool automates the generation and management of documentation for a Git repository, integrating functionalities to detect changes, handle file operations, manage project settings, and generate summaries for modules and directories. It is designed to work seamlessly within a Git environment, leveraging Git's capabilities to track changes and manage files.
+    
+    Args:
+        model (str): The model to use for documentation generation.
+        temperature (float): The temperature setting for the model.
+        request_timeout (int): The timeout for API requests in seconds.
+        base_url (str): The base URL for the API.
+        target_repo_path (str): The path to the target repository.
+        hierarchy_path (str): The path to the hierarchy file.
+        markdown_docs_path (str): The path to the markdown documents directory.
+        ignore_list (str): A comma-separated list of items to ignore.
+        language (str): The language for the documentation.
+        max_thread_count (int): The maximum number of threads to use.
+        log_level (str): The log level for the application.
+        print_hierarchy (bool): Whether to print the hierarchical tree of the target repository.
+    
+    Returns:
+        None
+    
+    Raises:
+        ValidationError: If the settings initialization fails due to invalid parameters.
+    
+    Note:
+        This method is the entry point for the documentation generation process and handles initialization, execution, and logging. It is particularly useful for large repositories where maintaining consistent and accurate documentation can be challenging and time-consuming. By automating these tasks, the project enhances productivity and ensures that documentation remains synchronized with the codebase.
+    """
     try:
         setting = SettingsManager.initialize_with_params(target_repo=target_repo_path, hierarchy_name=hierarchy_path, markdown_docs_name=markdown_docs_path, ignore_list=[item.strip() for item in ignore_list.split(',') if item], language=language, log_level=log_level, model=model, temperature=temperature, request_timeout=request_timeout, openai_base_url=base_url, max_thread_count=max_thread_count)
         set_logger_level_from_config(log_level=log_level)
@@ -110,37 +116,39 @@ Note:
         logger.success('Hierarchy printed.')
 
 def run_outside_cli(model, temperature, request_timeout, base_url, target_repo_path, hierarchy_path, markdown_docs_path, ignore_list, language, max_thread_count, log_level, print_hierarchy):
-    """Runs the documentation generation process outside of the command-line interface (CLI).
-
-This method initializes the project settings, sets the logger level, and runs the documentation generation process. If the `print_hierarchy` flag is set, it prints the hierarchical structure of the documentation items.
-
-Args:
-    model (str): The OpenAI model to use for chat completion.
-    temperature (float): The sampling temperature for the model.
-    request_timeout (int): The timeout for API requests in seconds.
-    base_url (str): The base URL for the OpenAI API.
-    target_repo_path (Path): The path to the target repository.
-    hierarchy_path (str): The name of the hierarchy directory.
-    markdown_docs_path (str): The name of the markdown documents directory.
-    ignore_list (str): A comma-separated list of files or directories to ignore.
-    language (str): The language to use. Must be a valid ISO 639 code or language name.
-    max_thread_count (int): The maximum number of threads to use.
-    log_level (str): The log level for the application. Must be one of 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'.
-    print_hierarchy (bool): Whether to print the hierarchical structure of the documentation items.
-
-Returns:
-    None
-
-Raises:
-    ValidationError: If the provided settings are invalid.
-    ValueError: If the log level input is invalid. The input must be one of the valid log levels: 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'.
-    ValueError: If the language input is invalid. The input must be a valid ISO 639 code or language name.
-
-Note:
-    - The method uses the `SettingsManager` to initialize project settings.
-    - It uses the `set_logger_level_from_config` function to set the logger level.
-    - It uses the `Runner` class to manage and generate the documentation.
-    - If `print_hierarchy` is set, it prints the hierarchical structure of the documentation items using the `print_recursive` method."""
+    """
+    Runs the documentation generation process outside of the command-line interface (CLI).
+    
+    This method initializes the project settings, sets the logger level, and runs the documentation generation process. If the `print_hierarchy` flag is set, it prints the hierarchical structure of the documentation items.
+    
+    Args:
+        model (str): The OpenAI model to use for chat completion.
+        temperature (float): The sampling temperature for the model.
+        request_timeout (int): The timeout for API requests in seconds.
+        base_url (str): The base URL for the OpenAI API.
+        target_repo_path (Path): The path to the target repository.
+        hierarchy_path (str): The name of the hierarchy directory.
+        markdown_docs_path (str): The name of the markdown documents directory.
+        ignore_list (str): A comma-separated list of files or directories to ignore.
+        language (str): The language to use. Must be a valid ISO 639 code or language name.
+        max_thread_count (int): The maximum number of threads to use.
+        log_level (str): The log level for the application. Must be one of 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'.
+        print_hierarchy (bool): Whether to print the hierarchical structure of the documentation items.
+    
+    Returns:
+        None
+    
+    Raises:
+        ValidationError: If the provided settings are invalid.
+        ValueError: If the log level input is invalid. The input must be one of the valid log levels: 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'.
+        ValueError: If the language input is invalid. The input must be a valid ISO 639 code or language name.
+    
+    Note:
+        - The method uses the `SettingsManager` to initialize project settings.
+        - It uses the `set_logger_level_from_config` function to set the logger level.
+        - It uses the `Runner` class to manage and generate the documentation.
+        - If `print_hierarchy` is set, it prints the hierarchical structure of the documentation items using the `print_recursive` method.
+    """
     try:
         setting = SettingsManager.initialize_with_params(target_repo=target_repo_path, hierarchy_name=hierarchy_path, markdown_docs_name=markdown_docs_path, ignore_list=[item.strip() for item in ignore_list.split(',') if item], language=language, log_level=log_level, model=model, temperature=temperature, request_timeout=request_timeout, openai_base_url=base_url, max_thread_count=max_thread_count)
         set_logger_level_from_config(log_level=log_level)
@@ -156,42 +164,46 @@ Note:
 
 @cli.command()
 def clean():
-    """Cleans up fake files.
-
-This function deletes fake files and logs a success message. It is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository. The tool integrates various functionalities to detect changes, handle file operations, manage project settings, and generate summaries for modules and directories.
-
-Args:
-    None
-
-Returns:
-    None
-
-Raises:
-    None
-
-Note:
-    This function is particularly useful for managing untracked and modified content in the repository."""
+    """
+    Cleans up fake files.
+    
+    This method deletes fake files and logs a success message. It is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository. The tool integrates various functionalities to detect changes, handle file operations, manage tasks, and configure settings, all while ensuring efficient and accurate documentation updates. This method is particularly useful for managing untracked and modified content in the repository.
+    
+    Args:
+        None
+    
+    Returns:
+        None
+    
+    Raises:
+        None
+    
+    Note:
+        This method leverages Git's capabilities to track changes and manage files, ensuring that the repository remains clean and organized.
+    """
     delete_fake_files()
     logger.success('Fake files have been cleaned up.')
 
 @cli.command()
 def diff():
-    """Compares the current state of the repository with a previous state to identify changes in documentation.
-
-This method checks the settings, ensures the command is not run during the generation process, and then creates a fake file structure to generate new meta information. It compares this new meta information with the existing one to determine which documentation items need to be generated or updated. Finally, it prints the changes and deletes the fake files.
-
-Args:
-    None
-
-Returns:
-    None
-
-Raises:
-    ValidationError: If the settings are invalid.
-    click.Abort: If the command is run during the generation process.
-
-Note:
-    This method is designed to be used as a pre-check before the actual documentation generation process. It integrates with the project's functionalities to detect changes, handle file operations, and manage project settings, ensuring that the documentation is up-to-date and accurate."""
+    """
+    Compares the current state of the repository with a previous state to identify changes in documentation.
+    
+    This method checks the settings, ensures the command is not run during the generation process, and then creates a fake file structure to generate new meta information. It compares this new meta information with the existing one to determine which documentation items need to be generated or updated. Finally, it prints the changes and deletes the fake files.
+    
+    Args:
+        None
+    
+    Returns:
+        None
+    
+    Raises:
+        ValidationError: If the settings are invalid.
+        click.Abort: If the command is run during the generation process.
+    
+    Note:
+        This method is designed to be used as a pre-check before the actual documentation generation process. It integrates with the project's functionalities to detect changes, handle file operations, and manage project settings, ensuring that the documentation is up-to-date and accurate. The tool is built to work seamlessly within a Git environment, leveraging Git's capabilities to track changes and manage files. This helps streamline the documentation process for software repositories, reducing manual effort and ensuring that documentation remains synchronized with the codebase.
+    """
     try:
         setting = SettingsManager.get_setting()
     except ValidationError as e:

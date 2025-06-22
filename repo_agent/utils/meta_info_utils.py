@@ -7,27 +7,30 @@ from repo_agent.settings import SettingsManager
 latest_verison_substring = '_latest_version.py'
 
 def make_fake_files():
-    """Creates fake files for untracked and modified files in the repository.
-
-This method first deletes any existing fake files using the `delete_fake_files` method. It then retrieves the project settings and initializes a Git repository object. The method processes unstaged changes and untracked files, creating fake files for Python files and handling modified files by renaming them to a temporary name. It also prints messages to the console to indicate the actions taken.
-
-Args:
-    None
-
-Returns:
-    tuple: A tuple containing two elements:
-        - file_path_reflections (dict): A dictionary mapping original file paths to their temporary file paths.
-        - jump_files (list): A list of untracked Python files that were skipped.
-
-Raises:
-    None
-
-Note:
-    - The method uses the `SettingsManager` class to retrieve the project settings.
-    - The method prints messages to the console to indicate the actions taken, such as skipping untracked files, saving the latest version of code, and creating temporary files for deleted but not staged files.
-    - The `latest_version_substring` is a string that identifies temporary files.
-    - The method uses color codes to format the console output for better readability.
-    - This tool is part of a comprehensive system designed to automate the generation and management of documentation for a Git repository, ensuring that documentation is up-to-date and accurate."""
+    """
+    Creates fake files for untracked and modified files in the repository.
+    
+    This method first deletes any existing fake files using the `delete_fake_files` method. It then retrieves the project settings and initializes a Git repository object. The method processes unstaged changes and untracked files, creating fake files for Python files and handling modified files by renaming them to a temporary name. It also prints messages to the console to indicate the actions taken.
+    
+    Args:
+        None
+    
+    Returns:
+        tuple: A tuple containing two elements:
+            - file_path_reflections (dict): A dictionary mapping original file paths to their temporary file paths.
+            - jump_files (list): A list of untracked Python files that were skipped.
+    
+    Raises:
+        None
+    
+    Note:
+        - The method uses the `SettingsManager` class to retrieve the project settings.
+        - The method prints messages to the console to indicate the actions taken, such as skipping untracked files, saving the latest version of code, and creating temporary files for deleted but not staged files.
+        - The `latest_version_substring` is a string that identifies temporary files.
+        - The method uses color codes to format the console output for better readability.
+        - This tool is part of a comprehensive system designed to automate the generation and management of documentation for a Git repository, ensuring that documentation is up-to-date and accurate.
+        - The primary purpose of this project is to streamline the documentation process for software repositories, reducing manual effort and ensuring that documentation remains synchronized with the codebase.
+    """
     delete_fake_files()
     setting = SettingsManager.get_setting()
     repo = git.Repo(setting.project.target_repo)
@@ -71,44 +74,48 @@ Note:
     return (file_path_reflections, jump_files)
 
 def delete_fake_files():
-    """Deletes fake files and recovers the latest version of modified files.
-
-This method recursively traverses the target repository to find and delete temporary files that end with a specific substring. It also recovers the latest version of modified files by renaming them back to their original names.
-
-Args:
-    None
-
-Returns:
-    None
-
-Raises:
-    None
-
-Note:
-    - The method uses the `SettingsManager` class to retrieve the project settings.
-    - The method prints messages to the console to indicate the actions taken, such as deleting temporary files or recovering the latest version of files.
-    - The `latest_version_substring` is a string that identifies temporary files.
-    - The method uses color codes to format the console output for better readability.
-    - This function is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository. It helps in maintaining an up-to-date and accurate documentation by handling untracked and modified content efficiently."""
+    """
+    Deletes fake files and recovers the latest version of modified files.
+    
+    This method recursively traverses the target repository to find and delete temporary files that end with a specific substring. It also recovers the latest version of modified files by renaming them back to their original names.
+    
+    Args:
+        None
+    
+    Returns:
+        None
+    
+    Raises:
+        None
+    
+    Note:
+        - The method uses the `SettingsManager` class to retrieve the project settings.
+        - The method prints messages to the console to indicate the actions taken, such as deleting temporary files or recovering the latest version of files.
+        - The `latest_version_substring` is a string that identifies temporary files.
+        - The method uses color codes to format the console output for better readability.
+        - This method is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository. It helps in maintaining an up-to-date and accurate documentation by handling untracked and modified content efficiently. The tool integrates various functionalities to detect changes, manage file operations, and configure settings, all while ensuring efficient and accurate documentation updates.
+    """
     setting = SettingsManager.get_setting()
 
     def gci(filepath):
-        """Recursively deletes temporary files and recovers the latest version of files in a directory.
-
-This method traverses the directory tree starting from the given filepath. It checks each file and directory, and if a file ends with a specific substring (`latest_version_substring`), it attempts to delete the corresponding original file and then either deletes the temporary file if it is empty or renames it to the original file name.
-
-Args:
-    filepath (str): The path to the directory to be processed.
-
-Returns:
-    None: This method does not return any value.
-
-Raises:
-    FileNotFoundError: If the specified filepath does not exist.
-    PermissionError: If the method does not have permission to access or modify files.
-
-Note:
-    This method uses the `os` and `Fore` modules for file operations and colored console output. The `latest_version_substring` and `setting.project.target_repo` are assumed to be defined elsewhere in the code. The tool is part of a larger project aimed at automating the generation and management of documentation for a Git repository, ensuring that documentation is up-to-date and accurate."""
+        """
+    Recursively deletes temporary files and recovers the latest version of files in a directory.
+    
+    This method traverses the directory tree starting from the given filepath. It checks each file and directory, and if a file ends with a specific substring (`latest_version_substring`), it attempts to delete the corresponding original file and then either deletes the temporary file if it is empty or renames it to the original file name.
+    
+    Args:
+        filepath (str): The path to the directory to be processed.
+    
+    Returns:
+        None: This method does not return any value.
+    
+    Raises:
+        FileNotFoundError: If the specified filepath does not exist.
+        PermissionError: If the method does not have permission to access or modify files.
+    
+    Note:
+        This method uses the `os` and `Fore` modules for file operations and colored console output. The `latest_version_substring` and `setting.project.target_repo` are assumed to be defined elsewhere in the code. The tool is part of a larger project aimed at automating the generation and management of documentation for a Git repository, ensuring that documentation is up-to-date and accurate. The primary purpose of this project is to streamline the documentation process for software repositories, reducing manual effort and enhancing productivity.
+    """
         files = os.listdir(filepath)
         for fi in files:
             fi_d = os.path.join(filepath, fi)
