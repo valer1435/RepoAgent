@@ -195,7 +195,7 @@ class ChangeDetector:
     """
         repo = self.repo
         if is_new_file:
-            add_command = f'git -C {repo.working_dir} add {file_path}'
+            add_command = f"git -C {repo.working_dir} add {file_path}"
             subprocess.run(add_command, shell=True, check=True)
             diffs = repo.git.diff('--staged', file_path).splitlines()
         else:
