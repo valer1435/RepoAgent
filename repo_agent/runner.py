@@ -323,7 +323,7 @@ class Runner:
         ValueError: If the `target_repo` or `hierarchy_name` settings are invalid.
     
     Note:
-        The primary purpose of this project is to automate the generation and management of documentation for a Git repository. It integrates various functionalities to detect changes, handle file operations, manage tasks, and configure settings, all while ensuring efficient and accurate documentation updates. The tool is built to work seamlessly within a Git environment, leveraging Git's capabilities to track changes and manage files. Additionally, it includes a multi-task dispatch system to efficiently process documentation generation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
+        The `repo_agent` project is a comprehensive tool designed to automate the generation and management of documentation for Python projects within a Git repository. It integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase. The project leverages Git to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction. Additionally, it supports multi-threaded task management and configuration settings to customize the documentation generation process.
     """
         self.setting = SettingsManager.get_setting()
         self.absolute_project_hierarchy_path = self.setting.project.target_repo / self.setting.project.hierarchy_name
@@ -348,7 +348,7 @@ class Runner:
         """
     Retrieves all Python files from the specified directory and its subdirectories.
     
-    This method is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository. It integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase. The tool leverages Git to detect changes, manage file handling, and generate documentation items as needed. It also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
+    This method is part of a comprehensive tool designed to automate the generation and management of documentation for Python projects within a Git repository. It integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase. The tool leverages Git to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction. Additionally, it supports multi-threaded task management and configuration settings to customize the documentation generation process.
     
     Args:
         directory (str): The root directory to search for Python files.
@@ -423,7 +423,7 @@ class Runner:
         Exception: If there is an error in the language model chat call.
     
     Note:
-        The `generate_main_project_idea` method formats the list of components into a message template and sends it to a language model to generate the project idea. The `SettingsManager` class is used to manage and initialize project and chat completion settings. This method is a crucial part of the `repo_agent` project, which aims to automate the generation and management of documentation for a Git repository. The project integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase, leveraging Git to detect changes, manage file handling, and generate documentation items as needed. It also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
+        The `generate_main_project_idea` method formats the list of components into a message template and sends it to a language model to generate the project idea. The `SettingsManager` class is used to manage and initialize project and chat completion settings. This method is a crucial part of the `repo_agent` project, which aims to automate the generation and management of documentation for Python projects within a Git repository. The project integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase, leveraging Git to detect changes, manage file handling, and generate documentation summaries. It also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
     """
         str_obj = []
         for doc in docs:
@@ -487,7 +487,7 @@ class Runner:
         """
     Retrieves the top N components from a documentation item, excluding any items that should be ignored.
     
-    This method is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository. It ensures that documentation is up-to-date and accurate by integrating various functionalities to detect changes, handle file operations, manage tasks, and configure settings.
+    This method is part of a comprehensive tool designed to automate the generation and management of documentation for Python projects within a Git repository. It ensures that documentation is up-to-date and accurately reflects the current state of the codebase by integrating various functionalities to detect changes, handle file operations, manage tasks, and configure settings.
     
     Args:
         doc_item (DocItem): The documentation item to process.
@@ -552,7 +552,7 @@ class Runner:
         str: The generated main project idea.
     
     Note:
-        The `generate_main_project_idea` method formats the list of components into a message template and sends it to a language model to generate the project idea. The `SettingsManager` class is used to manage and initialize project and chat completion settings. This method is a crucial part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. It integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase.
+        The `generate_main_project_idea` method formats the list of components into a message template and sends it to a language model to generate the project idea. The `SettingsManager` class is used to manage and initialize project and chat completion settings. This method is a crucial part of the `repo_agent` project, which automates the generation and management of documentation for Python projects within a Git repository. It integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase. The primary purpose of the `repo_agent` project is to streamline the documentation process for developers and maintainers of Python projects by automating the detection of changes, generation of documentation, and management of file states.
     """
         logger.info('Generation of the main idea')
         main_project_idea = self.generate_main_project_idea(docs)
@@ -604,7 +604,7 @@ class Runner:
         None
     
     Note:
-        This method relies on the `search_tree` method to find the correct `DocItem` in the hierarchical tree. The `module` dictionary must contain valid keys and values for the method to work correctly. The `repo_agent` project is designed to automate the generation and management of documentation for a Git repository, ensuring that documentation is always up-to-date and accurately reflects the current state of the codebase. It integrates various functionalities to detect changes, manage file handling, and generate documentation items as needed. The project also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
+        This method relies on the `search_tree` method to find the correct `DocItem` in the hierarchical tree. The `module` dictionary must contain valid keys and values for the method to work correctly. The `repo_agent` project is designed to automate the generation and management of documentation for Python projects within a Git repository, ensuring that documentation is always up-to-date and accurately reflects the current state of the codebase. It integrates Git to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction. Additionally, it supports multi-threaded task management and configuration settings to customize the documentation generation process.
     """
         rel_path = os.path.relpath(module['path'], self.meta_info.repo_path)
         doc_item = self.search_tree(self.meta_info.target_repo_hierarchical_tree, rel_path)
@@ -630,7 +630,7 @@ class Runner:
         None
     
     Note:  
-        This method is a key component of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. It integrates with other functionalities such as change detection, file operations, and summary generation to ensure that the documentation is up-to-date and accurate. The project is designed to work seamlessly within a Git environment, leveraging Git's capabilities to track changes and manage files. The multi-threaded task management system and settings manager further enhance the efficiency and configurability of the documentation process.
+        This method is a key component of the `repo_agent` project, which automates the generation and management of documentation for Python projects within a Git repository. It integrates with other functionalities such as change detection, file operations, and summary generation to ensure that the documentation is up-to-date and accurate. The project is designed to work seamlessly within a Git environment, leveraging Git's capabilities to track changes and manage files. The multi-threaded task management system and settings manager further enhance the efficiency and configurability of the documentation process.
     """
         if path == '.':
             return doc
@@ -661,7 +661,7 @@ class Runner:
         ValueError: If `path` does not exist or is not a valid file path.
     
     Note:
-        This method is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository. The tool integrates various functionalities to detect changes, handle file operations, manage tasks, and configure settings, ensuring efficient and accurate documentation updates. It is built to work seamlessly within a Git environment, leveraging Git's capabilities to track changes and manage files. The primary purpose of the `repo_agent` project is to streamline the documentation process for software development teams, reducing manual effort and ensuring that the documentation is always in sync with the codebase.
+        This method is part of the `repo_agent` project, a comprehensive tool designed to automate the generation and management of documentation for Python projects within a Git repository. The tool integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase. It leverages Git to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction. The primary purpose of the `repo_agent` project is to streamline the documentation process for developers and maintainers of Python projects, reducing manual effort and ensuring that the documentation is always current and useful.
     """
         path_obj = Path(path) if isinstance(path, str) else path
         processed_parts = []
@@ -713,6 +713,29 @@ class Runner:
         for file_item in tqdm(file_item_list):
 
             def recursive_check(doc_item) -> bool:
+                """
+    Runs the documentation generation process for the project.
+    
+    This method automates the generation and updating of documentation for a Git repository. It checks if the document version is empty and initializes the necessary settings and processes. If the document version is not empty and the generation process is not in progress, it detects changes in the repository, merges the new metadata, and generates the necessary documentation. It uses multiple threads to process tasks concurrently and ensures that the metadata is checkpointed and the markdown documentation is refreshed.
+    
+    Args:
+        self: The instance of the `Runner` class.
+    
+    Returns:
+        None
+    
+    Raises:
+        None
+    
+    Note:
+        - The method uses the `SettingsManager` to retrieve project settings.
+        - It uses the `MetaInfo` class to manage metadata and task generation.
+        - It uses the `ChangeDetector` class to detect changes in the repository.
+        - It uses the `worker` function to process tasks in parallel.
+        - It uses the `markdown_refresh` method to refresh the markdown documentation.
+        - It uses the `delete_fake_files` method to clean up temporary files.
+        - The method logs various actions and intermediate results for debugging and monitoring purposes.
+    """
                 if doc_item.md_content:
                     return True
                 for child in doc_item.children.values():
@@ -790,27 +813,21 @@ class Runner:
 
     def run(self):
         """
-    Runs the documentation generation process for the project.
+    Commits changes to the Git repository with the specified message.
     
-    This method automates the generation and updating of documentation for a Git repository. It checks if the document version is empty and initializes the necessary settings and processes. If the document version is not empty and the generation process is not in progress, it detects changes in the repository, merges the new metadata, and generates the necessary documentation. It uses multiple threads to process tasks concurrently and ensures that the metadata is checkpointed and the markdown documentation is refreshed.
+    This method is part of the `repo_agent` project, which automates the generation and management of documentation for Python projects within a Git repository. It integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase. The method ensures that changes are committed with a clear message, facilitating better version control and documentation tracking.
     
     Args:
-        self: The instance of the `Runner` class.
+        commit_message (str): The message to be used for the Git commit.
     
     Returns:
-        None
+        None: This method does not return any value.
     
     Raises:
-        None
+        subprocess.CalledProcessError: If the Git commit command fails.
     
     Note:
-        - The method uses the `SettingsManager` to retrieve project settings.
-        - It uses the `MetaInfo` class to manage metadata and task generation.
-        - It uses the `ChangeDetector` class to detect changes in the repository.
-        - It uses the `worker` function to process tasks in parallel.
-        - It uses the `markdown_refresh` method to refresh the markdown documentation.
-        - It uses the `delete_fake_files` method to clean up temporary files.
-        - The method logs various actions and intermediate results for debugging and monitoring purposes.
+        The `--no-verify` flag is used to bypass pre-commit hooks, which can be useful in automated workflows where pre-commit checks are not necessary.
     """
         if self.meta_info.document_version == '':
             settings = SettingsManager.get_setting()

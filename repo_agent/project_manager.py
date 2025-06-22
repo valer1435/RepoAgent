@@ -3,7 +3,7 @@ import jedi
 
 class ProjectManager:
     """
-    ProjectManager is a class for managing and organizing the structure of a project repository.
+    ProjectManager is a class for managing and organizing the structure of a Python project repository.
     
     This class automates the generation and management of documentation for a Git repository. It integrates various functionalities to detect changes, handle file operations, manage project settings, and generate summaries for modules and directories. The tool also includes a chat engine and a multi-task dispatch system to enhance user interaction and process management. Additionally, it provides utilities for handling .gitignore files and managing fake files for untracked and modified content.
     
@@ -69,7 +69,7 @@ class ProjectManager:
         """
     Initializes the ProjectManager instance.
     
-    Sets up the project manager with the specified repository path and project hierarchy file. This tool automates the generation and management of documentation for a Git repository, integrating functionalities to detect changes, handle file operations, manage tasks, and configure settings. It ensures efficient and accurate documentation updates by leveraging Git's capabilities to track changes and manage files. Additionally, it provides utilities for summarizing the repository, handling logging, and managing tasks in a multi-threaded environment.
+    Sets up the project manager with the specified repository path and project hierarchy file. This tool automates the generation and management of documentation for Python projects within a Git repository, integrating functionalities to detect changes, handle file operations, manage tasks, and configure settings. It ensures efficient and accurate documentation updates by leveraging Git's capabilities to track changes and manage files. Additionally, it provides utilities for summarizing the repository, handling logging, and managing tasks in a multi-threaded environment.
     
     Args:
         repo_path (str): The path to the repository.
@@ -82,7 +82,7 @@ class ProjectManager:
         None
     
     Note:
-        The project hierarchy file is expected to be a JSON file located at `repo_path/project_hierarchy/project_hierarchy.json`. This file is crucial for defining the structure of the project and guiding the documentation generation process. The `repo_agent` project is designed to streamline the documentation process for software repositories, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. By automating the detection of changes, the generation of documentation, and the management of documentation items, the project aims to reduce the manual effort required to maintain accurate and comprehensive documentation. This automation helps ensure that the documentation is always in sync with the codebase, improving the reliability and usability of the documentation for developers and other stakeholders.
+        The project hierarchy file is expected to be a JSON file located at `repo_path/project_hierarchy/project_hierarchy.json`. This file is crucial for defining the structure of the project and guiding the documentation generation process. The `repo_agent` project is designed to streamline the documentation process for Python projects, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. By automating the detection of changes, the generation of documentation, and the management of file states, the tool aims to reduce the manual effort required to maintain accurate and comprehensive documentation. This automation helps ensure that the documentation is always in sync with the codebase, improving the reliability and usability of the documentation for developers and other stakeholders.
     """
         self.repo_path = repo_path
         self.project = jedi.Project(self.repo_path)
@@ -92,7 +92,7 @@ class ProjectManager:
         """
     Gets the project structure as a formatted string.
     
-    This method recursively walks through the directory structure of the project, listing directories and Python files. Hidden files and directories (those starting with a dot) are ignored. It is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository, ensuring that documentation is up-to-date and accurately reflects the current state of the codebase.
+    This method recursively walks through the directory structure of the project, listing directories and Python files. Hidden files and directories (those starting with a dot) are ignored. It is part of a comprehensive tool designed to automate the generation and management of documentation for Python projects within a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase.
     
     Args:
         None
@@ -104,10 +104,29 @@ class ProjectManager:
         None
     
     Note:
-        This method only includes Python files (files ending with .py) in the structure. The `repo_agent` project leverages Git to detect changes, manage file handling, and generate documentation items as needed. It also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust. The primary purpose of the `repo_agent` project is to streamline the documentation process for software development teams, reducing the manual effort required to maintain accurate and comprehensive documentation.
+        This method only includes Python files (files ending with .py) in the structure. The `repo_agent` project leverages Git to detect changes, manage file handling, and generate documentation summaries. It also provides a command-line interface (CLI) for easy interaction and supports multi-threaded task management to efficiently process documentation tasks. The primary purpose of the `repo_agent` project is to streamline the documentation process for developers and maintainers of Python projects, reducing the manual effort required to keep documentation in sync with the codebase.
     """
 
         def walk_dir(root, prefix=''):
+            """
+    Builds a path tree from reference lists and a document item path.
+    
+    This method constructs a tree structure from the paths provided in `who_reference_me` and `reference_who`, and then modifies the last part of the `doc_item_path` to include a special marker before converting the tree to a string representation. This is particularly useful for generating accurate and up-to-date documentation for a Git repository, ensuring that all references are correctly represented.
+    
+    Args:
+        who_reference_me (List[str]): A list of paths referencing the current document item.
+        reference_who (List[str]): A list of paths that the current document item references.
+        doc_item_path (str): The path of the document item to be marked in the tree.
+    
+    Returns:
+        str: A string representation of the path tree with the document item path marked.
+    
+    Raises:
+        ValueError: If any of the input lists contain invalid paths.
+    
+    Note:
+        The method uses `os.sep` to split the paths into parts, ensuring compatibility with different operating systems. This method is part of a comprehensive tool designed to automate the generation and management of documentation for Python projects within a Git repository. The tool integrates various functionalities to detect changes, handle file operations, manage tasks, and configure settings, streamlining the documentation process and reducing manual effort.
+    """
             structure.append(prefix + os.path.basename(root))
             new_prefix = prefix + '  '
             for name in sorted(os.listdir(root)):

@@ -142,7 +142,7 @@ class ChangeDetector:
         git.exc.InvalidGitRepositoryError: If the provided path is not a valid Git repository.
     
     Note:
-        This method is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository. The `repo_agent` project integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase. It leverages Git to detect changes, manage file handling, and generate documentation items as needed. The primary purpose of the `repo_agent` project is to streamline the documentation process for software development teams, reducing manual effort and maintaining high-quality, accurate, and consistent documentation.
+        This method is part of the `repo_agent` project, a comprehensive tool designed to automate the generation and management of documentation for Python projects within a Git repository. The project leverages Git to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction. It supports multi-threaded task management and configuration settings to customize the documentation generation process. The primary purpose of the `repo_agent` project is to streamline the documentation process for developers and maintainers of Python projects, reducing manual effort and ensuring that the documentation is always current and useful.
     """
         self.repo_path = repo_path
         self.repo = git.Repo(repo_path)
@@ -151,10 +151,10 @@ class ChangeDetector:
         """
     Retrieves a dictionary of staged Python files in the repository.
     
-    This method identifies Python files that have been added or modified and are currently staged for the next commit. It is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository, ensuring that documentation is up-to-date and reflects the current state of the codebase. The project leverages Git to detect changes, manage file handling, and generate documentation items as needed, making it particularly useful for large repositories where manual tracking of changes can be time-consuming and error-prone.
+    This method identifies Python files that have been added or modified and are currently staged for the next commit. It is part of a comprehensive tool designed to automate the generation and management of documentation for Python projects within a Git repository. The project leverages Git to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction. This ensures that the documentation remains up-to-date and accurately reflects the current state of the codebase.
     
     Args:  
-        self: The instance of the ChangeDetector class.
+        self (ChangeDetector): The instance of the ChangeDetector class.
     
     Returns:  
         dict: A dictionary where keys are the paths of the staged Python files and values are boolean indicating whether the file is new (True) or modified (False).
@@ -178,7 +178,7 @@ class ChangeDetector:
         """
     Retrieves the differences between the current state of a file and its last committed state in the repository.
     
-    This method is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository. It integrates various functionalities to detect changes, handle file operations, manage tasks, and configure settings, all while ensuring efficient and accurate documentation updates. The tool is built to work seamlessly within a Git environment, leveraging Git's capabilities to track changes and manage files.
+    This method is part of a comprehensive tool designed to automate the generation and management of documentation for Python projects within a Git repository. It integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase. The tool leverages Git to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction. Additionally, it supports multi-threaded task management and configuration settings to customize the documentation generation process.
     
     Args:
         file_path (str): The path to the file for which to retrieve the differences.
@@ -285,7 +285,7 @@ class ChangeDetector:
     Note:  
         - The method uses the `SettingsManager` class to retrieve project settings.
         - The method prints the repository path, already staged files, untracked files, and newly staged files for debugging.
-        - This method is part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. The project ensures that documentation remains up-to-date and accurately reflects the current state of the codebase by integrating Git for change detection, managing file operations, and generating documentation items as needed. It also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
+        - This method is part of the `repo_agent` project, which automates the generation and management of documentation for Python projects within a Git repository. The project leverages Git to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction. Additionally, it supports multi-threaded task management and configuration settings to customize the documentation generation process.
     """
         to_be_staged_files = []
         staged_files = [item.a_path for item in self.repo.index.diff('HEAD')]
@@ -349,7 +349,7 @@ class ChangeDetector:
     Note:
         - The method uses the `get_to_be_staged_files` method to determine which files need to be staged.
         - The method prints intermediate results for debugging purposes.
-        - This functionality is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository, ensuring that documentation is up-to-date and reflects the current state of the codebase.
+        - This functionality is part of a comprehensive tool designed to automate the generation and management of documentation for Python projects within a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase.
     """
         unstaged_files_meeting_conditions = self.get_to_be_staged_files()
         for file_path in unstaged_files_meeting_conditions:

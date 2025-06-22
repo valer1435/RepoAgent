@@ -17,7 +17,7 @@ def cli():
     """
     CLI function for the repo_agent module.
     
-    This function serves as the entry point for the command-line interface of the repo_agent module. It automates the generation and management of documentation for a Git repository by integrating functionalities to detect changes, handle file operations, manage tasks, and configure settings. The tool ensures efficient and accurate documentation updates, streamlining the process for developers to maintain their documentation without manual intervention. It leverages Git to detect changes and includes a multi-task dispatch system to process documentation tasks in a multi-threaded environment, ensuring scalability and robustness.
+    This function serves as the entry point for the command-line interface of the repo_agent module. It automates the generation and management of documentation for Python projects within a Git repository by integrating functionalities to detect changes, handle file operations, manage tasks, and configure settings. The tool ensures efficient and accurate documentation updates, streamlining the process for developers to maintain their documentation without manual intervention. It leverages Git to detect changes and includes a multi-task dispatch system to process documentation tasks in a multi-threaded environment, ensuring scalability and robustness.
     
     Args:
         None
@@ -49,7 +49,7 @@ def handle_setting_error(e: ValidationError):
         click.ClickException: If there are configuration errors, this exception is raised to terminate the program.
     
     Note:
-        This method is used to handle and display errors during the initialization of settings in the `run`, `run_outside_cli`, and `diff` methods. It ensures that the user is informed about any missing or incorrect configuration settings, helping to maintain the integrity and functionality of the documentation generation process. The `repo_agent` project automates the generation and management of documentation for a Git repository, and this method plays a crucial role in ensuring that the settings are correctly configured for the automated processes.
+        This method is used to handle and display errors during the initialization of settings in the `run`, `run_outside_cli`, and `diff` methods. It ensures that the user is informed about any missing or incorrect configuration settings, helping to maintain the integrity and functionality of the documentation generation process. The `repo_agent` project automates the generation and management of documentation for Python projects within a Git repository, and this method plays a crucial role in ensuring that the settings are correctly configured for the automated processes.
     """
     for error in e.errors():
         field = error['loc'][-1]
@@ -77,7 +77,7 @@ def run(model, temperature, request_timeout, base_url, target_repo_path, hierarc
     """
     Runs the documentation generation process with specified settings.
     
-    This method initializes the settings, sets the logger level, and runs the documentation generation process. If the `print_hierarchy` flag is set, it prints the hierarchical tree of the target repository. The `repo_agent` project automates the generation and management of documentation for a Git repository, integrating functionalities to detect changes, handle file operations, manage project settings, and generate summaries for modules and directories. This automation helps maintain high-quality, accurate, and consistent documentation, which is essential for project collaboration, maintenance, and understanding.
+    This method initializes the settings, sets the logger level, and runs the documentation generation process. If the `print_hierarchy` flag is set, it prints the hierarchical tree of the target repository. The `repo_agent` project automates the generation and management of documentation for Python projects within a Git repository, integrating functionalities to detect changes, handle file operations, manage project settings, and generate summaries for modules and directories. This automation helps maintain high-quality, accurate, and consistent documentation, which is essential for project collaboration, maintenance, and understanding.
     
     Args:
         model (str): The model to use for documentation generation.
@@ -167,7 +167,7 @@ def clean():
     """
     Cleans up fake files.
     
-    This method deletes fake files and logs a success message. It is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository. The tool integrates various functionalities to detect changes, handle file operations, manage tasks, and configure settings, all while ensuring efficient and accurate documentation updates. The method is particularly useful for managing untracked and modified content in the repository, helping to keep the repository clean and organized.
+    This method deletes fake files and logs a success message. It is part of a comprehensive tool designed to automate the generation and management of documentation for Python projects within a Git repository. The tool integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase. The method is particularly useful for managing untracked and modified content in the repository, helping to keep the repository clean and organized.
     
     Args:
         None
@@ -179,7 +179,7 @@ def clean():
         None
     
     Note:
-        This method leverages Git's capabilities to track changes and manage files, ensuring that the repository remains clean and organized. It is an essential part of the `repo_agent` project, which aims to streamline the documentation process for software repositories by automating the detection of changes, generation of documentation, and management of documentation items. The project includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
+        This method leverages Git's capabilities to track changes and manage files, ensuring that the repository remains clean and organized. It is an essential part of the `repo_agent` project, which aims to streamline the documentation process for developers and maintainers of Python projects by automating the detection of changes, generation of documentation, and management of file states. The project includes a command-line interface (CLI) for easy interaction and supports multi-threaded task management and configuration settings to customize the documentation generation process.
     """
     delete_fake_files()
     logger.success('Fake files have been cleaned up.')
@@ -202,7 +202,7 @@ def diff():
         click.Abort: If the command is run during the generation process.
     
     Note:
-        This method is designed to be used as a pre-check before the actual documentation generation process. It integrates with the project's functionalities to detect changes, handle file operations, and manage project settings, ensuring that the documentation is up-to-date and accurate. The `repo_agent` project automates the generation and management of documentation for a Git repository, streamlining the documentation process and reducing manual effort. It leverages Git's capabilities to track changes and manage files, and includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment.
+        This method is designed to be used as a pre-check before the actual documentation generation process. It integrates with the project's functionalities to detect changes, handle file operations, and manage project settings, ensuring that the documentation is up-to-date and accurate. The `repo_agent` project automates the generation and management of documentation for Python projects within a Git repository, streamlining the documentation process and reducing manual effort. It leverages Git to track changes and manage files, and includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment.
     """
     try:
         setting = SettingsManager.get_setting()

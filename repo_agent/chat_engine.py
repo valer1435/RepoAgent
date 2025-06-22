@@ -108,7 +108,7 @@ class ChatEngine:
         """
     Initializes the ChatEngine instance.
     
-    Sets up the language model (LLM) using the provided project manager and settings from the SettingsManager. This method ensures that the LLM is configured with a context window of 20000 and retrieves the necessary settings to function properly within the project. The ChatEngine is a crucial component of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. It integrates Git to detect changes, manage file handling, and generate documentation items as needed, reducing the manual effort required to keep documentation current.
+    Sets up the language model (LLM) using the provided project manager and settings from the SettingsManager. This method ensures that the LLM is configured with a context window of 20000 and retrieves the necessary settings to function properly within the project. The ChatEngine is a crucial component of the `repo_agent` project, which automates the generation and management of documentation for Python projects within a Git repository. It integrates Git to detect changes, manage file handling, and generate documentation summaries, reducing the manual effort required to keep documentation current.
     
     Args:
         project_manager (ProjectManager): The project manager instance used to manage the project.
@@ -156,6 +156,32 @@ class ChatEngine:
         file_path = doc_item.get_full_name()
 
         def get_referenced_prompt(doc_item: DocItem) -> str:
+            """
+    Generates documentation for a code item using a chat engine.
+    
+    This method constructs a detailed prompt for a chat engine to generate or update documentation for a code item. The prompt includes information about the code item, its references, and any user-defined main ideas. It then sends the prompt to the chat engine and returns the generated documentation.
+    
+    Args:
+        doc_item (DocItem): The documentation item for which the documentation is being generated.
+    
+    Returns:
+        str: The generated documentation for the code item.
+    
+    Raises:
+        Exception: If there is an error in the chat engine call.
+    
+    Note:
+        See also: `build_prompt` method for constructing the prompt.
+    
+    Example:
+        >>> doc_item = DocItem(code_item=some_function, main_idea="Automate documentation generation for Python projects")
+        >>> generated_doc = generate_doc(doc_item)
+        >>> print(generated_doc)
+        "Detailed documentation for some_function, including its purpose, parameters, and return values."
+    
+    Purpose:
+        The primary purpose of the `repo_agent` project is to streamline the documentation process for developers and maintainers of Python projects. By automating the detection of changes, generation of documentation, and management of file states, the tool aims to reduce the manual effort required to keep documentation in sync with the codebase. This ensures that the documentation is always current and useful, enhancing the overall maintainability and usability of the project.
+    """
             if len(doc_item.reference_who) == 0:
                 return ''
             prompt = ['As you can see, the code calls the following objects, their code and docs are as following:']
@@ -165,6 +191,23 @@ class ChatEngine:
             return '\n'.join(prompt)
 
         def get_referencer_prompt(doc_item: DocItem) -> str:
+            """
+    Generates an idea based on a list of items.
+    
+    This method retrieves the project settings, formats the list of items into a message template, and sends the message to a language model for generating an idea. It logs the token usage of the language model and returns the generated idea. If an error occurs during the chat call, it logs the error and re-raises the exception.
+    
+    Args:
+        list_items (str): A string containing the list of items to be used for generating the idea.
+    
+    Returns:
+        str: The generated idea from the language model.
+    
+    Raises:
+        Exception: If there is an error in the language model chat call.
+    
+    Note:
+        The `SettingsManager` class is used to manage and initialize project and chat completion settings. The `idea_chat_template` is a predefined template for formatting the list of items into a message. This method is part of a comprehensive tool designed to automate the generation and management of documentation for Python projects within a Git repository, enhancing user interaction through a chat engine. The tool aims to streamline the documentation process, ensuring that it remains up-to-date and accurately reflects the current state of the codebase.
+    """
             if len(doc_item.who_reference_me) == 0:
                 return ''
             prompt = ['Also, the code has been called by the following objects, their code and docs are as following:']
@@ -174,6 +217,23 @@ class ChatEngine:
             return '\n'.join(prompt)
 
         def get_relationship_description(referencer_content, reference_letter):
+            """
+    Summarizes a module description using a language model.
+    
+    This method retrieves the project settings, formats the module description into messages, and sends the messages to a language model for summarization. It logs the token usage and returns the summarized content. If an error occurs during the chat call, it logs the error and re-raises the exception.
+    
+    Args:
+        module_desc (str): The description of the module to be summarized.
+    
+    Returns:
+        str: The summarized content of the module.
+    
+    Raises:
+        Exception: If an error occurs during the chat call with the language model.
+    
+    Note:
+        The `SettingsManager` class is used to manage and initialize project and chat completion settings. The `module_summary_template` is used to format the module description into messages. This method is part of a comprehensive tool designed to automate the generation and management of documentation for Python projects within a Git repository. The tool integrates various functionalities to detect changes, handle file operations, manage tasks, and configure settings, all while ensuring efficient and accurate documentation updates.
+    """
             if referencer_content and reference_letter:
                 return 'And please include the reference relationship with its callers and callees in the project from a functional perspective'
             elif referencer_content:

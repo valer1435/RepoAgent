@@ -9,7 +9,7 @@ class LogLevel(StrEnum):
     """
     Enum representing the log levels for the application.
     
-    This enum is used to set the log level in the `ProjectSettings` class, which is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository. The tool integrates various functionalities to detect changes, handle file operations, manage tasks, and configure settings, all while ensuring efficient and accurate documentation updates. The tool is built to work seamlessly within a Git environment, leveraging Git's capabilities to track changes and manage files. The `repo_agent` project uses this enum to manage log levels, which helps in maintaining high-quality, accurate, and consistent documentation by providing detailed logs for debugging and monitoring.
+    This enum is used to set the log level in the `ProjectSettings` class, which is part of a comprehensive tool designed to automate the generation and management of documentation for Python projects within a Git repository. The tool integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase. It leverages Git to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction. Additionally, it supports multi-threaded task management and configuration settings to customize the documentation generation process.
     
     Args:
         DEBUG (str): Log level for detailed debug information. Value is 'DEBUG'.
@@ -49,7 +49,7 @@ class ProjectSettings(BaseSettings):
         ValueError: If the log level input is invalid. The input must be one of the valid log levels: 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'.
     
     Note:
-        The `language` and `log_level` fields have custom validation methods to ensure they are set correctly. The `repo_agent` project is designed to automate the generation and management of documentation for a Git repository. It integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase. The project leverages Git to detect changes, manage file handling, and generate documentation items as needed. It also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust. The primary purpose of the `repo_agent` project is to streamline the documentation process for software development teams, reducing manual effort and ensuring that the documentation is always in sync with the codebase.
+        The `language` and `log_level` fields have custom validation methods to ensure they are set correctly. The `repo_agent` project is a comprehensive tool designed to automate the generation and management of documentation for Python projects within a Git repository. It integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase. The project leverages Git to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction. Additionally, it supports multi-threaded task management and configuration settings to customize the documentation generation process. The primary purpose of the `repo_agent` project is to streamline the documentation process for developers and maintainers of Python projects, reducing manual effort and ensuring that the documentation is always current and useful.
     """
     target_repo: DirectoryPath = ''
     hierarchy_name: str = '.project_doc_record'
@@ -65,6 +65,51 @@ class ProjectSettings(BaseSettings):
     @classmethod
     def validate_language_code(cls, v: str) -> str:
         """
+    Converts an HTTP URL to a string.
+    
+    This method takes an HTTP URL object and returns its string representation, which is useful for generating and managing documentation for a Python project within a Git repository. It ensures that URLs used in the documentation are in a readable and usable format.
+    
+    Args:  
+        openai_base_url (HttpUrl): The base URL to be converted to a string.
+    
+    Returns:  
+        str: The string representation of the base URL.
+    
+    Raises:  
+        None
+    
+    Note:  
+        This method is part of the `repo_agent` project, which automates the generation and management of documentation for Python projects within a Git repository. The project integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase. It leverages Git to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction. Additionally, it supports multi-threaded task management and configuration settings to customize the documentation generation process.
+    """
+        try:
+            language_name = Language.match(v).name
+            return language_name
+        except LanguageNotFoundError:
+            raise ValueError('Invalid language input. Please enter a valid ISO 639 code or language name.')
+
+    @field_validator('log_level', mode='before')
+    @classmethod
+    def set_log_level(cls, v: str) -> LogLevel:
+        """
+    Setting class for configuring project and chat completion settings.
+    
+    This class extends BaseSettings and provides configuration options for the project and chat completion using the OpenAI API. It is designed to support the automation of documentation generation and management for a Git repository, integrating functionalities to detect changes, handle file operations, manage project settings, and generate summaries for modules and directories.
+    
+    Args:
+        project (ProjectSettings): Configuration settings for the project. Defaults to an empty dictionary.
+        chat_completion (ChatCompletionSettings): Configuration settings for chat completion. Defaults to an empty dictionary.
+    
+    Note:
+        The `project` and `chat_completion` fields are instances of `ProjectSettings` and `ChatCompletionSettings` respectively, which provide detailed configuration options for the project and chat completion settings. These settings are crucial for the tool's ability to automate documentation and enhance user interaction through a chat engine. The `repo_agent` project aims to streamline the documentation process by automating the detection of changes, generation of documentation, and management of documentation items, ensuring high-quality and consistent documentation for software repositories. The project leverages Git to detect changes, manage file handling, and generate documentation items as needed. It also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
+    """
+        if isinstance(v, str):
+            v = v.upper()
+        if v in LogLevel._value2member_map_:
+            return LogLevel(v)
+        raise ValueError(f'Invalid log level: {v}')
+
+class ChatCompletionSettings(BaseSettings):
+    """
     Validates a language code and returns the corresponding language name.
     
     This method checks if the provided language code or name matches a valid ISO 639 code or language name. If a match is found, it returns the language name. If not, it raises a ValueError.
@@ -91,60 +136,6 @@ class ProjectSettings(BaseSettings):
             ...
         ValueError: 'xyz' is not a valid ISO 639 code or language name.
     """
-        try:
-            language_name = Language.match(v).name
-            return language_name
-        except LanguageNotFoundError:
-            raise ValueError('Invalid language input. Please enter a valid ISO 639 code or language name.')
-
-    @field_validator('log_level', mode='before')
-    @classmethod
-    def set_log_level(cls, v: str) -> LogLevel:
-        """
-    Sets the log level for the project.
-    
-    This method takes a string representing the log level, converts it to uppercase, and returns the corresponding LogLevel enum member. If the provided log level is not valid, it raises a ValueError. This functionality is crucial for configuring the verbosity of logs, which helps in debugging and monitoring the tool's operations.
-    
-    Args:  
-        v (str): The log level to set. This should be a string representing a valid log level.
-    
-    Returns:  
-        LogLevel: The LogLevel enum member corresponding to the provided log level.
-    
-    Raises:  
-        ValueError: If the provided log level is not a valid member of the LogLevel enum.
-    
-    Note:  
-        This method is part of the project settings management, ensuring that the tool's logging behavior can be easily adjusted to suit different development and operational needs. Efficient logging is essential for tracking the tool's operations and ensuring accurate documentation updates. The `repo_agent` project automates the generation and management of documentation for a Git repository, integrating various functionalities to keep documentation up-to-date and accurate. It leverages Git to detect changes, manage file handling, and generate documentation items as needed, ensuring that the documentation is always in sync with the codebase.
-    """
-        if isinstance(v, str):
-            v = v.upper()
-        if v in LogLevel._value2member_map_:
-            return LogLevel(v)
-        raise ValueError(f'Invalid log level: {v}')
-
-class ChatCompletionSettings(BaseSettings):
-    """
-    Settings for chat completion using the OpenAI API.
-    
-    This class configures the settings required for generating chat completions using the OpenAI API. It is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository, enhancing user interaction through a chat engine.
-    
-    Args:  
-        model (str): The model to use for chat completion. Defaults to 'gpt-4o-mini'.  
-        temperature (PositiveFloat): The sampling temperature for the model. Defaults to 0.2.  
-        request_timeout (PositiveInt): The timeout for API requests in seconds. Defaults to 180.  
-        openai_base_url (str): The base URL for the OpenAI API. Defaults to 'https://api.openai.com/v1'.  
-        openai_api_key (SecretStr): The API key for OpenAI. This is a required field.
-    
-    Returns:  
-        None
-    
-    Raises:  
-        ValueError: If `openai_api_key` is not provided.
-    
-    Note:  
-        The `openai_api_key` is excluded from the settings output for security reasons. The `openai_base_url` is converted to a string before validation.
-    """
     model: str = 'gpt-4o-mini'
     temperature: PositiveFloat = 0.2
     request_timeout: PositiveInt = 180
@@ -155,42 +146,6 @@ class ChatCompletionSettings(BaseSettings):
     @classmethod
     def convert_base_url_to_str(cls, openai_base_url: HttpUrl) -> str:
         """
-    Converts an HTTP URL to a string.
-    
-    This method takes an HTTP URL object and returns its string representation, which is useful for generating and managing documentation for a Git repository. It ensures that URLs used in the documentation are in a readable and usable format.
-    
-    Args:  
-        openai_base_url (HttpUrl): The base URL to be converted to a string.
-    
-    Returns:  
-        str: The string representation of the base URL.
-    
-    Raises:  
-        None
-    
-    Note:  
-        This method is part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. The project leverages Git to detect changes, manage file handling, and generate documentation items as needed. It includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
-    """
-        return str(openai_base_url)
-
-class Setting(BaseSettings):
-    """
-    Setting class for configuring project and chat completion settings.
-    
-    This class extends BaseSettings and provides configuration options for the project and chat completion using the OpenAI API. It is designed to support the automation of documentation generation and management for a Git repository, integrating functionalities to detect changes, handle file operations, manage project settings, and generate summaries for modules and directories.
-    
-    Args:
-        project (ProjectSettings): Configuration settings for the project. Defaults to an empty dictionary.
-        chat_completion (ChatCompletionSettings): Configuration settings for chat completion. Defaults to an empty dictionary.
-    
-    Note:
-        The `project` and `chat_completion` fields are instances of `ProjectSettings` and `ChatCompletionSettings` respectively, which provide detailed configuration options for the project and chat completion settings. These settings are crucial for the tool's ability to automate documentation and enhance user interaction through a chat engine. The `repo_agent` project aims to streamline the documentation process by automating the detection of changes, generation of documentation, and management of documentation items, ensuring high-quality and consistent documentation for software repositories. The project leverages Git to detect changes, manage file handling, and generate documentation items as needed. It also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
-    """
-    project: ProjectSettings = {}
-    chat_completion: ChatCompletionSettings = {}
-
-class SettingsManager:
-    """
     SettingsManager class for managing and initializing project and chat completion settings.
     
     This class provides methods to get and initialize settings for the project and chat completion using the OpenAI API. It is designed to streamline the documentation process for software repositories by automating the detection of changes, generation of summaries, and handling of file operations. The `repo_agent` project aims to reduce manual effort in maintaining accurate and comprehensive documentation, ensuring it is always in sync with the codebase.
@@ -251,6 +206,51 @@ class SettingsManager:
     Note:
         The `log_level` is converted to an instance of `LogLevel` before being used in `ProjectSettings`. The `openai_api_key` is a required field in `ChatCompletionSettings` and is excluded from the settings output for security reasons.
     """
+        return str(openai_base_url)
+
+class Setting(BaseSettings):
+    """
+    Sets the log level for the project.
+    
+    This method takes a string representing the log level, converts it to uppercase, and returns the corresponding LogLevel enum member. If the provided log level is not valid, it raises a ValueError. This functionality is crucial for configuring the verbosity of logs, which helps in debugging and monitoring the tool's operations.
+    
+    Args:  
+        v (str): The log level to set. This should be a string representing a valid log level.
+    
+    Returns:  
+        LogLevel: The LogLevel enum member corresponding to the provided log level.
+    
+    Raises:  
+        ValueError: If the provided log level is not a valid member of the LogLevel enum.
+    
+    Note:  
+        This method is part of the project settings management, ensuring that the tool's logging behavior can be easily adjusted to suit different development and operational needs. Efficient logging is essential for tracking the tool's operations and ensuring accurate documentation updates. The `repo_agent` project automates the generation and management of documentation for Python projects within a Git repository, integrating various functionalities to keep documentation up-to-date and accurate. It leverages Git to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction. Additionally, it supports multi-threaded task management and configuration settings to customize the documentation generation process.
+    """
+    project: ProjectSettings = {}
+    chat_completion: ChatCompletionSettings = {}
+
+class SettingsManager:
+    """
+    Settings for chat completion using the OpenAI API.
+    
+    This class configures the settings required for generating chat completions using the OpenAI API. It is part of a comprehensive tool designed to automate the generation and management of documentation for Python projects within a Git repository, enhancing user interaction through a chat engine.
+    
+    Args:  
+        model (str): The model to use for chat completion. Defaults to 'gpt-4o-mini'.  
+        temperature (PositiveFloat): The sampling temperature for the model. Defaults to 0.2.  
+        request_timeout (PositiveInt): The timeout for API requests in seconds. Defaults to 180.  
+        openai_base_url (str): The base URL for the OpenAI API. Defaults to 'https://api.openai.com/v1'.  
+        openai_api_key (SecretStr): The API key for OpenAI. This is a required field.
+    
+    Returns:  
+        None
+    
+    Raises:  
+        ValueError: If `openai_api_key` is not provided.
+    
+    Note:  
+        The `openai_api_key` is excluded from the settings output for security reasons. The `openai_base_url` is converted to a string before validation.
+    """
     _setting_instance: Optional[Setting] = None
 
     @classmethod
@@ -270,7 +270,7 @@ class SettingsManager:
         None
     
     Note:
-        The `Setting` class is integral to the project's functionality, as it manages various configurations necessary for automating documentation generation and management in a Git repository. The `repo_agent` project automates the generation and management of documentation for a Git repository, integrating Git to detect changes, manage file handling, and generate documentation items as needed. It also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
+        The `Setting` class is integral to the project's functionality, as it manages various configurations necessary for automating documentation generation and management in a Git repository. The `repo_agent` project automates the generation and management of documentation for Python projects within a Git repository, integrating Git to detect changes, manage file handling, and generate documentation summaries. It also provides a command-line interface (CLI) for easy interaction and supports multi-threaded task management to ensure the documentation generation process is both scalable and robust.
     """
         if cls._setting_instance is None:
             cls._setting_instance = Setting()
@@ -281,7 +281,7 @@ class SettingsManager:
         """
     Initializes the settings with the provided parameters.
     
-    This method sets up the project and chat completion settings using the provided parameters. It creates instances of `ProjectSettings` and `ChatCompletionSettings` and assigns them to the `_setting_instance` class attribute. The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring efficient and accurate updates.
+    This method sets up the project and chat completion settings using the provided parameters. It creates instances of `ProjectSettings` and `ChatCompletionSettings` and assigns them to the `_setting_instance` class attribute. The `repo_agent` project automates the generation and management of documentation for Python projects within a Git repository, ensuring efficient and accurate updates.
     
     Args:  
         target_repo (Path): The path to the target repository.  

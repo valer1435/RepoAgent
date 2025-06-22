@@ -6,20 +6,7 @@ class GitignoreChecker:
     """
     GitignoreChecker is a utility class for checking files and folders against a .gitignore file to determine which should be ignored.
     
-    This class is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository. It integrates various functionalities to detect changes, handle file operations, manage project settings, and generate summaries for modules and directories. The tool also includes a chat engine and a multi-task dispatch system to enhance user interaction and process management. Additionally, it provides utilities for handling .gitignore files and managing fake files for untracked and modified content.
-    
-    Args:
-        directory (str): The directory to check for ignored files and folders.
-        gitignore_path (str): The path to the .gitignore file. If the file is not found at the specified path, a default path is used.
-    
-    Returns:
-        list: A list of files and folders that are not ignored according to the .gitignore file.
-    
-    Raises:
-        FileNotFoundError: If the .gitignore file is not found at the specified path and the default path.
-    
-    Note:
-        The class reads the .gitignore file, parses it, and checks files and folders in the specified directory against the patterns defined in the file. This ensures that only relevant files and folders are included in the documentation process, enhancing efficiency and accuracy.
+    This class is part of a comprehensive tool designed to automate the generation and management of documentation for Python projects within a Git repository. It integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase. The project leverages Git to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction. Additionally, it supports multi-threaded task management and configuration settings to customize the documentation generation process.
     
     ---
     
@@ -40,7 +27,7 @@ class GitignoreChecker:
         FileNotFoundError: If the gitignore file at the specified path does not exist.
     
     Note:
-        This method is part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. It ensures that the .gitignore file is correctly loaded to manage file operations and untracked content, thereby facilitating efficient and accurate documentation updates. The project integrates various functionalities to detect changes, manage file handling, and generate documentation items, all while operating in a multi-threaded environment to ensure scalability and robustness.
+        This method ensures that the .gitignore file is correctly loaded to manage file operations and untracked content, thereby facilitating efficient and accurate documentation updates.
     
     ---
     
@@ -60,7 +47,7 @@ class GitignoreChecker:
         None
     
     Note:
-        This method is used internally by the GitignoreChecker class to load and process the .gitignore file. It relies on the `_parse_gitignore` and `_split_gitignore_patterns` methods for parsing and splitting the patterns, respectively. The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring that documentation is up-to-date and accurately reflects the current state of the codebase. This method plays a crucial role in filtering out files and folders that should not be included in the documentation process.
+        This method is used internally by the GitignoreChecker class to load and process the .gitignore file. It relies on the `_parse_gitignore` and `_split_gitignore_patterns` methods for parsing and splitting the patterns, respectively.
     
     ---
     
@@ -80,7 +67,7 @@ class GitignoreChecker:
         None
     
     Note:
-        This method is part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. The project leverages Git to detect changes, manage file handling, and generate documentation items as needed. It includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust. This automation helps ensure that the documentation is always in sync with the codebase, improving the reliability and usability of the documentation for developers and other stakeholders.
+        This method is part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. The project leverages Git to detect changes and manage file handling, ensuring that the documentation generation process is both scalable and robust.
     
     ---
     
@@ -100,7 +87,7 @@ class GitignoreChecker:
         None
     
     Note:
-        This method is used internally by the GitignoreChecker class to process gitignore patterns. The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. By leveraging Git to detect changes and manage file handling, the project streamlines the documentation process, making it particularly useful for large repositories where manual documentation management can be time-consuming and error-prone.
+        This method is used internally by the GitignoreChecker class to process gitignore patterns. The `repo_agent` project ensures that the documentation remains up-to-date and accurately reflects the current state of the codebase.
     
     ---
     
@@ -122,7 +109,7 @@ class GitignoreChecker:
         None
     
     Note:
-        This method is used internally by the `check_files_and_folders` method to filter out ignored files and directories. It is a crucial part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. The project ensures that untracked and ignored files are not included in the documentation process, helping to maintain high-quality, accurate, and consistent documentation. The `repo_agent` project integrates various functionalities to detect changes, manage file handling, and generate documentation items efficiently, ensuring that the documentation remains up-to-date and reflects the current state of the codebase.
+        This method is used internally by the `check_files_and_folders` method to filter out ignored files and directories. The `repo_agent` project ensures that untracked and ignored files are not included in the documentation process, helping to maintain high-quality, accurate, and consistent documentation.
     
     ---
     
@@ -142,7 +129,7 @@ class GitignoreChecker:
         None
     
     Note:
-        This method uses the `SettingsManager` class to retrieve the project's ignore list and the `_is_ignored` method to check if a path should be ignored. The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. It leverages Git to detect changes, manage file handling, and generate documentation items as needed, while also including a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment.
+        This method uses the `SettingsManager` class to retrieve the project's ignore list and the `_is_ignored` method to check if a path should be ignored. The `repo_agent` project ensures that the documentation remains up-to-date and accurately reflects the current state of the codebase.
     """
 
     def __init__(self, directory: str, gitignore_path: str):
@@ -162,7 +149,7 @@ class GitignoreChecker:
         FileNotFoundError: If the gitignore file at the specified path does not exist.
     
     Note:
-        This method is part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. It ensures that the .gitignore file is correctly loaded to manage file operations and untracked content, thereby facilitating efficient and accurate documentation updates. The project integrates various functionalities to detect changes, manage file handling, and generate documentation items, all while operating in a multi-threaded environment to ensure scalability and robustness.
+        This method is part of the `repo_agent` project, which automates the generation and management of documentation for Python projects within a Git repository. It ensures that the .gitignore file is correctly loaded to manage file operations and untracked content, thereby facilitating efficient and accurate documentation updates. The project integrates various functionalities to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction and supporting multi-threaded task management for scalability and robustness.
     """
         self.directory = directory
         self.gitignore_path = gitignore_path
@@ -184,7 +171,7 @@ class GitignoreChecker:
         None
     
     Note:  
-        This method is used internally by the GitignoreChecker class to load and process the .gitignore file. It relies on the `_parse_gitignore` and `_split_gitignore_patterns` methods for parsing and splitting the patterns, respectively. The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring that documentation is up-to-date and accurately reflects the current state of the codebase. This method plays a crucial role in filtering out files and folders that should not be included in the documentation process.
+        This method is used internally by the GitignoreChecker class to load and process the .gitignore file. It relies on the `_parse_gitignore` and `_split_gitignore_patterns` methods for parsing and splitting the patterns, respectively. The `repo_agent` project automates the generation and management of documentation for Python projects within a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. This method plays a crucial role in filtering out files and folders that should not be included in the documentation process.
     """
         try:
             with open(self.gitignore_path, 'r', encoding='utf-8') as file:
@@ -213,7 +200,7 @@ class GitignoreChecker:
         None
     
     Note:  
-        This method is part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. The project leverages Git to detect changes, manage file handling, and generate documentation items as needed. It includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust. This automation helps ensure that the documentation is always in sync with the codebase, improving the reliability and usability of the documentation for developers and other stakeholders.
+        This method is part of the `repo_agent` project, which automates the generation and management of documentation for Python projects within a Git repository. The project leverages Git to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction. Additionally, it supports multi-threaded task management and configuration settings to customize the documentation generation process. This automation helps ensure that the documentation is always in sync with the codebase, improving the reliability and usability of the documentation for developers and other stakeholders.
     """
         patterns = []
         for line in gitignore_content.splitlines():
@@ -239,7 +226,7 @@ class GitignoreChecker:
         None
     
     Note:  
-        This method is used internally by the GitignoreChecker class to process gitignore patterns. The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. By leveraging Git to detect changes and manage file handling, the project streamlines the documentation process, making it particularly useful for large repositories where manual documentation management can be time-consuming and error-prone.
+        This method is used internally by the GitignoreChecker class to process gitignore patterns. The `repo_agent` project automates the generation and management of documentation for Python projects within a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. By leveraging Git to detect changes and manage file handling, the project streamlines the documentation process, making it particularly useful for large repositories where manual documentation management can be time-consuming and error-prone.
     """
         folder_patterns = ['.git', '.github', '.idea', 'venv', '.venv']
         file_patterns = []
@@ -269,7 +256,7 @@ class GitignoreChecker:
         None
     
     Note:
-        This method is used internally by the `check_files_and_folders` method to filter out ignored files and directories. It is a crucial part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. The project ensures that untracked and ignored files are not included in the documentation process, helping to maintain high-quality, accurate, and consistent documentation.
+        This method is used internally by the `check_files_and_folders` method to filter out ignored files and directories. It is a crucial part of the `repo_agent` project, which automates the generation and management of documentation for Python projects within a Git repository. The project ensures that untracked and ignored files are not included in the documentation process, helping to maintain high-quality, accurate, and consistent documentation.
     """
         for pattern in patterns:
             if fnmatch.fnmatch(path, pattern):
@@ -294,7 +281,7 @@ class GitignoreChecker:
         None
     
     Note:
-        This method uses the `SettingsManager` class to retrieve the project's ignore list and the `_is_ignored` method to check if a path should be ignored. The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. It leverages Git to detect changes, manage file handling, and generate documentation items as needed, while also including a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment.
+        This method uses the `SettingsManager` class to retrieve the project's ignore list and the `_is_ignored` method to check if a path should be ignored. The `repo_agent` project automates the generation and management of documentation for Python projects within a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. It leverages Git to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction. Additionally, it supports multi-threaded task management and configuration settings to customize the documentation generation process.
     """
         ignored_folders = SettingsManager().get_setting().project.ignore_list
         not_ignored_files = []

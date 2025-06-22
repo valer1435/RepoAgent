@@ -20,7 +20,7 @@ def update_doc(node, new_docstring):
     Note:
         The method ensures that the new docstring is properly indented based on the node type. If the node is not a module, an additional indentation level is applied. This helps maintain consistent and readable code documentation.
     
-        This functionality is part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. The project integrates various functionalities to detect changes, handle file operations, manage tasks, and configure settings, all while ensuring efficient and accurate documentation updates. The primary purpose of the `repo_agent` project is to streamline the documentation process for software development teams, reducing the manual effort required to maintain accurate and comprehensive documentation.
+        This functionality is part of the `repo_agent` project, which automates the generation and management of documentation for Python projects within a Git repository. The project integrates various functionalities to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction. Additionally, it supports multi-threaded task management and configuration settings to customize the documentation generation process. The primary purpose of the `repo_agent` project is to streamline the documentation process for developers and maintainers of Python projects, reducing the manual effort required to keep documentation in sync with the codebase.
     """
     indent = '    ' if not isinstance(node, ast.Module) else ''
     lines = new_docstring.split('\n')

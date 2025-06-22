@@ -28,40 +28,11 @@ class InterceptHandler(logging.Handler):
         ValueError: If the log level name cannot be found in the logger's levels.
     
     Note:
-        This method uses the `inspect` module to determine the correct stack depth for the log message. The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. It leverages Git to detect changes, manage file handling, and generate documentation items as needed, and includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment.
+        This method uses the `inspect` module to determine the correct stack depth for the log message. The `repo_agent` project automates the generation and management of documentation for Python projects within a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. It leverages Git to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction. Additionally, it supports multi-threaded task management and configuration settings to customize the documentation generation process.
     """
 
     def emit(self, record: logging.LogRecord) -> None:
         """
-    Emits a log record to the logger.
-    
-    This method processes a log record and emits it to the logger with the appropriate level and depth. It ensures that the log message is formatted correctly and includes any exception information if available. This is particularly useful for maintaining accurate and detailed logs during the automated generation and management of documentation for a Git repository.
-    
-    Args:
-        record (logging.LogRecord): The log record to be emitted.
-    
-    Returns:
-        None: This method does not return any value.
-    
-    Raises:
-        ValueError: If the log level name cannot be found in the logger's levels.
-    
-    Note:
-        This method uses the `inspect` module to determine the correct stack depth for the log message. The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. It leverages Git to detect changes, manage file handling, and generate documentation items as needed, and includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment.
-    """
-        level: str | int
-        try:
-            level = logger.level(record.levelname).name
-        except ValueError:
-            level = record.levelno
-        frame, depth = (inspect.currentframe(), 0)
-        while frame and (depth == 0 or frame.f_code.co_filename == logging.__file__):
-            frame = frame.f_back
-            depth += 1
-        logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
-
-def set_logger_level_from_config(log_level):
-    """
     Sets the logger level based on the provided configuration.
     
     This method configures the logging level for the application by removing existing log handlers and adding a new one with the specified log level. It also sets up the basic configuration for the logging system to use the custom `InterceptHandler`.
@@ -77,6 +48,35 @@ def set_logger_level_from_config(log_level):
     
     Note:
         This method is used in conjunction with the `InterceptHandler` to ensure that log records are emitted with the correct context and formatting. It is called in the `run` and `run_outside_cli` methods of the `main.py` module to configure the logging level based on user input. This is crucial for the `repo_agent` project's ability to automate the generation and management of documentation for a Git repository, ensuring that logging is consistent and informative.
+    """
+        level: str | int
+        try:
+            level = logger.level(record.levelname).name
+        except ValueError:
+            level = record.levelno
+        frame, depth = (inspect.currentframe(), 0)
+        while frame and (depth == 0 or frame.f_code.co_filename == logging.__file__):
+            frame = frame.f_back
+            depth += 1
+        logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
+
+def set_logger_level_from_config(log_level):
+    """
+    Emits a log record to the logger.
+    
+    This method processes a log record and emits it to the logger with the appropriate level and depth. It ensures that the log message is formatted correctly and includes any exception information if available. This is particularly useful for maintaining accurate and detailed logs during the automated generation and management of documentation for a Git repository.
+    
+    Args:
+        record (logging.LogRecord): The log record to be emitted.
+    
+    Returns:
+        None: This method does not return any value.
+    
+    Raises:
+        ValueError: If the log level name cannot be found in the logger's levels.
+    
+    Note:
+        This method uses the `inspect` module to determine the correct stack depth for the log message. The `repo_agent` project automates the generation and management of documentation for Python projects within a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. It leverages Git to detect changes, manage file handling, and generate documentation summaries, while also providing a command-line interface (CLI) for easy interaction. Additionally, it supports multi-threaded task management and configuration settings to customize the documentation generation process.
     """
     logger.remove()
     logger.add(sys.stderr, level=log_level, enqueue=True, backtrace=False, diagnose=False)
