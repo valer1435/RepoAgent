@@ -36,7 +36,7 @@ class FileHandler:
     Reads the content of a file.
     
     Args:
-    - `self`: The instance of the FileHandler class.
+    - `self` (FileHandler): The instance of the FileHandler class.
     
     Returns:
     - `str`: The content of the file.
@@ -141,7 +141,7 @@ class FileHandler:
     - `parent` (ast.AST, optional): The parent node of the current node. Defaults to None.
     
     Returns:
-    - `None`: This method does not return any value.
+    - `None`
     
     Note:
     This method is used internally by the `get_functions_and_classes` method to ensure that all nodes in the AST have a reference to their parent node. This is particularly useful for generating accurate and detailed documentation for the codebase, as it helps in understanding the structure and relationships between different parts of the code.
@@ -236,7 +236,7 @@ class FileHandler:
         None
     
     Note:
-        The project hierarchy is derived from the settings managed by the SettingsManager. This method is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository, integrating various functionalities to detect changes, handle file operations, manage tasks, and configure settings. The primary purpose of the `repo_agent` project is to streamline the documentation process for software repositories, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase.
+        The project hierarchy is derived from the settings managed by the SettingsManager. The `repo_agent` project is designed to automate the generation and management of documentation for a Git repository, integrating various functionalities to detect changes, handle file operations, manage tasks, and configure settings. The primary purpose is to streamline the documentation process for software development teams, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. This automation helps reduce manual effort and ensures that the documentation is always in sync with the codebase, improving reliability and usability for developers and other stakeholders.
     """
         self.file_path = file_path
         self.repo_path = repo_path
@@ -261,7 +261,7 @@ class FileHandler:
         IOError: If an error occurs while reading the file.
     
     Note:
-        This method constructs the absolute file path by joining the repository path and the file path. It then opens the file in read mode with UTF-8 encoding and reads its content. The tool is built to work seamlessly within a Git environment, leveraging Git's capabilities to track changes and manage files. The `repo_agent` project aims to streamline the documentation process for software repositories, reducing manual effort and ensuring high-quality, accurate, and consistent documentation.
+        This method constructs the absolute file path by joining the repository path and the file path. It then opens the file in read mode with UTF-8 encoding and reads its content. The `repo_agent` project aims to streamline the documentation process for software repositories, reducing manual effort and ensuring high-quality, accurate, and consistent documentation. The tool leverages Git to detect changes and manage files, and includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment.
     """
         abs_file_path = os.path.join(self.repo_path, self.file_path)
         with open(abs_file_path, 'r', encoding='utf-8') as file:
@@ -344,7 +344,7 @@ class FileHandler:
         IOError: If there is an error writing to the file.
     
     Note:
-        This method is used by other components, such as `Runner.add_new_item` and `Runner.process_file_changes`, to write generated Markdown content to files. It integrates seamlessly with the Git environment to track and manage file changes efficiently. The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase.
+        This method is used by other components, such as `Runner.add_new_item` and `Runner.process_file_changes`, to write generated Markdown content to files. It integrates seamlessly with the Git environment to track and manage file changes efficiently. The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. The project leverages Git to detect changes, manage file handling, and generate documentation items as needed. It also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
     """
         if file_path.startswith('/'):
             file_path = file_path[1:]
@@ -372,7 +372,7 @@ class FileHandler:
         git.exc.GitError: If there is an error accessing the Git repository.
     
     Note:  
-        This method is a crucial part of the project's functionality, enabling the tool to track changes in file content over time. This is essential for automating the generation and management of documentation in a Git repository. The `repo_agent` project aims to streamline the documentation process by automating the detection of changes, generation of documentation, and management of documentation items, reducing manual effort and ensuring high-quality, accurate, and consistent documentation.
+        This method is a crucial part of the project's functionality, enabling the tool to track changes in file content over time. The `repo_agent` project aims to automate the generation and management of documentation in a Git repository, reducing manual effort and ensuring high-quality, accurate, and consistent documentation. By integrating Git to detect changes and manage file handling, the project ensures that the documentation remains up-to-date and reflects the current state of the codebase.
     """
         repo = git.Repo(self.repo_path)
         current_version_path = os.path.join(self.repo_path, self.file_path)
@@ -458,7 +458,7 @@ class FileHandler:
         None
     
     Note:
-        This method uses the `get_end_lineno` method to determine the end line number of functions and classes. It also calls the `add_parent_references` method to ensure that all nodes in the AST have a reference to their parent node. This method is crucial for generating accurate and detailed documentation for the repository.
+        This method uses the `get_end_lineno` method to determine the end line number of functions and classes. It also calls the `add_parent_references` method to ensure that all nodes in the AST have a reference to their parent node. This method is crucial for generating accurate and detailed documentation for the repository. The `repo_agent` project automates the detection of changes, manages file handling, and generates documentation items as needed, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase.
     """
         tree = ast.parse(code_content)
         self.add_parent_references(tree)
@@ -529,7 +529,7 @@ class FileHandler:
         None
     
     Note:
-        This method relies on the `GitignoreChecker` class to filter out ignored files and the `generate_file_structure` method to gather detailed information about code objects in a file. The `repo_agent` project is designed to automate the generation and management of documentation for a Git repository, ensuring that documentation is up-to-date and accurate. It integrates various functionalities to detect changes, manage file handling, and generate documentation items as needed. The project also includes a multi-threaded task management system and a settings manager to configure project and chat completion settings, making it a comprehensive solution for maintaining high-quality documentation in software repositories.
+        This method relies on the `GitignoreChecker` class to filter out ignored files and the `generate_file_structure` method to gather detailed information about code objects in a file. The `repo_agent` project is designed to automate the generation and management of documentation for a Git repository, ensuring that documentation is up-to-date and accurate. It integrates various functionalities to detect changes, manage file handling, and generate documentation items as needed. The project also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, making it a comprehensive solution for maintaining high-quality documentation in software repositories.
     """
         repo_structure = {}
         gitignore_checker = GitignoreChecker(directory=self.repo_path, gitignore_path=os.path.join(self.repo_path, '.gitignore'))

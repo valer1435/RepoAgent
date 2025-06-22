@@ -17,7 +17,7 @@ def cli():
     """
     CLI function for the repo_agent module.
     
-    This function serves as the entry point for the command-line interface of the repo_agent module. It automates the generation and management of documentation for a Git repository by integrating functionalities to detect changes, handle file operations, manage tasks, and configure settings. The tool ensures efficient and accurate documentation updates, streamlining the process for developers to maintain their documentation without manual intervention.
+    This function serves as the entry point for the command-line interface of the repo_agent module. It automates the generation and management of documentation for a Git repository by integrating functionalities to detect changes, handle file operations, manage tasks, and configure settings. The tool ensures efficient and accurate documentation updates, streamlining the process for developers to maintain their documentation without manual intervention. It leverages Git to detect changes and includes a multi-task dispatch system to process documentation tasks in a multi-threaded environment, ensuring scalability and robustness.
     
     Args:
         None
@@ -100,7 +100,7 @@ def run(model, temperature, request_timeout, base_url, target_repo_path, hierarc
         ValidationError: If the settings initialization fails due to invalid parameters.
     
     Note:
-        This method is the entry point for the documentation generation process and handles initialization, execution, and logging. It is particularly useful for large repositories where manual tracking and updating of documentation can be time-consuming and error-prone. The tool leverages Git's capabilities to track changes and manage files, ensuring efficient and accurate documentation updates.
+        This method is the entry point for the documentation generation process and handles initialization, execution, and logging. It is particularly useful for large repositories where manual tracking and updating of documentation can be time-consuming and error-prone. The tool leverages Git's capabilities to track changes and manage files, ensuring efficient and accurate documentation updates. The multi-task dispatch system allows for scalable and robust processing of documentation tasks in a multi-threaded environment.
     """
     try:
         setting = SettingsManager.initialize_with_params(target_repo=target_repo_path, hierarchy_name=hierarchy_path, markdown_docs_name=markdown_docs_path, ignore_list=[item.strip() for item in ignore_list.split(',') if item], language=language, log_level=log_level, model=model, temperature=temperature, request_timeout=request_timeout, openai_base_url=base_url, max_thread_count=max_thread_count)
@@ -179,7 +179,7 @@ def clean():
         None
     
     Note:
-        This method leverages Git's capabilities to track changes and manage files, ensuring that the repository remains clean and organized. It is an essential part of the `repo_agent` project, which aims to streamline the documentation process for software repositories by automating the detection of changes, generation of documentation, and management of documentation items.
+        This method leverages Git's capabilities to track changes and manage files, ensuring that the repository remains clean and organized. It is an essential part of the `repo_agent` project, which aims to streamline the documentation process for software repositories by automating the detection of changes, generation of documentation, and management of documentation items. The project includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
     """
     delete_fake_files()
     logger.success('Fake files have been cleaned up.')
@@ -202,7 +202,7 @@ def diff():
         click.Abort: If the command is run during the generation process.
     
     Note:
-        This method is designed to be used as a pre-check before the actual documentation generation process. It integrates with the project's functionalities to detect changes, handle file operations, and manage project settings, ensuring that the documentation is up-to-date and accurate. The tool is built to work seamlessly within a Git environment, leveraging Git's capabilities to track changes and manage files. The `repo_agent` project automates the generation and management of documentation for a Git repository, streamlining the documentation process and reducing manual effort.
+        This method is designed to be used as a pre-check before the actual documentation generation process. It integrates with the project's functionalities to detect changes, handle file operations, and manage project settings, ensuring that the documentation is up-to-date and accurate. The `repo_agent` project automates the generation and management of documentation for a Git repository, streamlining the documentation process and reducing manual effort. It leverages Git's capabilities to track changes and manage files, and includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment.
     """
     try:
         setting = SettingsManager.get_setting()

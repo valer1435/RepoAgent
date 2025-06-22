@@ -23,64 +23,7 @@ class Task:
         None
     
     Note:
-        This class is used in conjunction with the TaskManager class to manage and dispatch tasks. It helps in organizing and tracking the dependencies and additional information required for each task in the documentation generation process.
-    
-    ---
-    
-    Initializes a Task object.
-    
-    This method sets up a new Task instance with a unique identifier, a list of dependent tasks, and optional extra information. The Task object is part of a multi-task dispatch system designed to automate the generation and management of documentation for a Git repository. This system integrates various functionalities to detect changes, handle file operations, manage tasks, and configure settings, ensuring efficient and accurate documentation updates.
-    
-    Args:
-        task_id (int): The unique identifier for the task.
-        dependencies (List[Task]): A list of Task objects that this task depends on.
-        extra_info (Any, optional): Additional information associated with the task. Defaults to None.
-    
-    Returns:
-        None
-    
-    Raises:
-        None
-    
-    Note:
-        The status attribute is initialized to 0, indicating the task is in a default state. This status can be updated as the task progresses through the dispatch system.
-    
-    ---
-    
-    Initializes the TaskManager.
-    
-    This method sets up the initial state of the TaskManager, including an empty dictionary to store tasks, a threading lock for synchronization, and counters for task and query IDs. The TaskManager is a crucial component of the multi-task dispatch system, which automates the generation and management of documentation for a Git repository.
-    
-    Args:
-        None
-    
-    Returns:
-        None
-    
-    Raises:
-        None
-    
-    Note:
-        This method is called automatically when a TaskManager instance is created. The TaskManager is part of a larger tool designed to streamline the documentation process for software repositories by automating the detection of changes, generation of summaries, and handling of file operations. It ensures efficient and accurate documentation updates, leveraging Git's capabilities to track changes and manage files.
-    
-    ---
-    
-    Adds a new task to the task manager with specified dependencies and extra information.
-    
-    This method acquires a lock to ensure thread safety, creates a new Task object with a unique identifier, and adds it to the task dictionary. The unique identifier is incremented after the task is added.
-    
-    Args:
-        dependency_task_id (List[int]): A list of task IDs that the new task depends on.
-        extra (Any, optional): Additional information associated with the task. Defaults to None.
-    
-    Returns:
-        int: The unique identifier of the newly added task.
-    
-    Raises:
-        None
-    
-    Note:
-        This method is used in conjunction with the Task class to manage and dispatch tasks in the multi-task dispatch system, which is part of a comprehensive tool for automating the generation and management of documentation for a Git repository. The tool integrates various functionalities to detect changes, handle file operations, manage tasks, and configure settings, ensuring efficient and accurate documentation updates.
+        This class is used in conjunction with the TaskManager class to manage and dispatch tasks. It helps in organizing and tracking the dependencies and additional information required for each task in the documentation generation process. The status attribute is initialized to 0, indicating the task is in a default state. This status can be updated as the task progresses through the dispatch system. The multi-task dispatch system is designed to handle tasks in a multi-threaded environment, ensuring that documentation updates are processed efficiently.
     """
 
     def __init__(self, task_id: int, dependencies: List[Task], extra_info: Any=None):
@@ -216,7 +159,7 @@ class TaskManager:
         bool: True if all tasks are completed, False otherwise.
     
     Note:
-        This method is part of the multi-task dispatch system in the `repo_agent` project. The project automates the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. The multi-task dispatch system enhances user interaction and process management by efficiently processing documentation generation tasks.
+        This method is part of the multi-task dispatch system in the `repo_agent` project. The project automates the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. The multi-task dispatch system enhances user interaction and process management by efficiently processing documentation generation tasks in a multi-threaded environment, making the documentation generation process both scalable and robust.
     """
         return len(self.task_dict) == 0
 

@@ -7,7 +7,7 @@ def summarize_repository(root_dir: str, repo_structure, chat_engine) -> Dict[str
     """
     Summarizes the repository by generating summaries for each directory and its subdirectories.
     
-    This function recursively traverses the directory structure of a given repository, identifies Python files, and generates summaries based on the provided repository structure and chat engine. It also handles ignored folders as specified in the settings. The `repo_agent` project is designed to automate the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. The project leverages Git to detect changes, manage file handling, and generate documentation items as needed. It includes a multi-threaded task management system to efficiently process documentation generation tasks and a settings manager to configure project and chat completion settings.
+    This function recursively traverses the directory structure of a given repository, identifies Python files, and generates summaries based on the provided repository structure and chat engine. It also handles ignored folders as specified in the settings. The `repo_agent` project is designed to automate the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. The project leverages Git to detect changes, manage file handling, and generate documentation items as needed. It includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
     
     Args:
         root_dir (str): The root directory of the repository.
@@ -22,6 +22,25 @@ def summarize_repository(root_dir: str, repo_structure, chat_engine) -> Dict[str
     
     Note:
         See also: The `summarize_modules` method in the `Runner` class for an example of how this function is used in a workflow.
+    
+    Summarizes a directory by extracting summaries of Python files and subdirectories.
+    
+    This method iterates over the items in the specified directory, collects Python files, and recursively processes subdirectories that are not in the ignored folders list. It then generates summaries for the Python files and combines them with summaries of subdirectories to create a module summary. The tool is part of a comprehensive system designed to automate the generation and management of documentation for a Git repository, ensuring that documentation is up-to-date and accurate.
+    
+    Args:
+        directory (Path): The directory to be summarized.
+        repo_structure (Dict[str, Any]): A dictionary containing the structure of the repository, mapping file paths to their components.
+        chat_engine (Any): The chat engine used to generate module summaries.
+        root_dir (Path): The root directory of the repository.
+    
+    Returns:
+        Dict[str, Any]: A dictionary containing the name, path, file summaries, submodule summaries, and the module summary of the directory.
+    
+    Raises:
+        ValueError: If the directory does not exist or is not a valid directory.
+    
+    Note:
+        The method uses settings from the SettingsManager to determine ignored folders. This tool integrates various functionalities to detect changes, handle file operations, manage project settings, and generate summaries, making it particularly useful for large repositories where manual documentation can be time-consuming and error-prone. The primary purpose of this project is to streamline the process of maintaining and updating documentation for a software repository, ensuring efficient and accurate documentation updates.
     """
 
     def summarize_directory(directory: Path, repo_structure, chat_engine, root_dir) -> Dict[str, Any]:
@@ -79,7 +98,7 @@ def create_module_summary(name: str, file_summaries: List[str], submodule_summar
     """
     Creates a summary for a module based on file and submodule summaries.
     
-    This method constructs a module summary by combining the name of the module, summaries of its files, and summaries of its submodules. It then uses a `ChatEngine` instance to generate a final summarized content. The `repo_agent` project is designed to automate the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. The project leverages Git to detect changes, manage file handling, and generate documentation items as needed. It also includes a multi-threaded task management system to efficiently process documentation generation tasks and a settings manager to configure project and chat completion settings.
+    This method constructs a module summary by combining the name of the module, summaries of its files, and summaries of its submodules. It then uses a `ChatEngine` instance to generate a final summarized content. The `repo_agent` project is designed to automate the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. The project leverages Git to detect changes, manage file handling, and generate documentation items as needed. It also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
     
     Args:
         name (str): The name of the module.
