@@ -1,32 +1,35 @@
-site_name: My Docs
+site_name: Open-Source-Advisor
 theme:
   name: material
-  locale: en
-  palette:
-  # Palette toggle for light mode
-  - media: "(prefers-color-scheme: light)"
-    scheme: default
-    toggle:
-      icon: material/brightness-7
-      name: Switch to dark mode
-  # Palette toggle for dark mode
-  - media: "(prefers-color-scheme: dark)"
-    scheme: slate
-    toggle:
-      icon: material/brightness-7
-      name: Switch to light mode
-  features:
-    - navigation.tracking
-    - navigation.instant
-    - navigation.tabs
-    - navigation.tabs.sticky
-    - navigation.footer
-    - navigation.indexes
-    - content.tabs.link
-    - content.code.copy
+
 plugins:
   - search
-  - mkdocstrings
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: false
+            show_root_heading: true
+            show_object_full_path: false
+
+nav:
+  - User Guide:
+    - index.md
+  - API Reference:
+      - Github Agent: core/github_agent/github_agent.md
+      - Model Handler: core/models/models.md
+      - OSA Tree Sitter:
+          - core/osatreesitter/osatreesitter.md
+          - Documentation Generator: core/osatreesitter/docgen.md
+
+repo_url: https://github.com/aimclub/OSA
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/aimclub/OSA
+
 markdown_extensions:
   - admonition
   - codehilite

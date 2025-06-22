@@ -9,7 +9,7 @@ class InterceptHandler(logging.Handler):
     """
     InterceptHandler is a custom logging handler that intercepts log records and forwards them to a logger with the appropriate log level and depth.
     
-    This handler is designed to work with a logger that supports custom log levels and depth settings, such as the one provided by the `loguru` library. It ensures that log records are emitted with the correct context and formatting, which is crucial for maintaining accurate and detailed logs in the project's automated documentation generation and management system.
+    This handler is designed to work with a logger that supports custom log levels and depth settings, such as the one provided by the `loguru` library. It ensures that log records are emitted with the correct context and formatting, which is crucial for maintaining accurate and detailed logs in the `repo_agent` project's automated documentation generation and management system.
     
     Note:
         This handler is used in conjunction with the `set_logger_level_from_config` function to configure the logging level and intercept log records. It plays a vital role in the project's logging infrastructure, ensuring that all log messages are consistent and contextually accurate.
@@ -30,7 +30,7 @@ class InterceptHandler(logging.Handler):
         ValueError: If the log level name cannot be found in the logger's level mapping.
     
     Note:
-        This method is used in conjunction with the `InterceptHandler` to ensure that log records are emitted with the correct context and formatting. It is called in the `run` and `run_outside_cli` methods of the `main.py` module to configure the logging level based on user input. This is crucial for the tool's ability to automate the generation and management of documentation for a Git repository, ensuring that logging is consistent and informative.
+        This method is used in conjunction with the `InterceptHandler` to ensure that log records are emitted with the correct context and formatting. It is called in the `run` and `run_outside_cli` methods of the `main.py` module to configure the logging level based on user input. This is crucial for the `repo_agent` project's ability to automate the generation and management of documentation for a Git repository, ensuring that logging is consistent and informative.
     """
 
     def emit(self, record: logging.LogRecord) -> None:
@@ -49,7 +49,7 @@ class InterceptHandler(logging.Handler):
         ValueError: If the log level name cannot be found in the logger's levels.
     
     Note:
-        This method uses the `inspect` module to determine the correct stack depth for the log message. The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase.
+        This method uses the `inspect` module to determine the correct stack depth for the log message. The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. It leverages Git to detect changes, manage file handling, and generate documentation items as needed, and includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment.
     """
         level: str | int
         try:

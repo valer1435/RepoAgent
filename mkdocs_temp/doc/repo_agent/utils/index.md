@@ -1,0 +1,6 @@
+# Utils Module
+## Overview
+The `Utils` module in the `repo_agent` project provides a collection of utility functions and classes designed to support the automation of documentation generation and management. These utilities handle various tasks, including updating and removing docstrings from code, checking files and folders against a `.gitignore` file, and managing temporary and modified files in the repository. The module ensures that the documentation process is efficient, accurate, and aligned with the current state of the codebase.
+
+## Purpose
+The primary purpose of the `Utils` module is to facilitate the seamless integration of documentation generation and management tasks within the `repo_agent` project. By providing tools to update and remove docstrings, check files against `.gitignore` patterns, and manage temporary and modified files, the module helps ensure that the documentation remains up-to-date and reflects the current state of the codebase. This automation reduces manual effort and enhances the reliability and usability of the documentation for developers and other stakeholders.

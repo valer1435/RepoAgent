@@ -9,7 +9,7 @@ class LogLevel(StrEnum):
     """
     Enum representing the log levels for the application.
     
-    This enum is used to set the log level in the `ProjectSettings` class, which is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository. The tool integrates various functionalities to detect changes, handle file operations, manage tasks, and configure settings, all while ensuring efficient and accurate documentation updates. The tool is built to work seamlessly within a Git environment, leveraging Git's capabilities to track changes and manage files.
+    This enum is used to set the log level in the `ProjectSettings` class, which is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository. The tool integrates various functionalities to detect changes, handle file operations, manage tasks, and configure settings, all while ensuring efficient and accurate documentation updates. The tool is built to work seamlessly within a Git environment, leveraging Git's capabilities to track changes and manage files. The `repo_agent` project uses this enum to manage log levels, which helps in maintaining high-quality, accurate, and consistent documentation by providing detailed logs for debugging and monitoring.
     
     Args:
         DEBUG (str): Log level for detailed debug information. Value is 'DEBUG'.
@@ -49,7 +49,7 @@ class ProjectSettings(BaseSettings):
         ValueError: If the log level input is invalid. The input must be one of the valid log levels: 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'.
     
     Note:
-        The `language` and `log_level` fields have custom validation methods to ensure they are set correctly. The `repo_agent` project is designed to automate the generation and management of documentation for a Git repository. It integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase. The project leverages Git to detect changes, manage file handling, and generate documentation items as needed. It also includes a multi-threaded task management system to efficiently process documentation generation tasks and a settings manager to configure project and chat completion settings. Additionally, the project provides utilities for summarizing the repository and handling log levels, ensuring a robust and maintainable documentation process.
+        The `language` and `log_level` fields have custom validation methods to ensure they are set correctly. The `repo_agent` project is designed to automate the generation and management of documentation for a Git repository. It integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase. The project leverages Git to detect changes, manage file handling, and generate documentation items as needed. It also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust. The primary purpose of the `repo_agent` project is to streamline the documentation process for software development teams, reducing manual effort and ensuring that the documentation is always in sync with the codebase.
     """
     target_repo: DirectoryPath = ''
     hierarchy_name: str = '.project_doc_record'
@@ -80,6 +80,16 @@ class ProjectSettings(BaseSettings):
     
     Note:
         This method uses the `Language.match` method to find the language name.
+    
+    Examples:
+        >>> validate_language_code('en')
+        'English'
+        >>> validate_language_code('French')
+        'French'
+        >>> validate_language_code('xyz')
+        Traceback (most recent call last):
+            ...
+        ValueError: 'xyz' is not a valid ISO 639 code or language name.
     """
         try:
             language_name = Language.match(v).name
@@ -105,7 +115,7 @@ class ProjectSettings(BaseSettings):
         ValueError: If the provided log level is not a valid member of the LogLevel enum.
     
     Note:  
-        This method is part of the project settings management, ensuring that the tool's logging behavior can be easily adjusted to suit different development and operational needs. Efficient logging is essential for tracking the tool's operations and ensuring accurate documentation updates. The `repo_agent` project automates the generation and management of documentation for a Git repository, integrating various functionalities to keep documentation up-to-date and accurate.
+        This method is part of the project settings management, ensuring that the tool's logging behavior can be easily adjusted to suit different development and operational needs. Efficient logging is essential for tracking the tool's operations and ensuring accurate documentation updates. The `repo_agent` project automates the generation and management of documentation for a Git repository, integrating various functionalities to keep documentation up-to-date and accurate. It leverages Git to detect changes, manage file handling, and generate documentation items as needed, ensuring that the documentation is always in sync with the codebase.
     """
         if isinstance(v, str):
             v = v.upper()
@@ -159,7 +169,7 @@ class ChatCompletionSettings(BaseSettings):
         None
     
     Note:  
-        This method is part of the documentation generation and management tool, which automates the process of updating and maintaining high-quality documentation for software repositories. It leverages Git to detect changes, manage file handling, and generate documentation items as needed. The tool includes a multi-threaded task management system to efficiently process documentation generation tasks and a settings manager to configure project and chat completion settings.
+        This method is part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. The project leverages Git to detect changes, manage file handling, and generate documentation items as needed. It includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
     """
         return str(openai_base_url)
 
@@ -174,7 +184,7 @@ class Setting(BaseSettings):
         chat_completion (ChatCompletionSettings): Configuration settings for chat completion. Defaults to an empty dictionary.
     
     Note:
-        The `project` and `chat_completion` fields are instances of `ProjectSettings` and `ChatCompletionSettings` respectively, which provide detailed configuration options for the project and chat completion settings. These settings are crucial for the tool's ability to automate documentation and enhance user interaction through a chat engine. The `repo_agent` project aims to streamline the documentation process by automating the detection of changes, generation of documentation, and management of documentation items, ensuring high-quality and consistent documentation for software repositories.
+        The `project` and `chat_completion` fields are instances of `ProjectSettings` and `ChatCompletionSettings` respectively, which provide detailed configuration options for the project and chat completion settings. These settings are crucial for the tool's ability to automate documentation and enhance user interaction through a chat engine. The `repo_agent` project aims to streamline the documentation process by automating the detection of changes, generation of documentation, and management of documentation items, ensuring high-quality and consistent documentation for software repositories. The project leverages Git to detect changes, manage file handling, and generate documentation items as needed. It also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
     """
     project: ProjectSettings = {}
     chat_completion: ChatCompletionSettings = {}
@@ -183,7 +193,7 @@ class SettingsManager:
     """
     SettingsManager class for managing and initializing project and chat completion settings.
     
-    This class provides methods to get and initialize settings for the project and chat completion using the OpenAI API. It is designed to streamline the documentation process for software repositories by automating the detection of changes, generation of summaries, and handling of file operations.
+    This class provides methods to get and initialize settings for the project and chat completion using the OpenAI API. It is designed to streamline the documentation process for software repositories by automating the detection of changes, generation of summaries, and handling of file operations. The `repo_agent` project aims to reduce manual effort in maintaining accurate and comprehensive documentation, ensuring it is always in sync with the codebase.
     
     Note:
         The `Setting` class extends `BaseSettings` and provides configuration options for the project and chat completion settings. The `ProjectSettings` and `ChatCompletionSettings` classes are used to configure detailed settings for the project and chat completion, respectively. This tool is particularly useful for large repositories where manual tracking and updating of documentation can be time-consuming and error-prone.
@@ -260,7 +270,7 @@ class SettingsManager:
         None
     
     Note:
-        The `Setting` class is integral to the project's functionality, as it manages various configurations necessary for automating documentation generation and management in a Git repository. This method ensures that the configuration is consistent and accessible throughout the project. The `repo_agent` project automates the generation and management of documentation for a Git repository, integrating Git to detect changes, manage file handling, and generate documentation items as needed. It also includes a multi-threaded task management system and utilities for summarizing the repository and handling log levels.
+        The `Setting` class is integral to the project's functionality, as it manages various configurations necessary for automating documentation generation and management in a Git repository. The `repo_agent` project automates the generation and management of documentation for a Git repository, integrating Git to detect changes, manage file handling, and generate documentation items as needed. It also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
     """
         if cls._setting_instance is None:
             cls._setting_instance = Setting()
