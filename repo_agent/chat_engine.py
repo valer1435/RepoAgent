@@ -108,7 +108,7 @@ class ChatEngine:
         """
     Initializes the ChatEngine instance.
     
-    Sets up the language model (LLM) using the provided project manager and settings from the SettingsManager. This method ensures that the LLM is configured with a context window of 20000 and retrieves the necessary settings to function properly within the project. The ChatEngine is a crucial component of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. It integrates Git to detect changes, manage file handling, and generate documentation items as needed, reducing the manual effort required to keep documentation current. The project also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
+    Sets up the language model (LLM) using the provided project manager and settings from the SettingsManager. This method ensures that the LLM is configured with a context window of 20000 and retrieves the necessary settings to function properly within the project. The ChatEngine is a crucial component of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. It integrates Git to detect changes, manage file handling, and generate documentation items as needed, reducing the manual effort required to keep documentation current.
     
     Args:
         project_manager (ProjectManager): The project manager instance used to manage the project.
@@ -215,8 +215,6 @@ class ChatEngine:
     
     Note:
         See also: `build_prompt` method for constructing the prompt.
-    
-    The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. This method plays a crucial role in the project by leveraging a chat engine to create or update documentation items, thereby reducing the manual effort required to maintain comprehensive and accurate documentation.
     """
         settings = SettingsManager.get_setting()
         if settings.project.main_idea:
@@ -247,7 +245,7 @@ class ChatEngine:
         Exception: If there is an error in the language model chat call.
     
     Note:
-        The `SettingsManager` class is used to manage and initialize project and chat completion settings. The `idea_chat_template` is a predefined template for formatting the list of items into a message. This method is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository, enhancing user interaction through a chat engine. The `repo_agent` project integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase. It leverages Git to detect changes, manage file handling, and generate documentation items as needed. The tool also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
+        The `SettingsManager` class is used to manage and initialize project and chat completion settings. The `idea_chat_template` is a predefined template for formatting the list of items into a message. This method is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository, enhancing user interaction through a chat engine.
     """
         settings = SettingsManager.get_setting()
         messages = idea_chat_template.format_messages(components=list_items, language=settings.project.language)

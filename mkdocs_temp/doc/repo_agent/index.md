@@ -1,6 +1,0 @@
-# Repo Agent Module
-## Overview
-The `Repo Agent` module is designed to automate the detection of changes in Python files within a Git repository and manage the generation and updating of documentation. It integrates with Git to track changes, parse file differences, and identify structural changes in Python files. The module also includes functionalities to stage and add unstaged files to the Git staging area, ensuring that the documentation remains up-to-date and reflects the current state of the codebase.
-
-## Purpose
-The primary purpose of the `Repo Agent` module is to facilitate the automatic generation and management of documentation for a Git repository. By detecting changes in Python files, parsing differences, and identifying structural changes, the module ensures that the documentation is always in sync with the codebase. Additionally, it provides methods to stage and add unstaged files, streamlining the process of maintaining accurate and comprehensive documentation. This automation reduces the manual effort required to keep documentation up-to-date, enhancing the reliability and usability of the documentation for developers and other stakeholders.

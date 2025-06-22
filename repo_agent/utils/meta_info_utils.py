@@ -92,7 +92,26 @@ def delete_fake_files():
         - The method prints messages to the console to indicate the actions taken, such as deleting temporary files or recovering the latest version of files.
         - The `latest_version_substring` is a string that identifies temporary files.
         - The method uses color codes to format the console output for better readability.
-        - This method is part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. It helps in maintaining an up-to-date and accurate documentation by handling untracked and modified content efficiently. The project leverages Git to detect changes and manage file handling, ensuring that the documentation remains current and reflects the current state of the codebase.
+        - This method is part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. It helps in maintaining up-to-date and accurate documentation by handling untracked and modified content efficiently. The project leverages Git to detect changes and manage file handling, ensuring that the documentation remains current and reflects the current state of the codebase.
+    
+    Recursively deletes temporary files and recovers the latest version of files in a directory.
+    
+    This method traverses the directory tree starting from the given filepath. It checks each file and directory, and if a file ends with a specific substring (`latest_version_substring`), it attempts to delete the corresponding original file and then either deletes the temporary file if it is empty or renames it to the original file name.
+    
+    Args:
+        filepath (str): The path to the directory to be processed.
+    
+    Returns:
+        None: This method does not return any value.
+    
+    Raises:
+        FileNotFoundError: If the specified filepath does not exist.
+        PermissionError: If the method does not have permission to access or modify files.
+    
+    Note:
+        - This method uses the `os` and `Fore` modules for file operations and colored console output.
+        - The `latest_version_substring` and `setting.project.target_repo` are assumed to be defined elsewhere in the code.
+        - The `repo_agent` project is designed to automate the generation and management of documentation for a Git repository, ensuring that documentation is up-to-date and accurately reflects the current state of the codebase. This method is part of the project's utility suite, aimed at maintaining and updating documentation efficiently.
     """
     setting = SettingsManager.get_setting()
 

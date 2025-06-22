@@ -129,20 +129,20 @@ class ChatCompletionSettings(BaseSettings):
     
     This class configures the settings required for generating chat completions using the OpenAI API. It is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository, enhancing user interaction through a chat engine.
     
-    Args:
-        model (str): The model to use for chat completion. Defaults to 'gpt-4o-mini'.
-        temperature (PositiveFloat): The sampling temperature for the model. Defaults to 0.2.
-        request_timeout (PositiveInt): The timeout for API requests in seconds. Defaults to 180.
-        openai_base_url (str): The base URL for the OpenAI API. Defaults to 'https://api.openai.com/v1'.
+    Args:  
+        model (str): The model to use for chat completion. Defaults to 'gpt-4o-mini'.  
+        temperature (PositiveFloat): The sampling temperature for the model. Defaults to 0.2.  
+        request_timeout (PositiveInt): The timeout for API requests in seconds. Defaults to 180.  
+        openai_base_url (str): The base URL for the OpenAI API. Defaults to 'https://api.openai.com/v1'.  
         openai_api_key (SecretStr): The API key for OpenAI. This is a required field.
     
-    Returns:
+    Returns:  
         None
     
-    Raises:
+    Raises:  
         ValueError: If `openai_api_key` is not provided.
     
-    Note:
+    Note:  
         The `openai_api_key` is excluded from the settings output for security reasons. The `openai_base_url` is converted to a string before validation.
     """
     model: str = 'gpt-4o-mini'
@@ -224,7 +224,7 @@ class SettingsManager:
     
     Initializes the settings with the provided parameters.
     
-    This method sets up the project and chat completion settings using the provided parameters. It creates instances of `ProjectSettings` and `ChatCompletionSettings` and assigns them to the `_setting_instance` class attribute. The tool automates the generation and management of documentation for a Git repository, ensuring efficient and accurate updates.
+    This method sets up the project and chat completion settings using the provided parameters. It creates instances of `ProjectSettings` and `ChatCompletionSettings` and assigns them to the `_setting_instance` class attribute. The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring efficient and accurate updates.
     
     Args:
         target_repo (Path): The path to the target repository.
