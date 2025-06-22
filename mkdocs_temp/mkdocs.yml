@@ -1,4 +1,5 @@
 site_name: OSADocs
+docs_dir: doc
 theme:
     name: material
 plugins:
