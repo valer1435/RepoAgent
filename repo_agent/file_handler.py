@@ -46,7 +46,7 @@ class FileHandler:
     - `IOError`: If an error occurs while reading the file.
     
     Note:
-    This method constructs the absolute file path by joining the repository path and the file path. It then opens the file in read mode with UTF-8 encoding and reads its content. The tool integrates various functionalities to detect changes, handle file operations, manage project settings, and generate summaries for modules and directories.
+    This method constructs the absolute file path by joining the repository path and the file path. It then opens the file in read mode with UTF-8 encoding and reads its content.
     
     #### get_obj_code_info
     
@@ -130,7 +130,7 @@ class FileHandler:
     - `int`: The end line number of the node. Returns -1 if the node or any of its children do not have a line number.
     
     Note:
-    This method is used by the `get_functions_and_classes` method to determine the end line number of functions and classes in the parsed code. It is a crucial part of the file handling functionality, which is essential for the automated generation and management of documentation for a Git repository.
+    This method is used by the `get_functions_and_classes` method to determine the end line number of functions and classes in the parsed code.
     
     #### add_parent_references
     
@@ -144,7 +144,7 @@ class FileHandler:
     - `None`
     
     Note:
-    This method is used internally by the `get_functions_and_classes` method to ensure that all nodes in the AST have a reference to their parent node. This is particularly useful for generating accurate and detailed documentation for the codebase, as it helps in understanding the structure and relationships between different parts of the code.
+    This method is used internally by the `get_functions_and_classes` method to ensure that all nodes in the AST have a reference to their parent node. This is particularly useful for generating accurate and detailed documentation for the codebase.
     
     #### get_functions_and_classes
     
@@ -186,7 +186,7 @@ class FileHandler:
       - `source_node` (object): The source node of the code object (None for directories).
     
     Note:
-    This method is a crucial part of the automated documentation generation process. It is used by other methods such as `generate_overall_structure` to gather detailed information about code objects in a file. The method relies on the `get_functions_and_classes` and `get_obj_code_info` methods to extract and format the necessary information, ensuring that all code elements are accurately represented. This helps in maintaining and updating documentation for a Git repository efficiently and accurately.
+    This method is a crucial part of the automated documentation generation process. It is used by other methods such as `generate_overall_structure` to gather detailed information about code objects in a file. The method relies on the `get_functions_and_classes` and `get_obj_code_info` methods to extract and format the necessary information, ensuring that all code elements are accurately represented.
     
     #### generate_overall_structure
     
@@ -200,7 +200,7 @@ class FileHandler:
     - `dict`: A dictionary where the keys are file paths and the values are lists of dictionaries, each containing detailed information about a code object or directory.
     
     Note:
-    This method relies on the `GitignoreChecker` class to filter out ignored files and the `generate_file_structure` method to gather detailed information about code objects in a file. The tool is part of a comprehensive system designed to automate the generation and management of documentation for a Git repository, ensuring that documentation is up-to-date and accurate. The primary purpose of this project is to streamline the process of maintaining and updating documentation for a software repository, automating the detection of changes, the generation of documentation, and the management of project settings.
+    This method relies on the `GitignoreChecker` class to filter out ignored files and the `generate_file_structure` method to gather detailed information about code objects in a file. The tool is part of a comprehensive system designed to automate the generation and management of documentation for a Git repository, ensuring that documentation is up-to-date and accurate.
     
     #### convert_to_markdown_file
     
@@ -216,7 +216,7 @@ class FileHandler:
     - `ValueError`: If no file object is found for the specified file path in the project hierarchy JSON.
     
     Note:
-    This method is typically called after the file's structural information has been updated or added to the project hierarchy JSON. It ensures that the Markdown documentation is in sync with the code structure. The tool automates the generation and management of documentation for a Git repository, integrating functionalities to detect changes, handle file operations, manage tasks, and configure settings, all while ensuring efficient and accurate documentation updates.
+    This method is typically called after the file's structural information has been updated or added to the project hierarchy JSON. It ensures that the Markdown documentation is in sync with the code structure.
     """
 
     def __init__(self, repo_path, file_path):
@@ -236,7 +236,7 @@ class FileHandler:
         None
     
     Note:
-        The project hierarchy is derived from the settings managed by the SettingsManager. The `repo_agent` project is designed to automate the generation and management of documentation for a Git repository, integrating various functionalities to detect changes, handle file operations, manage tasks, and configure settings. The primary purpose is to streamline the documentation process for software development teams, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. This automation helps reduce manual effort and ensures that the documentation is always in sync with the codebase, improving reliability and usability for developers and other stakeholders.
+        The project hierarchy is derived from the settings managed by the SettingsManager. The `repo_agent` project is designed to automate the generation and management of documentation for a Git repository, integrating various functionalities to detect changes, handle file operations, manage tasks, and configure settings. This automation helps reduce manual effort and ensures that the documentation is always in sync with the codebase, improving reliability and usability for developers and other stakeholders.
     """
         self.file_path = file_path
         self.repo_path = repo_path
@@ -344,7 +344,7 @@ class FileHandler:
         IOError: If there is an error writing to the file.
     
     Note:
-        This method is used by other components, such as `Runner.add_new_item` and `Runner.process_file_changes`, to write generated Markdown content to files. It integrates seamlessly with the Git environment to track and manage file changes efficiently. The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. The project leverages Git to detect changes, manage file handling, and generate documentation items as needed. It also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
+        This method is used by other components, such as `Runner.add_new_item` and `Runner.process_file_changes`, to write generated Markdown content to files. It integrates seamlessly with the Git environment to track and manage file changes efficiently. The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase.
     """
         if file_path.startswith('/'):
             file_path = file_path[1:]
@@ -436,30 +436,34 @@ class FileHandler:
             self.add_parent_references(child, node)
 
     def get_functions_and_classes(self, code_content):
+        '''
+    def get_functions_and_classes(self, code_content):
         """
-    Retrieves functions and classes from the given code content.
+        Retrieves functions and classes from the given code content.
     
-    This method parses the provided code content using the Abstract Syntax Tree (AST) and extracts information about functions and classes, including their names, line numbers, parameters, and docstrings. It is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository.
+        This method parses the provided code content using the Abstract Syntax Tree (AST) and extracts information about functions and classes, including their names, line numbers, parameters, and docstrings. It is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository.
     
-    Args:
-        code_content (str): The code content to parse.
+        Args:
+            code_content (str): The code content to parse.
     
-    Returns:
-        list: A list of tuples, each containing the following information about a function or class:
-            - type (str): The type of the node (e.g., "FunctionDef", "ClassDef", "AsyncFunctionDef").
-            - name (str): The name of the function or class.
-            - start_line (int): The starting line number of the function or class.
-            - end_line (int): The ending line number of the function or class.
-            - parameters (list): A list of parameter names for the function (empty for classes).
-            - docstring (str): The docstring of the function or class.
-            - node (ast.AST): The AST node object.
+        Returns:
+            list: A list of tuples, each containing the following information about a function or class:
+                - type (str): The type of the node (e.g., "FunctionDef", "ClassDef", "AsyncFunctionDef").
+                - name (str): The name of the function or class.
+                - start_line (int): The starting line number of the function or class.
+                - end_line (int): The ending line number of the function or class.
+                - parameters (list): A list of parameter names for the function (empty for classes).
+                - docstring (str): The docstring of the function or class.
+                - node (ast.AST): The AST node object.
     
-    Raises:
-        None
+        Raises:
+            None
     
-    Note:
-        This method uses the `get_end_lineno` method to determine the end line number of functions and classes. It also calls the `add_parent_references` method to ensure that all nodes in the AST have a reference to their parent node. This method is crucial for generating accurate and detailed documentation for the repository. The `repo_agent` project automates the detection of changes, manages file handling, and generates documentation items as needed, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase.
-    """
+        Note:
+            This method uses the `get_end_lineno` method to determine the end line number of functions and classes. It also calls the `add_parent_references` method to ensure that all nodes in the AST have a reference to their parent node. This method is crucial for generating accurate and detailed documentation for the repository. The `repo_agent` project automates the detection of changes, manages file handling, and generates documentation items as needed, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase.
+        """
+    
+    '''
         tree = ast.parse(code_content)
         self.add_parent_references(tree)
         functions_and_classes = []

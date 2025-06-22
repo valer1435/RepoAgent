@@ -50,7 +50,7 @@ class Runner:
         ValueError: If the `target_repo` or `hierarchy_name` settings are invalid.
     
     Note:
-        The primary purpose of this project is to automate the generation and management of documentation for a Git repository. It integrates various functionalities to detect changes, handle file operations, manage tasks, and configure settings, all while ensuring efficient and accurate documentation updates. The tool is built to work seamlessly within a Git environment, leveraging Git's capabilities to track changes and manage files.
+        The primary purpose of this project is to automate the generation and management of documentation for a Git repository. It integrates various functionalities to detect changes, handle file operations, manage tasks, and configure settings, all while ensuring efficient and accurate documentation updates. The tool is built to work seamlessly within a Git environment, leveraging Git's capabilities to track changes and manage files. Additionally, it includes a multi-task dispatch system to efficiently process documentation generation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
     
     ---
     
@@ -552,7 +552,7 @@ class Runner:
         str: The generated main project idea.
     
     Note:
-        The `generate_main_project_idea` method formats the list of components into a message template and sends it to a language model to generate the project idea. The `SettingsManager` class is used to manage and initialize project and chat completion settings. This method is a crucial part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. It integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase. The project leverages Git to detect changes, manage file handling, and generate documentation items as needed. It also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
+        The `generate_main_project_idea` method formats the list of components into a message template and sends it to a language model to generate the project idea. The `SettingsManager` class is used to manage and initialize project and chat completion settings. This method is a crucial part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. It integrates various functionalities to ensure that the documentation remains up-to-date and accurately reflects the current state of the codebase.
     """
         logger.info('Generation of the main idea')
         main_project_idea = self.generate_main_project_idea(docs)

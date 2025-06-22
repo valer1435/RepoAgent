@@ -23,7 +23,7 @@ class Task:
         None
     
     Note:
-        This class is used in conjunction with the TaskManager class to manage and dispatch tasks. It helps in organizing and tracking the dependencies and additional information required for each task in the documentation generation process. The status attribute is initialized to 0, indicating the task is in a default state. This status can be updated as the task progresses through the dispatch system. The multi-task dispatch system is designed to handle tasks in a multi-threaded environment, ensuring that documentation updates are processed efficiently.
+        The status attribute is initialized to 0, indicating the task is in a default state. This status can be updated as the task progresses through the dispatch system. The multi-task dispatch system is designed to handle tasks in a multi-threaded environment, ensuring that documentation updates are processed efficiently.
     """
 
     def __init__(self, task_id: int, dependencies: List[Task], extra_info: Any=None):

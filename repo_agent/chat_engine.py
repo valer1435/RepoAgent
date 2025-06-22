@@ -108,7 +108,7 @@ class ChatEngine:
         """
     Initializes the ChatEngine instance.
     
-    Sets up the language model (LLM) using the provided project manager and settings from the SettingsManager. This method ensures that the LLM is configured with a context window of 20000 and retrieves the necessary settings to function properly within the project. The ChatEngine is a crucial component of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. It integrates Git to detect changes, manage file handling, and generate documentation items as needed, reducing the manual effort required to keep documentation current. The project also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
+    Sets up the language model (LLM) using the provided project manager and settings from the SettingsManager. This method ensures that the LLM is configured with a context window of 20000 and retrieves the necessary settings to function properly within the project. The ChatEngine is a crucial component of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. It integrates Git to detect changes, manage file handling, and generate documentation items as needed, reducing the manual effort required to keep documentation current.
     
     Args:
         project_manager (ProjectManager): The project manager instance used to manage the project.
@@ -215,8 +215,6 @@ class ChatEngine:
     
     Note:
         See also: `build_prompt` method for constructing the prompt.
-    
-    The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. This method plays a crucial role in the project by leveraging a chat engine to create or update documentation items, thereby reducing the manual effort required to maintain comprehensive and accurate documentation.
     """
         settings = SettingsManager.get_setting()
         if settings.project.main_idea:
