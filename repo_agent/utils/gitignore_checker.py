@@ -2,6 +2,7 @@ import fnmatch
 import os
 from repo_agent.settings import SettingsManager
 
+
 class GitignoreChecker:
     """
     GitignoreChecker is a utility class for checking files and folders against a .gitignore file to determine which should be ignored.
@@ -40,7 +41,7 @@ class GitignoreChecker:
         FileNotFoundError: If the gitignore file at the specified path does not exist.
     
     Note:
-        This method is part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. It ensures that the .gitignore file is correctly loaded to manage file operations and untracked content, thereby facilitating efficient and accurate documentation updates. The project integrates various functionalities to detect changes, manage file handling, and generate documentation items, all while operating in a multi-threaded environment to ensure scalability and robustness.
+        This method is part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. It ensures that the .gitignore file is correctly loaded to manage file operations and untracked content, thereby facilitating efficient and accurate documentation updates.
     
     ---
     
@@ -122,7 +123,7 @@ class GitignoreChecker:
         None
     
     Note:
-        This method is used internally by the `check_files_and_folders` method to filter out ignored files and directories. It is a crucial part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. The project ensures that untracked and ignored files are not included in the documentation process, helping to maintain high-quality, accurate, and consistent documentation. The `repo_agent` project integrates various functionalities to detect changes, manage file handling, and generate documentation items efficiently, ensuring that the documentation remains up-to-date and reflects the current state of the codebase.
+        This method is used internally by the `check_files_and_folders` method to filter out ignored files and directories. It is a crucial part of the `repo_agent` project, which automates the generation and management of documentation for a Git repository. The project ensures that untracked and ignored files are not included in the documentation process, helping to maintain high-quality, accurate, and consistent documentation.
     
     ---
     
@@ -166,9 +167,10 @@ class GitignoreChecker:
     """
         self.directory = directory
         self.gitignore_path = gitignore_path
-        self.folder_patterns, self.file_patterns = self._load_gitignore_patterns()
+        self.folder_patterns, self.file_patterns = (self.
+            _load_gitignore_patterns())
 
-    def _load_gitignore_patterns(self) -> tuple:
+    def _load_gitignore_patterns(self) ->tuple:
         """
     Loads and processes the .gitignore file patterns.
     
@@ -190,14 +192,15 @@ class GitignoreChecker:
             with open(self.gitignore_path, 'r', encoding='utf-8') as file:
                 gitignore_content = file.read()
         except FileNotFoundError:
-            default_path = os.path.join(os.path.dirname(__file__), '..', '..', '.gitignore')
+            default_path = os.path.join(os.path.dirname(__file__), '..',
+                '..', '.gitignore')
             with open(default_path, 'r', encoding='utf-8') as file:
                 gitignore_content = file.read()
         patterns = self._parse_gitignore(gitignore_content)
         return self._split_gitignore_patterns(patterns)
 
     @staticmethod
-    def _parse_gitignore(gitignore_content: str) -> list:
+    def _parse_gitignore(gitignore_content: str) ->list:
         """
     Parses the content of a .gitignore file and extracts the patterns.
     
@@ -218,12 +221,12 @@ class GitignoreChecker:
         patterns = []
         for line in gitignore_content.splitlines():
             line = line.strip()
-            if line and (not line.startswith('#')):
+            if line and not line.startswith('#'):
                 patterns.append(line)
         return patterns
 
     @staticmethod
-    def _split_gitignore_patterns(gitignore_patterns: list) -> tuple:
+    def _split_gitignore_patterns(gitignore_patterns: list) ->tuple:
         """
     Splits gitignore patterns into folder and file patterns.
     
@@ -248,10 +251,10 @@ class GitignoreChecker:
                 folder_patterns.append(pattern.rstrip('/'))
             else:
                 file_patterns.append(pattern)
-        return (folder_patterns, file_patterns)
+        return folder_patterns, file_patterns
 
     @staticmethod
-    def _is_ignored(path: str, patterns: list, is_dir: bool=False) -> bool:
+    def _is_ignored(path: str, patterns: list, is_dir: bool=False) ->bool:
         """
     Checks if a given path is ignored based on a list of patterns.
     
@@ -274,11 +277,12 @@ class GitignoreChecker:
         for pattern in patterns:
             if fnmatch.fnmatch(path, pattern):
                 return True
-            if is_dir and pattern.endswith('/') and fnmatch.fnmatch(path, pattern[:-1]):
+            if is_dir and pattern.endswith('/') and fnmatch.fnmatch(path,
+                pattern[:-1]):
                 return True
         return False
 
-    def check_files_and_folders(self) -> list:
+    def check_files_and_folders(self) ->list:
         """
     Checks and returns a list of files and folders that are not ignored based on the project's ignore list and specific patterns.
     
@@ -299,11 +303,15 @@ class GitignoreChecker:
         ignored_folders = SettingsManager().get_setting().project.ignore_list
         not_ignored_files = []
         for root, dirs, files in os.walk(self.directory):
-            dirs[:] = [d for d in dirs if not self._is_ignored(d, self.folder_patterns, is_dir=True) and (not any([d in i for i in ignored_folders]))]
-            not_ignored_files += [os.path.relpath(os.path.join(root, d), self.directory) for d in dirs]
+            dirs[:] = [d for d in dirs if not self._is_ignored(d, self.
+                folder_patterns, is_dir=True) and not any([(d in i) for i in
+                ignored_folders])]
+            not_ignored_files += [os.path.relpath(os.path.join(root, d),
+                self.directory) for d in dirs]
             for file in files:
                 file_path = os.path.join(root, file)
                 relative_path = os.path.relpath(file_path, self.directory)
-                if not self._is_ignored(file, self.file_patterns) and file_path.endswith('.py'):
+                if not self._is_ignored(file, self.file_patterns
+                    ) and file_path.endswith('.py'):
                     not_ignored_files.append(relative_path)
         return not_ignored_files

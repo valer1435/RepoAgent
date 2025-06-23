@@ -1,6 +1,7 @@
 import ast
 import re
 
+
 def update_doc(node, new_docstring):
     """
     Updates the docstring of an AST node.
@@ -25,13 +26,14 @@ def update_doc(node, new_docstring):
     indent = '    ' if not isinstance(node, ast.Module) else ''
     lines = new_docstring.split('\n')
     if len(lines) > 1:
-        lines[1:] = [indent + line for line in lines[1:]]
+        lines[1:] = [(indent + line) for line in lines[1:]]
     processed_doc = '\n' + indent + '\n'.join(lines) + '\n' + indent
     if ast.get_docstring(node) is None:
         node.body.insert(0, ast.Expr(value=ast.Str(s=processed_doc)))
     else:
         node.body[0] = ast.Expr(value=ast.Str(s=processed_doc))
     return node
+
 
 def remove_docstrings(code):
     """
@@ -51,5 +53,6 @@ def remove_docstrings(code):
     Note:
         This method uses a regular expression to identify and remove docstrings. It is important to ensure that the input code is well-formed to avoid unintended removal of string literals. This tool is part of a larger project aimed at streamlining documentation management in a Git environment, which includes automated detection of changes, file handling, and multi-task dispatch for efficient processing.
     """
-    pattern = re.compile('^\\s*("""|\\\'\\\'\\\').*?^\\s*\\1', re.DOTALL | re.MULTILINE)
+    pattern = re.compile('^\\s*("""|\\\'\\\'\\\').*?^\\s*\\1', re.DOTALL |
+        re.MULTILINE)
     return pattern.sub('', code)
