@@ -353,6 +353,6 @@ class ChangeDetector:
     """
         unstaged_files_meeting_conditions = self.get_to_be_staged_files()
         for file_path in unstaged_files_meeting_conditions:
-            add_command = f'git -C {self.repo.working_dir} add {file_path}'
+            add_command = f"git -C {self.repo.working_dir} add {file_path}"
             subprocess.run(add_command, shell=True, check=True)
         return unstaged_files_meeting_conditions
