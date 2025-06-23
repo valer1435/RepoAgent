@@ -1,6 +1,7 @@
 import os
 import jedi
 
+
 class ProjectManager:
     """
     ProjectManager is a class for managing and organizing the structure of a project repository.
@@ -86,7 +87,8 @@ class ProjectManager:
     """
         self.repo_path = repo_path
         self.project = jedi.Project(self.repo_path)
-        self.project_hierarchy = os.path.join(self.repo_path, project_hierarchy, 'project_hierarchy.json')
+        self.project_hierarchy = os.path.join(self.repo_path,
+            project_hierarchy, 'project_hierarchy.json')
 
     def get_project_structure(self):
         """

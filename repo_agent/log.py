@@ -3,7 +3,40 @@ import logging
 import sys
 from loguru import logger
 logger = logger.opt(colors=True)
-'\nRepoAgent 日志记录器对象。\n\n默认信息:\n- 格式: `[%(asctime)s %(name)s] %(levelname)s: %(message)s`\n- 等级: `INFO` ，根据 `CONFIG["log_level"]` 配置改变\n- 输出: 输出至 stdout\n\n用法示例:\n    ```python\n    from repo_agent.log import logger\n    \n    # 基本消息记录\n    logger.info("It <green>works</>!") # 使用颜色\n\n    # 记录异常信息\n    try:\n        1 / 0\n    except ZeroDivisionError:\n        # 使用 `logger.exception` 可以在记录异常消息时自动附加异常的堆栈跟踪信息。\n        logger.exception("ZeroDivisionError occurred")\n\n    # 记录调试信息\n    logger.debug(f"Debugging info: {some_debug_variable}")\n\n    # 记录警告信息\n    logger.warning("This is a warning message")\n\n    # 记录错误信息\n    logger.error("An error occurred")\n    ```\n\n'
+"""
+RepoAgent 日志记录器对象。
+
+默认信息:
+- 格式: `[%(asctime)s %(name)s] %(levelname)s: %(message)s`
+- 等级: `INFO` ，根据 `CONFIG["log_level"]` 配置改变
+- 输出: 输出至 stdout
+
+用法示例:
+    ```python
+    from repo_agent.log import logger
+    
+    # 基本消息记录
+    logger.info("It <green>works</>!") # 使用颜色
+
+    # 记录异常信息
+    try:
+        1 / 0
+    except ZeroDivisionError:
+        # 使用 `logger.exception` 可以在记录异常消息时自动附加异常的堆栈跟踪信息。
+        logger.exception("ZeroDivisionError occurred")
+
+    # 记录调试信息
+    logger.debug(f"Debugging info: {some_debug_variable}")
+
+    # 记录警告信息
+    logger.warning("This is a warning message")
+
+    # 记录错误信息
+    logger.error("An error occurred")
+    ```
+
+"""
+
 
 class InterceptHandler(logging.Handler):
     """
@@ -13,25 +46,9 @@ class InterceptHandler(logging.Handler):
     
     Note:
         This handler is used in conjunction with the `set_logger_level_from_config` function to configure the logging level and intercept log records. It plays a vital role in the project's logging infrastructure, ensuring that all log messages are consistent and contextually accurate.
-    
-    ---
-    
-    emit emits a log record to the logger.
-    
-    Args:
-        record (logging.LogRecord): The log record to be emitted.
-    
-    Returns:
-        None: This method does not return any value.
-    
-    Raises:
-        ValueError: If the log level name cannot be found in the logger's levels.
-    
-    Note:
-        This method uses the `inspect` module to determine the correct stack depth for the log message. The `repo_agent` project automates the generation and management of documentation for a Git repository, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase. It leverages Git to detect changes, manage file handling, and generate documentation items as needed, and includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment.
     """
 
-    def emit(self, record: logging.LogRecord) -> None:
+    def emit(self, record: logging.LogRecord) ->None:
         """
     Emits a log record to the logger.
     
@@ -54,11 +71,14 @@ class InterceptHandler(logging.Handler):
             level = logger.level(record.levelname).name
         except ValueError:
             level = record.levelno
-        frame, depth = (inspect.currentframe(), 0)
-        while frame and (depth == 0 or frame.f_code.co_filename == logging.__file__):
+        frame, depth = inspect.currentframe(), 0
+        while frame and (depth == 0 or frame.f_code.co_filename == logging.
+            __file__):
             frame = frame.f_back
             depth += 1
-        logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
+        logger.opt(depth=depth, exception=record.exc_info).log(level,
+            record.getMessage())
+
 
 def set_logger_level_from_config(log_level):
     """
@@ -79,6 +99,7 @@ def set_logger_level_from_config(log_level):
         This method is used in conjunction with the `InterceptHandler` to ensure that log records are emitted with the correct context and formatting. It is called in the `run` and `run_outside_cli` methods of the `main.py` module to configure the logging level based on user input. This is crucial for the `repo_agent` project's ability to automate the generation and management of documentation for a Git repository, ensuring that logging is consistent and informative.
     """
     logger.remove()
-    logger.add(sys.stderr, level=log_level, enqueue=True, backtrace=False, diagnose=False)
+    logger.add(sys.stderr, level=log_level, enqueue=True, backtrace=False,
+        diagnose=False)
     logging.basicConfig(handlers=[InterceptHandler()], level=0, force=True)
     logger.success(f'Log level set to {log_level}!')

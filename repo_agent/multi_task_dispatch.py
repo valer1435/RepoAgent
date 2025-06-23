@@ -5,6 +5,7 @@ import time
 from typing import Any, Callable, Dict, List
 from colorama import Fore, Style
 
+
 class Task:
     """
     Task class represents a task with a unique identifier, dependencies, and additional information.
@@ -26,7 +27,8 @@ class Task:
         The status attribute is initialized to 0, indicating the task is in a default state. This status can be updated as the task progresses through the dispatch system. The multi-task dispatch system is designed to handle tasks in a multi-threaded environment, ensuring that documentation updates are processed efficiently.
     """
 
-    def __init__(self, task_id: int, dependencies: List[Task], extra_info: Any=None):
+    def __init__(self, task_id: int, dependencies: List[Task], extra_info:
+        Any=None):
         """
     Initializes a Task object.
     
@@ -50,6 +52,7 @@ class Task:
         self.extra_info = extra_info
         self.dependencies = dependencies
         self.status = 0
+
 
 class TaskManager:
     """
@@ -149,7 +152,7 @@ class TaskManager:
         self.query_id = 0
 
     @property
-    def all_success(self) -> bool:
+    def all_success(self) ->bool:
         """
     Checks if all tasks in the task manager are completed successfully.
     
@@ -163,7 +166,7 @@ class TaskManager:
     """
         return len(self.task_dict) == 0
 
-    def add_task(self, dependency_task_id: List[int], extra=None) -> int:
+    def add_task(self, dependency_task_id: List[int], extra=None) ->int:
         """
     Adds a new task to the task manager with specified dependencies and extra information.
     
@@ -183,8 +186,10 @@ class TaskManager:
         This method is part of the `TaskManager` class, which is a component of the `repo_agent` project. The `repo_agent` project automates the generation and management of documentation for a Git repository, integrating various functionalities to detect changes, handle file operations, manage tasks, and configure settings. This ensures efficient and accurate documentation updates, making it particularly useful for large repositories where manual documentation management can be time-consuming and error-prone.
     """
         with self.task_lock:
-            depend_tasks = [self.task_dict[task_id] for task_id in dependency_task_id if task_id in self.task_dict]
-            self.task_dict[self.now_id] = Task(task_id=self.now_id, dependencies=depend_tasks, extra_info=extra)
+            depend_tasks = [self.task_dict[task_id] for task_id in
+                dependency_task_id if task_id in self.task_dict]
+            self.task_dict[self.now_id] = Task(task_id=self.now_id,
+                dependencies=depend_tasks, extra_info=extra)
             self.now_id += 1
             return self.now_id - 1
 
@@ -209,12 +214,15 @@ class TaskManager:
         with self.task_lock:
             self.query_id += 1
             for task_id in self.task_dict.keys():
-                ready = len(self.task_dict[task_id].dependencies) == 0 and self.task_dict[task_id].status == 0
+                ready = len(self.task_dict[task_id].dependencies
+                    ) == 0 and self.task_dict[task_id].status == 0
                 if ready:
                     self.task_dict[task_id].status = 1
-                    print(f'{Fore.RED}[process {process_id}]{Style.RESET_ALL}: get task({task_id}), remain({len(self.task_dict)})')
-                    return (self.task_dict[task_id], task_id)
-            return (None, -1)
+                    print(
+                        f'{Fore.RED}[process {process_id}]{Style.RESET_ALL}: get task({task_id}), remain({len(self.task_dict)})'
+                        )
+                    return self.task_dict[task_id], task_id
+            return None, -1
 
     def mark_completed(self, task_id: int):
         """
@@ -240,6 +248,7 @@ class TaskManager:
                 if target_task in task.dependencies:
                     task.dependencies.remove(target_task)
             self.task_dict.pop(task_id)
+
 
 def worker(task_manager, process_id: int, handler: Callable):
     """

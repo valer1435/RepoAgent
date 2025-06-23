@@ -10,6 +10,7 @@ from repo_agent.settings import SettingsManager
 from repo_agent.utils.gitignore_checker import GitignoreChecker
 from repo_agent.utils.meta_info_utils import latest_verison_substring
 
+
 class FileHandler:
     """
     ### FileHandler
@@ -241,7 +242,8 @@ class FileHandler:
         self.file_path = file_path
         self.repo_path = repo_path
         setting = SettingsManager.get_setting()
-        self.project_hierarchy = setting.project.target_repo / setting.project.hierarchy_name
+        self.project_hierarchy = (setting.project.target_repo / setting.
+            project.hierarchy_name)
 
     def read_file(self):
         """
@@ -268,7 +270,8 @@ class FileHandler:
             content = file.read()
         return content
 
-    def get_obj_code_info(self, code_type, code_name, start_line, end_line, params, file_path=None, docstring='', source_node=None):
+    def get_obj_code_info(self, code_type, code_name, start_line, end_line,
+        params, file_path=None, docstring='', source_node=None):
         """
     Retrieves detailed information about a code object (function or class) from a file.
     
@@ -313,7 +316,8 @@ class FileHandler:
         code_info['params'] = params
         code_info['docstring'] = docstring
         code_info['source_node'] = source_node
-        with open(os.path.join(self.repo_path, file_path if file_path != None else self.file_path), 'r', encoding='utf-8') as code_file:
+        with open(os.path.join(self.repo_path, file_path if file_path !=
+            None else self.file_path), 'r', encoding='utf-8') as code_file:
             lines = code_file.readlines()
             code_content = ''.join(lines[start_line - 1:end_line])
             name_column = lines[start_line - 1].find(code_name)
@@ -383,10 +387,11 @@ class FileHandler:
         if commits:
             commit = commits[0]
             try:
-                previous_version = (commit.tree / self.file_path).data_stream.read().decode('utf-8')
+                previous_version = (commit.tree / self.file_path
+                    ).data_stream.read().decode('utf-8')
             except KeyError:
                 previous_version = None
-        return (current_version, previous_version)
+        return current_version, previous_version
 
     def get_end_lineno(self, node):
         """
@@ -407,7 +412,8 @@ class FileHandler:
             return -1
         end_lineno = node.lineno
         for child in ast.iter_child_nodes(node):
-            child_end = getattr(child, 'end_lineno', None) or self.get_end_lineno(child)
+            child_end = getattr(child, 'end_lineno', None
+                ) or self.get_end_lineno(child)
             if child_end > -1:
                 end_lineno = max(end_lineno, child_end)
         return end_lineno
@@ -436,9 +442,9 @@ class FileHandler:
             self.add_parent_references(child, node)
 
     def get_functions_and_classes(self, code_content):
-        '''
-    def get_functions_and_classes(self, code_content):
         """
+    def get_functions_and_classes(self, code_content):
+        ""\"
         Retrieves functions and classes from the given code content.
     
         This method parses the provided code content using the Abstract Syntax Tree (AST) and extracts information about functions and classes, including their names, line numbers, parameters, and docstrings. It is part of a comprehensive tool designed to automate the generation and management of documentation for a Git repository.
@@ -461,19 +467,23 @@ class FileHandler:
     
         Note:
             This method uses the `get_end_lineno` method to determine the end line number of functions and classes. It also calls the `add_parent_references` method to ensure that all nodes in the AST have a reference to their parent node. This method is crucial for generating accurate and detailed documentation for the repository. The `repo_agent` project automates the detection of changes, manages file handling, and generates documentation items as needed, ensuring that the documentation remains up-to-date and accurately reflects the current state of the codebase.
-        """
+        ""\"
     
-    '''
+    """
         tree = ast.parse(code_content)
         self.add_parent_references(tree)
         functions_and_classes = []
         for node in ast.walk(tree):
-            if isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)):
+            if isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.
+                AsyncFunctionDef)):
                 start_line = node.lineno
                 end_line = self.get_end_lineno(node)
-                parameters = [arg.arg for arg in node.args.args] if 'args' in dir(node) else []
+                parameters = [arg.arg for arg in node.args.args
+                    ] if 'args' in dir(node) else []
                 all_names = [item[1] for item in functions_and_classes]
-                functions_and_classes.append((type(node).__name__, node.name, start_line, end_line, parameters, ast.get_docstring(node), node))
+                functions_and_classes.append((type(node).__name__, node.
+                    name, start_line, end_line, parameters, ast.
+                    get_docstring(node), node))
         return functions_and_classes
 
     def generate_file_structure(self, file_path):
@@ -504,19 +514,25 @@ class FileHandler:
         This method is a crucial part of the automated documentation generation process in the `repo_agent` project. It is used by other methods such as `generate_overall_structure` to gather detailed information about code objects in a file. The method relies on the `get_functions_and_classes` and `get_obj_code_info` methods to extract and format the necessary information, ensuring that all code elements are accurately represented. This helps in maintaining and updating documentation for a Git repository efficiently and accurately.
     """
         if os.path.isdir(os.path.join(self.repo_path, file_path)):
-            return [{'type': 'Dir', 'name': file_path, 'content': '', 'md_content': [], 'code_start_line': -1, 'code_end_line': -1}]
+            return [{'type': 'Dir', 'name': file_path, 'content': '',
+                'md_content': [], 'code_start_line': -1, 'code_end_line': -1}]
         else:
-            with open(os.path.join(self.repo_path, file_path), 'r', encoding='utf-8') as f:
+            with open(os.path.join(self.repo_path, file_path), 'r',
+                encoding='utf-8') as f:
                 content = f.read()
                 structures = self.get_functions_and_classes(content)
                 file_objects = []
                 for struct in structures:
-                    structure_type, name, start_line, end_line, params, docstring, source_node = struct
-                    code_info = self.get_obj_code_info(structure_type, name, start_line, end_line, params, file_path, docstring, source_node)
+                    (structure_type, name, start_line, end_line, params,
+                        docstring, source_node) = struct
+                    code_info = self.get_obj_code_info(structure_type, name,
+                        start_line, end_line, params, file_path, docstring,
+                        source_node)
                     file_objects.append(code_info)
         return file_objects
 
-    def generate_overall_structure(self, file_path_reflections, jump_files) -> dict:
+    def generate_overall_structure(self, file_path_reflections, jump_files
+        ) ->dict:
         """
     Generates the overall structure of the repository, excluding ignored files and specified jump files.
     
@@ -536,22 +552,31 @@ class FileHandler:
         This method relies on the `GitignoreChecker` class to filter out ignored files and the `generate_file_structure` method to gather detailed information about code objects in a file. The `repo_agent` project is designed to automate the generation and management of documentation for a Git repository, ensuring that documentation is up-to-date and accurate. It integrates various functionalities to detect changes, manage file handling, and generate documentation items as needed. The project also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, making it a comprehensive solution for maintaining high-quality documentation in software repositories.
     """
         repo_structure = {}
-        gitignore_checker = GitignoreChecker(directory=self.repo_path, gitignore_path=os.path.join(self.repo_path, '.gitignore'))
+        gitignore_checker = GitignoreChecker(directory=self.repo_path,
+            gitignore_path=os.path.join(self.repo_path, '.gitignore'))
         bar = tqdm(gitignore_checker.check_files_and_folders())
         for not_ignored_files in bar:
             normal_file_names = not_ignored_files
             if not_ignored_files in jump_files:
-                print(f'{Fore.LIGHTYELLOW_EX}[File-Handler] Unstaged AddFile, ignore this file: {Style.RESET_ALL}{normal_file_names}')
+                print(
+                    f'{Fore.LIGHTYELLOW_EX}[File-Handler] Unstaged AddFile, ignore this file: {Style.RESET_ALL}{normal_file_names}'
+                    )
                 continue
             elif not_ignored_files.endswith(latest_verison_substring):
-                print(f'{Fore.LIGHTYELLOW_EX}[File-Handler] Skip Latest Version, Using Git-Status Version]: {Style.RESET_ALL}{normal_file_names}')
+                print(
+                    f'{Fore.LIGHTYELLOW_EX}[File-Handler] Skip Latest Version, Using Git-Status Version]: {Style.RESET_ALL}{normal_file_names}'
+                    )
                 continue
             try:
-                repo_structure[normal_file_names] = self.generate_file_structure(not_ignored_files)
+                repo_structure[normal_file_names
+                    ] = self.generate_file_structure(not_ignored_files)
             except Exception as e:
-                logger.error(f'Alert: An error occurred while generating file structure for {not_ignored_files}: {e}')
+                logger.error(
+                    f'Alert: An error occurred while generating file structure for {not_ignored_files}: {e}'
+                    )
                 continue
-            bar.set_description(f'generating repo structure: {not_ignored_files}')
+            bar.set_description(
+                f'generating repo structure: {not_ignored_files}')
         return repo_structure
 
     def convert_to_markdown_file(self, file_path=None):
@@ -578,10 +603,13 @@ class FileHandler:
             file_path = self.file_path
         file_dict = json_data.get(file_path)
         if file_dict is None:
-            raise ValueError(f'No file object found for {self.file_path} in project_hierarchy.json')
+            raise ValueError(
+                f'No file object found for {self.file_path} in project_hierarchy.json'
+                )
         markdown = ''
         parent_dict = {}
-        objects = sorted(file_dict.values(), key=lambda obj: obj['code_start_line'])
+        objects = sorted(file_dict.values(), key=lambda obj: obj[
+            'code_start_line'])
         for obj in objects:
             if obj['parent'] is not None:
                 parent_dict[obj['name']] = obj['parent']
@@ -599,8 +627,11 @@ class FileHandler:
             if obj['type'] in ['FunctionDef', 'AsyncFunctionDef']:
                 params_str = '()'
                 if obj['params']:
-                    params_str = f'({', '.join(obj['params'])})'
-            markdown += f'{'#' * level} {obj['type']} {obj['name']}{params_str}:\n'
-            markdown += f'{(obj['md_content'][-1] if len(obj['md_content']) > 0 else '')}\n'
+                    params_str = f"({', '.join(obj['params'])})"
+            markdown += (
+                f"{'#' * level} {obj['type']} {obj['name']}{params_str}:\n")
+            markdown += (
+                f"{obj['md_content'][-1] if len(obj['md_content']) > 0 else ''}\n"
+                )
         markdown += '***\n'
         return markdown

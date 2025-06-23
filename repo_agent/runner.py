@@ -23,6 +23,7 @@ from repo_agent.settings import SettingsManager
 from repo_agent.utils.docstring_updater import update_doc
 from repo_agent.utils.meta_info_utils import delete_fake_files, make_fake_files
 
+
 class Runner:
     """
     Runner class for managing and generating documentation for a project repository.
@@ -326,22 +327,32 @@ class Runner:
         The primary purpose of this project is to automate the generation and management of documentation for a Git repository. It integrates various functionalities to detect changes, handle file operations, manage tasks, and configure settings, all while ensuring efficient and accurate documentation updates. The tool is built to work seamlessly within a Git environment, leveraging Git's capabilities to track changes and manage files. Additionally, it includes a multi-task dispatch system to efficiently process documentation generation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
     """
         self.setting = SettingsManager.get_setting()
-        self.absolute_project_hierarchy_path = self.setting.project.target_repo / self.setting.project.hierarchy_name
-        shutil.copy('mkdocs.yml', Path(self.setting.project.target_repo, 'mkdocs.yml'))
-        self.project_manager = ProjectManager(repo_path=self.setting.project.target_repo, project_hierarchy=self.setting.project.hierarchy_name)
-        self.change_detector = ChangeDetector(repo_path=self.setting.project.target_repo)
+        self.absolute_project_hierarchy_path = (self.setting.project.
+            target_repo / self.setting.project.hierarchy_name)
+        shutil.copy('mkdocs.yml', Path(self.setting.project.target_repo,
+            'mkdocs.yml'))
+        self.project_manager = ProjectManager(repo_path=self.setting.
+            project.target_repo, project_hierarchy=self.setting.project.
+            hierarchy_name)
+        self.change_detector = ChangeDetector(repo_path=self.setting.
+            project.target_repo)
         self.chat_engine = ChatEngine(project_manager=self.project_manager)
         file_path_reflections, jump_files = make_fake_files()
         setting = SettingsManager.get_setting()
         if not self.absolute_project_hierarchy_path.exists():
-            self.meta_info = MetaInfo.init_meta_info(file_path_reflections, jump_files)
-            self.meta_info.checkpoint(target_dir_path=self.absolute_project_hierarchy_path)
+            self.meta_info = MetaInfo.init_meta_info(file_path_reflections,
+                jump_files)
+            self.meta_info.checkpoint(target_dir_path=self.
+                absolute_project_hierarchy_path)
         else:
             project_abs_path = setting.project.target_repo
             file_handler = FileHandler(project_abs_path, None)
-            repo_structure = file_handler.generate_overall_structure(file_path_reflections, jump_files)
-            self.meta_info = MetaInfo.from_checkpoint_path(self.absolute_project_hierarchy_path, repo_structure)
-            SettingsManager.get_setting().project.main_idea = self.meta_info.main_idea
+            repo_structure = file_handler.generate_overall_structure(
+                file_path_reflections, jump_files)
+            self.meta_info = MetaInfo.from_checkpoint_path(self.
+                absolute_project_hierarchy_path, repo_structure)
+            SettingsManager.get_setting(
+                ).project.main_idea = self.meta_info.main_idea
         self.runner_lock = threading.Lock()
 
     def get_all_pys(self, directory):
@@ -389,17 +400,26 @@ class Runner:
     """
         settings = SettingsManager.get_setting()
         try:
-            if not need_to_generate(doc_item, self.setting.project.ignore_list):
-                print(f'Content ignored/Document generated, skipping: {doc_item.get_full_name()}')
+            if not need_to_generate(doc_item, self.setting.project.ignore_list
+                ):
+                print(
+                    f'Content ignored/Document generated, skipping: {doc_item.get_full_name()}'
+                    )
             else:
-                print(f' -- Generating document  {Fore.LIGHTYELLOW_EX}{doc_item.item_type.name}: {doc_item.get_full_name()}{Style.RESET_ALL}')
-                response_message = self.chat_engine.generate_doc(doc_item=doc_item)
+                print(
+                    f' -- Generating document  {Fore.LIGHTYELLOW_EX}{doc_item.item_type.name}: {doc_item.get_full_name()}{Style.RESET_ALL}'
+                    )
+                response_message = self.chat_engine.generate_doc(doc_item=
+                    doc_item)
                 doc_item.md_content.append(response_message)
                 if settings.project.main_idea:
                     doc_item.item_status = DocItemStatus.doc_up_to_date
-                self.meta_info.checkpoint(target_dir_path=self.absolute_project_hierarchy_path)
+                self.meta_info.checkpoint(target_dir_path=self.
+                    absolute_project_hierarchy_path)
         except Exception:
-            logger.exception(f'Document generation failed after multiple attempts, skipping: {doc_item.get_full_name()}')
+            logger.exception(
+                f'Document generation failed after multiple attempts, skipping: {doc_item.get_full_name()}'
+                )
             doc_item.md_content.append('')
             if settings.project.main_idea:
                 doc_item.item_status = DocItemStatus.doc_up_to_date
@@ -427,7 +447,11 @@ class Runner:
     """
         str_obj = []
         for doc in docs:
-            str_obj.append(f'Component name: {doc['obj_name']}\nComponent description: {doc['md_content']}\nComponent place in hierarchy: {doc['tree_path']}')
+            str_obj.append(
+                f"""Component name: {doc['obj_name']}
+Component description: {doc['md_content']}
+Component place in hierarchy: {doc['tree_path']}"""
+                )
         response_message = self.chat_engine.generate_idea('\n\n'.join(str_obj))
         return response_message
 
@@ -459,7 +483,8 @@ class Runner:
         >>> runner.generate_doc()
     """
         logger.info('Starting to generate documentation')
-        check_task_available_func = partial(need_to_generate, ignore_list=self.setting.project.ignore_list)
+        check_task_available_func = partial(need_to_generate, ignore_list=
+            self.setting.project.ignore_list)
         task_manager = self.meta_info.get_topology(check_task_available_func)
         before_task_len = len(task_manager.task_dict)
         if not self.meta_info.in_generation_process:
@@ -469,19 +494,27 @@ class Runner:
             logger.info('Load from an existing task-list')
         self.meta_info.print_task_list(task_manager.task_dict)
         try:
-            threads = [threading.Thread(target=worker, args=(task_manager, process_id, self.generate_doc_for_a_single_item)) for process_id in range(self.setting.project.max_thread_count)]
+            threads = [threading.Thread(target=worker, args=(task_manager,
+                process_id, self.generate_doc_for_a_single_item)) for
+                process_id in range(self.setting.project.max_thread_count)]
             for thread in threads:
                 thread.start()
             for thread in threads:
                 thread.join()
             self.markdown_refresh()
             if self.setting.project.main_idea:
-                self.meta_info.document_version = self.change_detector.repo.head.commit.hexsha
+                self.meta_info.document_version = (self.change_detector.
+                    repo.head.commit.hexsha)
                 self.meta_info.in_generation_process = False
-                self.meta_info.checkpoint(target_dir_path=self.absolute_project_hierarchy_path)
-            logger.info(f'Successfully generated {before_task_len - len(task_manager.task_dict)} documents.')
+                self.meta_info.checkpoint(target_dir_path=self.
+                    absolute_project_hierarchy_path)
+            logger.info(
+                f'Successfully generated {before_task_len - len(task_manager.task_dict)} documents.'
+                )
         except BaseException as e:
-            logger.error(f'An error occurred: {e}. {before_task_len - len(task_manager.task_dict)} docs are generated at this time')
+            logger.error(
+                f'An error occurred: {e}. {before_task_len - len(task_manager.task_dict)} docs are generated at this time'
+                )
 
     def get_top_n_components(self, doc_item: DocItem):
         """
@@ -534,7 +567,11 @@ class Runner:
     Note:
         The markdown content is split, and the first part is extracted. The tree path is represented as a string with items separated by '->'. This method is crucial for the automated documentation generation process, ensuring that all relevant information is captured and organized. The `repo_agent` project leverages Git to detect changes, manage file handling, and generate documentation items, making it an essential part of maintaining high-quality, accurate, and consistent documentation for software repositories.
     """
-        return {'obj_name': doc_item.obj_name, 'md_content': doc_item.md_content[-1].split('\n\n')[0], 'who_reference_me': doc_item.who_reference_me, 'reference_who': doc_item.reference_who, 'tree_path': '->'.join([obj.obj_name for obj in doc_item.tree_path])}
+        return {'obj_name': doc_item.obj_name, 'md_content': doc_item.
+            md_content[-1].split('\n\n')[0], 'who_reference_me': doc_item.
+            who_reference_me, 'reference_who': doc_item.reference_who,
+            'tree_path': '->'.join([obj.obj_name for obj in doc_item.
+            tree_path])}
 
     def generate_main_idea(self, docs):
         """
@@ -579,9 +616,11 @@ class Runner:
         See also: The `summarize_repository` function for details on how the repository is summarized and the `MetaInfo.checkpoint` method for how the state is saved.
     """
         logger.info('Modules documentation generation')
-        res = summarize_repository(self.meta_info.repo_path, self.meta_info.repo_structure, self.chat_engine)
+        res = summarize_repository(self.meta_info.repo_path, self.meta_info
+            .repo_structure, self.chat_engine)
         self.update_modules(res)
-        self.meta_info.checkpoint(target_dir_path=self.absolute_project_hierarchy_path)
+        self.meta_info.checkpoint(target_dir_path=self.
+            absolute_project_hierarchy_path)
         logger.info(f'Successfully generated module summaries')
         return res
 
@@ -607,7 +646,8 @@ class Runner:
         This method relies on the `search_tree` method to find the correct `DocItem` in the hierarchical tree. The `module` dictionary must contain valid keys and values for the method to work correctly. The `repo_agent` project is designed to automate the generation and management of documentation for a Git repository, ensuring that documentation is always up-to-date and accurately reflects the current state of the codebase. It integrates various functionalities to detect changes, manage file handling, and generate documentation items as needed. The project also includes a multi-task dispatch system to efficiently process documentation tasks in a multi-threaded environment, ensuring that the documentation generation process is both scalable and robust.
     """
         rel_path = os.path.relpath(module['path'], self.meta_info.repo_path)
-        doc_item = self.search_tree(self.meta_info.target_repo_hierarchical_tree, rel_path)
+        doc_item = self.search_tree(self.meta_info.
+            target_repo_hierarchical_tree, rel_path)
         doc_item.md_content.append(module['module_summary'])
         doc_item.item_status = DocItemStatus.doc_up_to_date
         for sm in module['submodules']:
@@ -702,9 +742,11 @@ class Runner:
         - The multi-task dispatch system ensures efficient processing of documentation tasks in a multi-threaded environment, enhancing scalability and robustness.
     """
         with self.runner_lock:
-            markdown_folder = Path(self.setting.project.target_repo) / self.setting.project.markdown_docs_name
+            markdown_folder = Path(self.setting.project.target_repo
+                ) / self.setting.project.markdown_docs_name
             if markdown_folder.exists():
-                logger.debug(f'Deleting existing contents of {markdown_folder}')
+                logger.debug(f'Deleting existing contents of {markdown_folder}'
+                    )
                 shutil.rmtree(markdown_folder)
             markdown_folder.mkdir(parents=True, exist_ok=True)
             logger.debug(f'Created markdown folder at {markdown_folder}')
@@ -712,15 +754,18 @@ class Runner:
         logger.debug(f'Found {len(file_item_list)} files to process.')
         for file_item in tqdm(file_item_list):
 
-            def recursive_check(doc_item) -> bool:
+            def recursive_check(doc_item) ->bool:
                 if doc_item.md_content:
                     return True
                 for child in doc_item.children.values():
                     if recursive_check(child):
                         return True
                 return False
-            if not recursive_check(file_item) and file_item.item_type == DocItemType._file:
-                logger.debug(f'No documentation content for: {file_item.get_full_name()}, skipping.')
+            if not recursive_check(file_item
+                ) and file_item.item_type == DocItemType._file:
+                logger.debug(
+                    f'No documentation content for: {file_item.get_full_name()}, skipping.'
+                    )
                 continue
             markdown = ''
             if file_item.item_type == DocItemType._dir:
@@ -729,26 +774,38 @@ class Runner:
             elif file_item.item_type == DocItemType._repo:
                 markdown += SettingsManager.get_setting().project.main_idea
             else:
-                markdown += f'# {Path(file_item.obj_name).name.strip('.py').replace('_', ' ').title()}\n\n'
+                markdown += f"""# {Path(file_item.obj_name).name.strip('.py').replace('_', ' ').title()}
+
+"""
                 for child in file_item.children.values():
                     update_doc(child.source_node, child.md_content[-1])
-                    markdown += f'## {child.obj_name}\n{self.convert_path_to_dot_notation(Path(file_item.obj_name), child.obj_name)}\n\n'
+                    markdown += f"""## {child.obj_name}
+{self.convert_path_to_dot_notation(Path(file_item.obj_name), child.obj_name)}
+
+"""
                     for n_child in child.children.values():
                         update_doc(n_child.source_node, n_child.md_content[-1])
                 children_names = list(file_item.children.keys())
                 if children_names:
-                    with open(Path(self.setting.project.target_repo, file_item.obj_name), 'w+', encoding='utf-8') as f:
-                        value = ast.unparse(file_item.children[children_names[0]].source_node.parent)
+                    with open(Path(self.setting.project.target_repo,
+                        file_item.obj_name), 'w+', encoding='utf-8') as f:
+                        value = ast.unparse(file_item.children[
+                            children_names[0]].source_node.parent)
                         f.write(value)
             if not markdown:
-                logger.warning(f'No markdown content generated for: {file_item.get_full_name()}')
+                logger.warning(
+                    f'No markdown content generated for: {file_item.get_full_name()}'
+                    )
                 continue
             if file_item.item_type == DocItemType._dir:
-                file_path = Path(self.setting.project.markdown_docs_name) / Path(file_item.obj_name) / 'index.md'
+                file_path = Path(self.setting.project.markdown_docs_name
+                    ) / Path(file_item.obj_name) / 'index.md'
             elif file_item.item_type == DocItemType._repo:
-                file_path = Path(self.setting.project.markdown_docs_name) / 'index.md'
+                file_path = Path(self.setting.project.markdown_docs_name
+                    ) / 'index.md'
             else:
-                file_path = Path(self.setting.project.markdown_docs_name) / file_item.get_file_name().replace('.py', '.md')
+                file_path = Path(self.setting.project.markdown_docs_name
+                    ) / file_item.get_file_name().replace('.py', '.md')
             abs_file_path = self.setting.project.target_repo / file_path
             logger.debug(f'Writing markdown to: {abs_file_path}')
             abs_file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -756,14 +813,19 @@ class Runner:
             with self.runner_lock:
                 for attempt in range(3):
                     try:
-                        with open(abs_file_path, 'w', encoding='utf-8') as file:
+                        with open(abs_file_path, 'w', encoding='utf-8'
+                            ) as file:
                             file.write(markdown)
                         logger.debug(f'Successfully wrote to {abs_file_path}')
                         break
                     except IOError as e:
-                        logger.error(f'Failed to write {abs_file_path} on attempt {attempt + 1}: {e}')
+                        logger.error(
+                            f'Failed to write {abs_file_path} on attempt {attempt + 1}: {e}'
+                            )
                         time.sleep(1)
-        logger.info(f'Markdown documents have been refreshed at {self.setting.project.markdown_docs_name}')
+        logger.info(
+            f'Markdown documents have been refreshed at {self.setting.project.markdown_docs_name}'
+            )
 
     def git_commit(self, commit_message):
         """
@@ -784,7 +846,8 @@ class Runner:
         The `--no-verify` flag is used to bypass pre-commit hooks, which can be useful in automated workflows where pre-commit checks are not necessary.
     """
         try:
-            subprocess.check_call(['git', 'commit', '--no-verify', '-m', commit_message], shell=True)
+            subprocess.check_call(['git', 'commit', '--no-verify', '-m',
+                commit_message], shell=True)
         except subprocess.CalledProcessError as e:
             print(f'An error occurred while trying to commit {str(e)}')
 
@@ -820,40 +883,68 @@ class Runner:
                 self.markdown_refresh()
             else:
                 self.generate_doc()
-                settings.project.main_idea = self.generate_main_idea(self.get_top_n_components(self.meta_info.target_repo_hierarchical_tree))
+                settings.project.main_idea = self.generate_main_idea(self.
+                    get_top_n_components(self.meta_info.
+                    target_repo_hierarchical_tree))
                 self.generate_doc()
                 self.summarize_modules()
                 self.markdown_refresh()
-            self.meta_info.checkpoint(target_dir_path=self.absolute_project_hierarchy_path, flash_reference_relation=True)
+            self.meta_info.checkpoint(target_dir_path=self.
+                absolute_project_hierarchy_path, flash_reference_relation=True)
             return
         if not self.meta_info.in_generation_process:
             logger.info('Starting to detect changes.')
-            '采用新的办法\n            1.新建一个project-hierachy\n            2.和老的hierarchy做merge,处理以下情况：\n            - 创建一个新文件：需要生成对应的doc\n            - 文件、对象被删除：对应的doc也删除(按照目前的实现，文件重命名算是删除再添加)\n            - 引用关系变了：对应的obj-doc需要重新生成\n            \n            merge后的new_meta_info中：\n            1.新建的文件没有文档，因此metainfo merge后还是没有文档\n            2.被删除的文件和obj，本来就不在新的meta里面，相当于文档被自动删除了\n            3.只需要观察被修改的文件，以及引用关系需要被通知的文件去重新生成文档'
+            """采用新的办法
+            1.新建一个project-hierachy
+            2.和老的hierarchy做merge,处理以下情况：
+            - 创建一个新文件：需要生成对应的doc
+            - 文件、对象被删除：对应的doc也删除(按照目前的实现，文件重命名算是删除再添加)
+            - 引用关系变了：对应的obj-doc需要重新生成
+            
+            merge后的new_meta_info中：
+            1.新建的文件没有文档，因此metainfo merge后还是没有文档
+            2.被删除的文件和obj，本来就不在新的meta里面，相当于文档被自动删除了
+            3.只需要观察被修改的文件，以及引用关系需要被通知的文件去重新生成文档"""
             file_path_reflections, jump_files = make_fake_files()
-            new_meta_info = MetaInfo.init_meta_info(file_path_reflections, jump_files)
+            new_meta_info = MetaInfo.init_meta_info(file_path_reflections,
+                jump_files)
             new_meta_info.load_doc_from_older_meta(self.meta_info)
             self.meta_info = new_meta_info
             self.meta_info.in_generation_process = True
-        check_task_available_func = partial(need_to_generate, ignore_list=self.setting.project.ignore_list)
-        task_manager = self.meta_info.get_task_manager(self.meta_info.target_repo_hierarchical_tree, task_available_func=check_task_available_func)
+        check_task_available_func = partial(need_to_generate, ignore_list=
+            self.setting.project.ignore_list)
+        task_manager = self.meta_info.get_task_manager(self.meta_info.
+            target_repo_hierarchical_tree, task_available_func=
+            check_task_available_func)
         for item_name, item_type in self.meta_info.deleted_items_from_older_meta:
-            print(f'{Fore.LIGHTMAGENTA_EX}[Dir/File/Obj Delete Dected]: {Style.RESET_ALL} {item_type} {item_name}')
+            print(
+                f'{Fore.LIGHTMAGENTA_EX}[Dir/File/Obj Delete Dected]: {Style.RESET_ALL} {item_type} {item_name}'
+                )
         self.meta_info.print_task_list(task_manager.task_dict)
         if task_manager.all_success:
-            logger.info('No tasks in the queue, all documents are completed and up to date.')
-        threads = [threading.Thread(target=worker, args=(task_manager, process_id, self.generate_doc_for_a_single_item)) for process_id in range(self.setting.project.max_thread_count)]
+            logger.info(
+                'No tasks in the queue, all documents are completed and up to date.'
+                )
+        threads = [threading.Thread(target=worker, args=(task_manager,
+            process_id, self.generate_doc_for_a_single_item)) for
+            process_id in range(self.setting.project.max_thread_count)]
         for thread in threads:
             thread.start()
         for thread in threads:
             thread.join()
         self.meta_info.in_generation_process = False
-        self.meta_info.document_version = self.change_detector.repo.head.commit.hexsha
-        self.meta_info.checkpoint(target_dir_path=self.absolute_project_hierarchy_path, flash_reference_relation=True)
+        self.meta_info.document_version = (self.change_detector.repo.head.
+            commit.hexsha)
+        self.meta_info.checkpoint(target_dir_path=self.
+            absolute_project_hierarchy_path, flash_reference_relation=True)
         logger.info(f'Doc has been forwarded to the latest version')
         self.markdown_refresh()
         delete_fake_files()
-        logger.info(f'Starting to git-add DocMetaInfo and newly generated Docs')
+        logger.info(f'Starting to git-add DocMetaInfo and newly generated Docs'
+            )
         time.sleep(1)
         git_add_result = self.change_detector.add_unstaged_files()
         if len(git_add_result) > 0:
-            logger.info(f'Added {[file for file in git_add_result]} to the staging area.')
+            logger.info(
+                f'Added {[file for file in git_add_result]} to the staging area.'
+                )

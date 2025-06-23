@@ -1,12 +1,12 @@
 # Utils Module
 ## Overview
-The `Utils` module in the `repo_agent` project is a collection of utility functions and classes designed to support various tasks related to code and file management. These utilities include functionalities for updating and removing docstrings, checking files and folders against a `.gitignore` file, and managing temporary files in the repository. The module is essential for ensuring that the documentation and file handling processes are efficient and accurate.
+The `Utils` module is a collection of utility functions and classes designed to support the core functionalities of the `repo_agent` project. It includes tools for updating and removing docstrings, checking files against `.gitignore` patterns, and managing temporary files and file states. These utilities are essential for ensuring that the documentation generation process is efficient, accurate, and maintains the integrity of the codebase.
 
 ## Purpose
-The primary purpose of the `Utils` module is to provide a set of tools that facilitate the automation and management of documentation and file handling tasks within a Git repository. Specifically, the module:
+The primary purpose of the `Utils` module is to provide a set of reusable and reliable tools that facilitate the automation of documentation generation and management. Specifically, it helps in:
 
-- **Updates and Removes Docstrings**: Provides functions to update and remove docstrings from code, which is useful for maintaining and generating accurate documentation.
-- **Checks Gitignore Patterns**: Includes a utility class to check files and folders against a `.gitignore` file, ensuring that only relevant files are processed and documented.
-- **Manages Temporary Files**: Offers functions to create, delete, and recover temporary files, which helps in maintaining the integrity of the repository during documentation generation and other automated processes.
+- **Docstring Management**: Updating and removing docstrings from code to ensure consistency and accuracy in the documentation.
+- **Gitignore Compliance**: Checking files and folders against `.gitignore` patterns to exclude irrelevant files from the documentation process.
+- **File State Management**: Creating, deleting, and recovering temporary files to maintain the integrity of the repository during the documentation generation process.
 
-By integrating these utilities, the `Utils` module enhances the overall functionality of the `repo_agent` project, making it easier to manage and maintain documentation and file handling tasks.
+By integrating these utilities, the `Utils` module enhances the overall functionality and reliability of the `repo_agent` project, making it easier for developers to manage and maintain high-quality documentation.
