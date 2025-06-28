@@ -8,7 +8,19 @@ logger = logger.opt(colors=True)
 
 
 class InterceptHandler(logging.Handler):
+    """
+    Handles intercepted messages and dispatches them to registered handlers.
+
+    This class acts as a central point for receiving messages that have been
+    intercepted, and then distributing those messages to specific handler
+    functions based on message type or other criteria. It allows for flexible
+    and extensible message processing without tightly coupling the interception
+    logic with the handling logic."""
+
     def emit(self, record: logging.LogRecord) -> None:
+        """
+        No valid docstring found."""
+
         level: str | int
         try:
             level = logger.level(record.levelname).name
@@ -18,11 +30,24 @@ class InterceptHandler(logging.Handler):
         while frame and (depth == 0 or frame.f_code.co_filename == logging.__file__):
             frame = frame.f_back
             depth += 1
-        logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
+        logger.opt(depth=depth, exception=record.exc_info).log(
+            level, record.getMessage()
+        )
 
 
 def set_logger_level_from_config(log_level):
+    """
+    Sets the logger level based on a configuration value.
+
+    Args:
+        log_level: The desired log level (e.g., "DEBUG", "INFO").
+
+    Returns:
+        None
+        Sets the logging level for the root logger and prints a success message."""
     logger.remove()
-    logger.add(sys.stderr, level=log_level, enqueue=True, backtrace=False, diagnose=False)
+    logger.add(
+        sys.stderr, level=log_level, enqueue=True, backtrace=False, diagnose=False
+    )
     logging.basicConfig(handlers=[InterceptHandler()], level=0, force=True)
-    logger.success(f'Log level set to {log_level}!')
+    logger.success(f"Log level set to {log_level}!")
