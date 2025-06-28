@@ -8,7 +8,29 @@ logger = logger.opt(colors=True)
 
 
 class InterceptHandler(logging.Handler):
+    """
+    Handles logging records with adjusted backtrace depth.
+
+        This handler is designed to intercept loguru records and modify the
+        backtrace to exclude frames originating from within the logging module itself,
+        resulting in cleaner and more informative stack traces in logs.
+    """
+
     def emit(self, record: logging.LogRecord) -> None:
+        """
+        Logs a record, adjusting the backtrace to exclude internal logging frames.
+
+            This method adjusts the backtrace depth to exclude frames from the logging
+            module itself, providing more relevant context in logs. It then uses
+            loguru's logger to log the record at the appropriate level.
+
+            Args:
+                record: The logging record to emit.
+
+            Returns:
+                None
+        """
+
         level: str | int
         try:
             level = logger.level(record.levelname).name
@@ -18,11 +40,24 @@ class InterceptHandler(logging.Handler):
         while frame and (depth == 0 or frame.f_code.co_filename == logging.__file__):
             frame = frame.f_back
             depth += 1
-        logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
+        logger.opt(depth=depth, exception=record.exc_info).log(
+            level, record.getMessage()
+        )
 
 
 def set_logger_level_from_config(log_level):
+    """
+    Sets the logger level based on the provided configuration.
+
+        Args:
+            log_level: The desired log level (e.g., "DEBUG", "INFO", "WARNING").
+
+        Returns:
+            None
+    """
     logger.remove()
-    logger.add(sys.stderr, level=log_level, enqueue=True, backtrace=False, diagnose=False)
+    logger.add(
+        sys.stderr, level=log_level, enqueue=True, backtrace=False, diagnose=False
+    )
     logging.basicConfig(handlers=[InterceptHandler()], level=0, force=True)
-    logger.success(f'Log level set to {log_level}!')
+    logger.success(f"Log level set to {log_level}!")
