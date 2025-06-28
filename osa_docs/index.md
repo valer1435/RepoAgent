@@ -1,0 +1,3 @@
+# RepoAgent
+
+RepoAgent is a tool designed to analyze and summarize code repositories, likely with the assistance of large language models. It focuses on understanding repository structure, tracking changes within the codebase, and potentially generating documentation or providing insights into the project's components. The core functionality revolves around processing files, identifying relationships between them, and utilizing this information for various tasks such as summarization and change detection. Command-line interface is available to run main functionalities.

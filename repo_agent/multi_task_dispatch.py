@@ -7,6 +7,8 @@ from colorama import Fore, Style
 
 
 class Task:
+    """
+    Represents a task with dependencies and extra information."""
 
     def __init__(self, task_id: int, dependencies: List[Task], extra_info: Any = None):
         self.task_id = task_id
@@ -16,8 +18,20 @@ class Task:
 
 
 class TaskManager:
+    """
+    Manages a set of tasks with dependencies and tracks their completion status."""
 
     def __init__(self):
+        """
+        Initializes the task management system with an empty dictionary to store tasks, a lock for thread safety, and initializes unique IDs for new tasks and queries.
+
+            Args:
+                None
+
+            Returns:
+                None
+        """
+
         self.task_dict: Dict[int, Task] = {}
         self.task_lock = threading.Lock()
         self.now_id = 0
@@ -25,28 +39,87 @@ class TaskManager:
 
     @property
     def all_success(self) -> bool:
+        """
+        Indicates whether all tasks have finished.
+
+            Args:
+                None
+
+            Returns:
+                bool: True if all tasks are successful (task_dict is empty), False otherwise.
+        """
+
         return len(self.task_dict) == 0
 
     def add_task(self, dependency_task_id: List[int], extra=None) -> int:
+        """
+        Registers a new task with its dependencies and optional extra information, assigning it a unique ID.
+
+            Args:
+                dependency_task_id: A list of IDs representing tasks that this task depends on.
+                extra: Optional additional information associated with the task.
+
+            Returns:
+                int: The ID of the newly added task.
+        """
+
         with self.task_lock:
-            depend_tasks = [self.task_dict[task_id] for task_id in dependency_task_id if task_id in self.task_dict]
-            self.task_dict[self.now_id] = Task(task_id=self.now_id, dependencies=depend_tasks, extra_info=extra)
+            depend_tasks = [
+                self.task_dict[task_id]
+                for task_id in dependency_task_id
+                if task_id in self.task_dict
+            ]
+            self.task_dict[self.now_id] = Task(
+                task_id=self.now_id, dependencies=depend_tasks, extra_info=extra
+            )
             self.now_id += 1
             return self.now_id - 1
 
     def get_next_task(self, process_id: int):
+        """
+        Assigns a ready task to a requesting process, marking it as in-progress and updating its status. Returns the task details and ID, or (None, -1) if no tasks are currently available.
+
+            This method checks for tasks that have no remaining dependencies and are not yet assigned to a worker.
+            If such a task is found, it marks the task as 'in progress' and returns it along with its ID.
+            If no ready tasks are available, it returns (None, -1).
+
+            Args:
+                process_id: The ID of the process requesting a task.
+
+            Returns:
+                tuple: A tuple containing the next task object and its ID.
+                       Returns (None, -1) if no task is currently available.
+        """
+
         with self.task_lock:
             self.query_id += 1
             for task_id in self.task_dict.keys():
-                ready = len(self.task_dict[task_id].dependencies) == 0 and self.task_dict[task_id].status == 0
+                ready = (
+                    len(self.task_dict[task_id].dependencies) == 0
+                    and self.task_dict[task_id].status == 0
+                )
                 if ready:
                     self.task_dict[task_id].status = 1
                     print(
-                        f'{Fore.RED}[process {process_id}]{Style.RESET_ALL}: get task({task_id}), remain({len(self.task_dict)})')
+                        f"{Fore.RED}[process {process_id}]{Style.RESET_ALL}: get task({task_id}), remain({len(self.task_dict)})"
+                    )
                     return (self.task_dict[task_id], task_id)
             return (None, -1)
 
     def mark_completed(self, task_id: int):
+        """
+        Removes a completed task and updates the dependency relationships of other tasks.
+
+            Removes the completed task from the task dictionary and removes it
+            from the dependency lists of other tasks.
+
+            Args:
+                task_id: The ID of the task to mark as completed.
+
+            Returns:
+                None
+        """
+
         with self.task_lock:
             target_task = self.task_dict[task_id]
             for task in self.task_dict.values():
@@ -56,6 +129,17 @@ class TaskManager:
 
 
 def worker(task_manager, process_id: int, handler: Callable):
+    """
+    Executes tasks from a task manager until all tasks are successful.
+
+        Args:
+            task_manager: The task manager object providing access to tasks and completion status.
+            process_id:  The ID of the worker process.
+            handler: A callable that processes the extra information associated with each task.
+
+        Returns:
+            None
+    """
     while True:
         if task_manager.all_success:
             return

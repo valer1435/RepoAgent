@@ -1,8 +1,7 @@
 from llama_index.core import ChatPromptTemplate
 from llama_index.core.llms import ChatMessage, MessageRole
 
-docstring_generation_instruction = (
-    """Generate a Google-formatted docstring for the Python {code_type_tell} located at {file_path}. 
+docstring_generation_instruction = """Generate a Google-formatted docstring for the Python {code_type_tell} located at {file_path}. 
 The {code_type_tell} is named {code_name} and has the following code content:
 
 ```python
@@ -70,22 +69,17 @@ Do not put too much examples and references.
 Replace {code_type_tell} with "function", "method", or "class".
 
 Keep in mind that your audience is document readers, so use a deterministic tone to generate precise content and don't let them know you're provided with code snippet and documents. AVOID ANY SPECULATION and inaccurate descriptions!"""
-)
 
-docstring_system = (
-    "You are python senior developer. You are developer of the framework"
-)
+docstring_system = "You are python senior developer. You are developer of the framework"
 
 message_templates = [
     ChatMessage(content=docstring_system, role=MessageRole.SYSTEM),
     ChatMessage(content=docstring_generation_instruction, role=MessageRole.USER),
-
 ]
 
 chat_template = ChatPromptTemplate(message_templates=message_templates)
 
-docstring_update_instruction = (
-    """Update a Google-formatted docstring for the Python {code_type_tell} located at {file_path} uding provided main idea of the project. Note that you will not be provided with any code
+docstring_update_instruction = """Update a Google-formatted docstring for the Python {code_type_tell} located at {file_path} uding provided main idea of the project. Note that you will not be provided with any code
 The {code_type_tell} is named {code_name} and has the following docstring:
 
 ```python
@@ -144,15 +138,15 @@ Do not put too much examples and references.
 Replace {code_type_tell} with "function", "method", or "class".
 
 Keep in mind that your audience is document readers, so use a deterministic tone to generate precise content and don't let them know you're provided with code snippet and documents. AVOID ANY SPECULATION and inaccurate descriptions!"""
-)
 
 docstring_update_templates = [
     ChatMessage(content=docstring_system, role=MessageRole.SYSTEM),
     ChatMessage(content=docstring_update_instruction, role=MessageRole.USER),
-
 ]
 
-docstring_update_chat_templates = ChatPromptTemplate(message_templates=docstring_update_templates)
+docstring_update_chat_templates = ChatPromptTemplate(
+    message_templates=docstring_update_templates
+)
 
 idea_generation_instruction = (
     "You are an AI documentation assistant, and your task is to summarize the main idea of the project and formulate for which purpose it was written."
@@ -201,7 +195,9 @@ new_description_guideline = (
 )
 
 desc_message_templates = [
-    ChatMessage(content=new_description_generation_instruction, role=MessageRole.SYSTEM),
+    ChatMessage(
+        content=new_description_generation_instruction, role=MessageRole.SYSTEM
+    ),
     ChatMessage(
         content=new_description_guideline,
         role=MessageRole.USER,
@@ -222,7 +218,6 @@ module_summary_generation_instruction = (
     "# Name\n"
     "## Overview\n"
     "## Purpose\n"
-
     "Do not mention or describe any submodule or files! Rename snake_case names on meaningful names."
 )
 
@@ -240,4 +235,6 @@ module_summary_message_templates = [
     ),
 ]
 
-module_summary_template = ChatPromptTemplate(message_templates=module_summary_message_templates)
+module_summary_template = ChatPromptTemplate(
+    message_templates=module_summary_message_templates
+)
